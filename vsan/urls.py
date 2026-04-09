@@ -17,10 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from usuarios import views
+from setores import views as setor_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('about/', views.about, name='about'),
-    path('contact/', views.contact, name='contact')
+    path('contact/', views.contact, name='contact'),
+    path('cadastrar-usuario/', views.cadastrar_usuario, name='cadastrar_usuario'),
+    path('cadastrar-setor/', setor_views.cadastrar_setor, name='cadastrar_setor'),
+    path('setores/excluir/<int:setor_id>/', setor_views.excluir_setor, name='excluir_setor'),
+    path('setores/', setor_views.listar_setores, name='listar_setores'),
+    path('sucesso/', views.sucesso, name='sucesso'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('definir-tipo-usuario/<int:usuario_id>/', views.definir_tipo_usuario, name='definir_tipo_usuario'),
 ]

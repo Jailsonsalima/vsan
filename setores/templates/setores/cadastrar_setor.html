@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+<h2>Cadastrar Setor</h2>
+<form method="post" class="form">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="nome">Nome do Setor:</label>
+        <input type="text" id="nome" name="nome" required>
+    </div>
+    <button type="submit" class="btn-primary">Cadastrar</button>
+</form>
+</div>
+<div class="dashboard-container">
+    <h2>Lista de Setores</h2>
+    <table class="dashboard-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome do Setor</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for setor in setores %}
+            <tr>
+                <td>{{ setor.id }}</td>
+                <td>{{ setor.nome }}</td>
+                <td>
+                    <form method="post" action="{% url 'excluir_setor' setor.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-danger">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">Nenhum setor cadastrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

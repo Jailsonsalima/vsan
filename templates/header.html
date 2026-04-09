@@ -8,4 +8,13 @@
             <li><a href="{% url 'contact' %}">Contato</a></li>
         </ul>
     </nav>
+    <div>
+    {% if user.is_authenticated %}
+        <span class="user-info">Olá, {{ user.username }}!</span>
+        <button><a href="{% url 'dashboard' %}">Dashboard</a></button>
+        <button><a href="{% url 'logout' %}">Logout</a></button>
+    {% else %}
+        <button><a href="{% url 'login' %}">Login</a></button>
+    {% endif %}
+    </div>
 </header>

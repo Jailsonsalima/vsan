@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h2>Dashboard</h2>
+    <p>Bem-vindo, {{ request.user.username }}!</p>
+
+    <!-- Área visível para todos -->
+    <section class="dashboard-section">
+        <h3>Informações Gerais</h3>
+        <p>Aqui você pode colocar estatísticas, avisos ou dados comuns a todos os usuários.</p>
+    </section>
+
+    <!-- Área restrita ao diretor -->
+    {% if request.user.tipo_usuario == "diretor" %}
+    <div class="form-group">
+        <button class="btn-secondary"><a href="{% url 'cadastrar_setor' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Novo Setor</a></button>
+    </div>
+    <section class="dashboard-section">
+        <h3>Gerenciamento de Contas</h3>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>Email</th>
+                    <th>Setor</th>
+                    <th>Tipo de Usuário</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario.username }}</td>
+                    <td>{{ usuario.email }}</td>
+                    <td>{{ usuario.setor.nome }}</td>
+                    <td>{{ usuario.tipo_usuario|default:"Não definido" }}</td>
+                    <td>
+                        {% if usuario.is_active %}
+                            <span class="status ativo">Ativo</span>
+                        {% else %}
+                            <span class="status inativo">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="post" action="{% url 'definir_tipo_usuario' usuario.id %}">
+                            {% csrf_token %}
+                            <select name="tipo_usuario" class="select-tipo">
+                                <option value="diretor">Diretor</option>
+                                <option value="coordenador">Coordenador</option>
+                                <option value="funcionario">Funcionário</option>
+                            </select>
+                            <select name="setor" class="select-tipo">
+                                <option value="">-- Setor --</option>
+                                {% for setor in setores %}
+                                    <option value="{{ setor.id }}">{{ setor.nome }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <button type="submit" class="btn-primary">Definir</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% else %}
+    <p><strong>Área de contas disponível apenas para diretores.</strong></p>
+    {% endif %}
+</div>
+{% endblock %}
