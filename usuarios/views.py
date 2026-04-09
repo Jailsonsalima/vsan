@@ -38,7 +38,7 @@ def sucesso(request):
 
 @login_required
 def dashboard(request):
-    usuarios = Usuario.objects.all()
+    usuarios = Usuario.objects.filter(is_superuser=False)  # Exclui superusuários da lista
     setores = Setor.objects.all()
     return render(request, 'usuarios/dashboard.html', {'usuarios': usuarios, 'setores': setores})
 
