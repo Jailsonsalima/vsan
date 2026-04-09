@@ -47,6 +47,9 @@
                         <form method="post" action="{% url 'definir_tipo_usuario' usuario.id %}">
                             {% csrf_token %}
                             <select name="tipo_usuario" class="select-tipo">
+                                {% if usuario.is_active %}
+                                    <option value="inativo" selected>Inativo</option>
+                               {% endif %}
                                 <option value="diretor">Diretor</option>
                                 <option value="coordenador">Coordenador</option>
                                 <option value="funcionario">Funcionário</option>

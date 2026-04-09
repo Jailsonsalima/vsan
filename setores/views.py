@@ -6,14 +6,19 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 @login_required
 def cadastrar_setor(request):
+    # Aqui buscamos todos os setores e passamos para o template, para que possam ser listados na página de cadastro
+    setores = Setor.objects.all()
     if request.method == 'POST':
         nome = request.POST.get('nome')
-        setor = Setor(nome=nome)
-        setor.save()
-        messages.success(request, f"Setor '{setor.nome}' cadastrado com sucesso.")
-        return redirect('cadastrar_setor')
-    # Aqui buscamos todos os setores e passamos para o template
-    setores = Setor.objects.all()
+        # Verifica se já existe setor com esse nome
+        if Setor.objects.filter(nome__iexact=nome).exists():
+            messages.error(request, f"O setor '{nome}' já está cadastrado.")
+        else:
+            setor = Setor(nome=nome)
+            setor.save()
+            messages.success(request, f"Setor '{setor.nome}' cadastrado com sucesso.")
+            return redirect('cadastrar_setor')
+    
     return render(request, 'setores/cadastrar_setor.html', {'setores': setores})
 
 

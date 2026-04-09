@@ -49,10 +49,11 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return render(request, 'usuarios/dashboard.html')
+            return redirect('dashboard')  # redireciona para a rota do dashboard
         else:
             messages.error(request, 'Credenciais inválidas.')
     return render(request, 'usuarios/login.html')
+
 
 def logout_view(request):
     logout(request)
@@ -65,8 +66,12 @@ def definir_tipo_usuario(request, usuario_id):
     if request.method == 'POST':
         tipo_usuario = request.POST.get('tipo_usuario')
         setor_id = request.POST.get('setor')
-        if tipo_usuario:
+        if tipo_usuario == "inativo":
+            usuario.tipo_usuario = None
+            usuario.is_active = False
+        else:
             usuario.tipo_usuario = tipo_usuario
+            usuario.is_active = True
         if setor_id:
             usuario.setor = Setor.objects.get(id=setor_id)
 
