@@ -72,7 +72,7 @@ body {
 }
 
 .btn-primary {
-    background-color: #333;
+    background-color: #2724ee;
     color: #fff;
     padding: 10px 20px;
     border: none;
@@ -83,21 +83,24 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: #555;
+    background-color: #fff;
+    color: #333;
 }
 
 .btn-secondary {
-    background-color: #f4f4f4;
-    color: #333;
+    background-color: #2724ee;
+    color: #fff;
     padding: 10px 20px;
     border: 1px solid #bbb;
     border-radius: 5px;
     text-decoration: none;
     transition: background 0.3s;
+    cursor: pointer;
 }
 
 .btn-secondary:hover {
-    background-color: #ddd;
+    background-color: #1a179b;
+    color: #fff;
 }
 
 footer {

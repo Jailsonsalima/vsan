@@ -3,18 +3,18 @@
     <a href="{% url 'home' %}" class="logo">VSAN</a>
     <nav>
         <ul class="menu">
-            <li><a href="{% url 'home' %}">Inicio</a></li>
-            <li><a href="{% url 'about' %}">Sobre</a></li>
-            <li><a href="{% url 'contact' %}">Contato</a></li>
+            <li><a href="{% url 'home' %}" class='btn-primary'>Inicio</a></li>
+            <li><a href="{% url 'about' %}" class='btn-primary'>Sobre</a></li>
+            <li><a href="{% url 'contact' %}" class='btn-primary'>Contato</a></li>
         </ul>
     </nav>
     <div class="auth-buttons">
     {% if user.is_authenticated %}
         <span class="user-info">Olá, {{ user.username }}!</span>
-        <button><a href="{% url 'dashboard' %}" class='btn-secondary'>Dashboard</a></button>
-        <button><a href="{% url 'logout' %}" class='btn-secondary'>Logout</a></button>
+        <a href="{% url 'dashboard' %}" class='btn-primary'>Dashboard</a>
+        <a href="{% url 'logout' %}" class='btn-primary'>Logout</a>
     {% else %}
-        <button><a href="{% url 'login' %}" class='btn-secondary'>Login</a></button>
+        <a href="{% url 'login' %}" class='btn-primary'>Login</a>
     {% endif %}
     </div>
 </header>
