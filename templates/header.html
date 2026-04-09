@@ -8,13 +8,13 @@
             <li><a href="{% url 'contact' %}">Contato</a></li>
         </ul>
     </nav>
-    <div>
+    <div class="auth-buttons">
     {% if user.is_authenticated %}
         <span class="user-info">Olá, {{ user.username }}!</span>
-        <button><a href="{% url 'dashboard' %}">Dashboard</a></button>
-        <button><a href="{% url 'logout' %}">Logout</a></button>
+        <button><a href="{% url 'dashboard' %}" class='btn-secondary'>Dashboard</a></button>
+        <button><a href="{% url 'logout' %}" class='btn-secondary'>Logout</a></button>
     {% else %}
-        <button><a href="{% url 'login' %}">Login</a></button>
+        <button><a href="{% url 'login' %}" class='btn-secondary'>Login</a></button>
     {% endif %}
     </div>
 </header>
