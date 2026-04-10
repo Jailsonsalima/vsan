@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from usuarios import views
 from setores import views as setor_views
+from servidores import views as servidor_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,4 +34,7 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('definir-tipo-usuario/<int:usuario_id>/', views.definir_tipo_usuario, name='definir_tipo_usuario'),
+    path("cadastro_servidor/", servidor_views.cadastro_servidor, name="cadastro_servidor"),
+    path("servidores/", servidor_views.lista_servidores, name="lista_servidores"),
+    path("servidores/pdf/", servidor_views.gerar_pdf_servidores, name="gerar_pdf_servidores"),
 ]

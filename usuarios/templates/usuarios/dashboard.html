@@ -15,6 +15,10 @@
     {% if request.user.tipo_usuario == "diretor" %}
     <div class="form-group">
         <button class="btn-secondary"><a href="{% url 'cadastrar_setor' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Novo Setor</a></button>
+
+        <button class="btn-secondary"><a href="{% url 'cadastro_servidor' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Novo Servidor</a></button>
+
+        <button class="btn-secondary"><a href="{% url 'lista_servidores' %}" style="text-decoration: none; color: inherit; font-size: large;">Gerar PDF de Servidores</a></button>
     </div>
     <section class="dashboard-section">
         <h3>Gerenciamento de Contas</h3>
