@@ -2,12 +2,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container">
 <form method="post" action="{% url 'gerar_pdf_servidores' %}" class="form-group">
     {% csrf_token %}
     {% for servidor in servidores %}
         <div>
             <input type="checkbox" name="servidores" value="{{ servidor.id }}">
-            {{ servidor.nome }} - {{ servidor.matricula }}
+            {{ servidor.nome }} - {{ servidor.matricula }}<br><br>
         </div>
     {% endfor %}
     <button type="submit" class="btn-secondary">Gerar PDF</button>
@@ -16,4 +17,5 @@
 {% if pdf_url %}
     <a href="{{ pdf_url }}" target="_blank">Baixar PDF</a>
 {% endif %}
+</div>
 {% endblock %}
