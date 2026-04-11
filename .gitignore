@@ -1,2 +1,32 @@
-.venv/
-vsan/settings.py
+# Arquivos de banco de dados locais
+db.sqlite3
+
+# Arquivos compilados do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Arquivos de log
+*.log
+
+# Arquivos de configuração locais
+.env
+*.env
+
+# Diretórios de mídia e estáticos gerados
+/media/
+staticfiles/
+static/
+
+# Arquivos de migração compilados
+*.mo
+
+# Arquivos de backup
+*.bak
+*.swp
+*.swo
+
+# Virtualenv
+venv/
+env/
