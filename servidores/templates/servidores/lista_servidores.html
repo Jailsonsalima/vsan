@@ -1,9 +1,8 @@
-
 {% extends 'base.html' %}
 
 {% block content %}
 <div class="container">
-<form method="post" action="{% url 'gerar_pdf_servidores' %}" class="form-group">
+<form id="form-servidores" method="post" action="{% url 'gerar_pdf_servidores' %}" class="form-group" target="_blank">
     {% csrf_token %}
     {% for servidor in servidores %}
         <div>
@@ -11,11 +10,42 @@
             {{ servidor.nome }} - {{ servidor.matricula }}<br><br>
         </div>
     {% endfor %}
-    <button type="submit" class="btn-secondary">Gerar PDF</button>
+    <button id="btn-pdf" type="submit" class="btn btn-disabled" disabled>Gerar PDF</button>
 </form>
 
 {% if pdf_url %}
     <a href="{{ pdf_url }}" target="_blank">Baixar PDF</a>
 {% endif %}
 </div>
+
+<script>
+    const form = document.getElementById('form-servidores');
+    const checkboxes = document.querySelectorAll('input[name="servidores"]');
+    const btnPdf = document.getElementById('btn-pdf');
+
+    function atualizarBotao() {
+        const algumSelecionado = Array.from(checkboxes).some(c => c.checked);
+        btnPdf.disabled = !algumSelecionado;
+
+        if (algumSelecionado) {
+            btnPdf.classList.remove('btn-disabled');
+            btnPdf.classList.add('btn-secondary'); // azul quando ativo
+        } else {
+            btnPdf.classList.remove('btn-secondary');
+            btnPdf.classList.add('btn-disabled'); // cinza quando desabilitado
+        }
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', atualizarBotao));
+
+    // limpa checkboxes após envio
+    form.addEventListener('submit', () => {
+        setTimeout(() => {
+            checkboxes.forEach(cb => cb.checked = false);
+            btnPdf.disabled = true;
+            btnPdf.classList.remove('btn-secondary');
+            btnPdf.classList.add('btn-disabled');
+        }, 500); // espera meio segundo para não atrapalhar o envio
+    });
+</script>
 {% endblock %}
