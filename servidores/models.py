@@ -11,7 +11,7 @@ class Servidor(models.Model):
             ("Colaborador Eventual", "Colaborador Eventual"),
         ]
     )
-    matricula = models.PositiveIntegerField(unique=True)
+    matricula = models.CharField(max_length=20, unique=True)
     lotacao = models.CharField(max_length=100)
     cargo = models.CharField(max_length=100)
     funcao = models.CharField(max_length=150, blank=True, null=True)
@@ -25,13 +25,13 @@ class Servidor(models.Model):
 
     cpf = models.CharField(max_length=14, unique=True)
     rg = models.CharField(max_length=20, blank=True, null=True)
-    nascimento = models.DateField()
+    nascimento = models.DateField(blank=True, null=True)
     transporte = models.CharField(max_length=50, blank=True, null=True)
     banco = models.CharField(max_length=50, blank=True, null=True)
     agencia = models.CharField(max_length=20, blank=True, null=True)
     conta = models.CharField(max_length=30, blank=True, null=True)
     objetivo = models.TextField(blank=True, null=True)
-    data = models.DateField()
+    data = models.DateField(blank=True, null=True)
     chefia = models.CharField(max_length=150, blank=True, null=True)
 
     def __str__(self):
