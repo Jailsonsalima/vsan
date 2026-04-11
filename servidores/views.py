@@ -30,7 +30,7 @@ def cadastro_servidor(request):
             chefia=request.POST.get("chefia"),
         )
         return redirect("lista_servidores")  # rota para listar servidores
-        
+
     # Se for GET, mostra o formulário
     return render(request, "servidores/cadastro_servidor.html")
 
@@ -42,12 +42,15 @@ def gerar_pdf_servidores(request):
 
         # renderiza o HTML e injeta STATIC_URL
         html_string = render_to_string(
-            "servidores/pdf_modelo.html",
-            {"servidores": servidores, "STATIC_URL": static("")}
+            "pdf_modelo.html",
+            {"servidores": servidores}
         )
 
         # base_url é essencial para que o WeasyPrint consiga resolver imagens e CSS
-        pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+        pdf_file = HTML(
+            string=html_string,
+            base_url=request.build_absolute_uri('/')
+        ).write_pdf()
 
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response['Content-Disposition'] = 'inline; filename="servidores.pdf"'
