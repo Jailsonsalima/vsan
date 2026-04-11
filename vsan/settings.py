@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-772h*ndc9ykwz85g2wfz8$++v)nhfm8lq2aj^x5kit)p8$8i%x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["vsan.pythonanywhere.com"]
 
 
 # Application definition
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'usuarios.apps.UsuariosConfig',
     'setores.apps.SetoresConfig',
+    'servidores.apps.ServidoresConfig',
 ]
 
 MIDDLEWARE = [
@@ -117,7 +118,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
 
 # Modelo customizado de usuário
 AUTH_USER_MODEL = 'usuarios.Usuario'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# default static files settings for PythonAnywhere.
+# see https://help.pythonanywhere.com/pages/DjangoStaticFiles for more info
+MEDIA_ROOT = '/home/vsan/vsan/media'
+MEDIA_URL = '/media/'
+STATIC_ROOT = '/home/vsan/vsan/static'
+STATIC_URL = '/static/'
