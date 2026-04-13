@@ -1,4 +1,5 @@
 from django.db import models
+from servidores.models import Servidor
 
 # Create your models here.
 
@@ -21,6 +22,8 @@ class Atividade(models.Model):
     data_retorno = models.DateField(blank=True, null=True)
     data_criacao = models.DateTimeField(auto_now_add=True)
 
+    servidores = models.ManyToManyField(Servidor, related_name="atividades")  # vínculo
+    
     def __str__(self):
         return f"{self.tipo_atividade} - {self.servidor_nome} ({self.servidor_matricula})"
 

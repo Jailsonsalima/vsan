@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container">
-<form id="form-servidores" method="post" action="{% url 'gerar_pdf_servidores' %}" class="form-group" target="_blank">
+<form id="form-servidores" method="post" action="{% url 'selecionar_servidores' atividade.id %}" class="form-group" target="_blank">
     {% csrf_token %}
     {% for servidor in servidores %}
         <div>

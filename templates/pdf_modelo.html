@@ -10,13 +10,28 @@
 
         h3 { text-align: center; margin-bottom: 30px; }
         img { display: block; margin: 0 auto; width: 120px; height: auto; margin-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 120px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 1020px; }
 
         tr, td { border: 2px solid #000000; padding: 8px; text-align: left; }
     </style>
 </head>
 <body>
-
+    <h3>Dados da Atividade</h3>
+<table>
+    <tr>
+        <td><strong>Tipo:</strong> {{ atividade.tipo_atividade }}</td>
+        <td><strong>Data Ida:</strong> {{ atividade.data_ida }}</td>
+        <td><strong>Data Retorno:</strong> {{ atividade.data_retorno }}</td>
+    </tr>
+    <tr>
+        <td><strong>Dias/Diárias:</strong> {{ atividade.dias_diarias }}</td>
+        <td><strong>Pernoite:</strong> {{ atividade.pernoite }}</td>
+        <td><strong>Transporte:</strong> {{ atividade.transporte }}</td>
+    </tr>
+    <tr>
+        <td colspan="3"><strong>Objetivo:</strong> {{ atividade.objetivo }}</td>
+    </tr>
+</table>
     {% for servidor in servidores %}
     <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Logo">
 
@@ -46,9 +61,15 @@ Departamento de Vigilância Sanitária - DEVS/DVS/SESPA</td>
             <td colspan="2" style="width:50%;"><strong>Função:</strong><br>{{ servidor.funcao }}</td>
         </tr>
         <tr>
-            <td colspan="2" style="width:30%;"><strong>Período da Viagem:</strong><br>{{ servidor.periodo_viagem }}</td>
-            <td colspan="2" style="width:30%;"><strong>Nº Dias / Diárias:</strong><br>{{ servidor.dias_diarias }}</td>
-            <td><strong>Pernoite:</strong><br>{{ servidor.pernoite }}</td>
+            <td colspan="2" style="width:30%;"><strong>Período da Viagem:</strong><br>
+                {% if atividade.data_ida|date:"m" == atividade.data_retorno|date:"m" %}
+                    {{ atividade.data_ida|date:"d" }} a {{ atividade.data_retorno|date:"d/m/Y" }}
+                {% else %}
+                    {{ atividade.data_ida|date:"d/m/Y" }} a {{ atividade.data_retorno|date:"d/m/Y" }}
+                {% endif %}
+            </td>
+            <td colspan="2" style="width:30%;"><strong>Nº Dias / Diárias:</strong><br>{{ atividade.dias_diarias }}</td>
+            <td><strong>Pernoite:</strong><br>{{ atividade.pernoite }}</td>
         </tr>
         <tr>
             <td colspan="2" style="width:33%;"><strong>CPF:</strong><br>{{ servidor.cpf }}</td>
@@ -56,7 +77,7 @@ Departamento de Vigilância Sanitária - DEVS/DVS/SESPA</td>
             <td><strong>Data Nascimento:</strong><br>{{ servidor.data_nascimento }}</td>
         </tr>
         <tr>
-            <td colspan="5"><strong>Meio de Transporte:</strong><br>{{ servidor.transporte }}</td>
+            <td colspan="5"><strong>Meio de Transporte:</strong><br>{{ atividade.transporte }}</td>
         </tr>
         <tr>
             <td colspan="2"><strong>Banco:</strong><br>{{ servidor.banco }}</td>
@@ -64,7 +85,7 @@ Departamento de Vigilância Sanitária - DEVS/DVS/SESPA</td>
             <td><strong>Conta Corrente:</strong><br>{{ servidor.conta }}</td>
         </tr>
         <tr>
-            <td colspan="5"><strong>Objetivo:</strong>{{ servidor.objetivo }}</td>
+            <td colspan="5"><strong>Objetivo:</strong>{{ atividade.objetivo }}</td>
         </tr>
         <tr>
             <td colspan="5"><strong> Férias/Licenças Oficiais:</strong> Declaramos que não foi encaminhado à Diretoria do Trabalho e de Educação na Saúde - DGTES o
