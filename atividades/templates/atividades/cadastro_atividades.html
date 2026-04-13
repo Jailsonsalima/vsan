@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Cadastro de Atividade</h2>
+    <form method="post" class="form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="tipo_atividade">Atividade:</label>
+            <select name="tipo_atividade" id="tipo_atividade" required>
+                <option value="Viagem">Viagem</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <strong>Período da Viagem</strong>
+            <label for="data_ida">Data de Ida :</label>
+            <input type="date" name="data_ida" id="data_ida" required>
+        </div>
+        <div class="form-group">
+            <label for="data_retorno">Data de Retorno :</label>
+            <input type="date" name="data_retorno" id="data_retorno" required>
+        </div>
+        <div class="form-group">
+            <label for="dias_diarias">Nº Dias / Diárias:</label>
+            <input type="text" name="dias_diarias" id="dias_diarias" required>
+        </div>
+        <div>
+            <label>Pernoite:</label>
+            <div class="radio-group">
+                <div class="radio-group">
+                    <input type="radio" id="pernoite_sim" name="pernoite" value="Sim" required>
+                    <label for="pernoite_sim">Sim</label>
+                </div>
+                <div class="radio-group">
+                    <input type="radio" id="pernoite_nao" name="pernoite" value="Não" required>
+                    <label for="pernoite_nao">Não</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="transporte">Meio de Transporte:</label>
+            <input type="text" name="transporte" id="transporte" required>
+        </div>
+        <div class="form-group">
+            <label for="objetivo">Objetivo:</label>
+            <textarea name="objetivo" id="objetivo" rows="3" required></textarea>
+        </div>
+        
+        
+        <button type="submit" class="btn-secondary">Próximo ></button>
+    </form>
+</div>
+{% endblock %}

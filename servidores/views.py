@@ -3,7 +3,6 @@ from .models import Servidor
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
-from django.templatetags.static import static
 
 def cadastro_servidor(request):
     if request.method == "POST":
@@ -15,22 +14,16 @@ def cadastro_servidor(request):
             lotacao=request.POST.get("lotacao"),
             cargo=request.POST.get("cargo"),
             funcao=request.POST.get("funcao"),
-            periodo_viagem=request.POST.get("periodo_viagem"),
-            dias_diarias=request.POST.get("dias_diarias"),
-            pernoite=request.POST.get("pernoite"),
             cpf=request.POST.get("cpf"),
             rg=request.POST.get("rg"),
             nascimento=request.POST.get("nascimento") or None,
-            transporte=request.POST.get("transporte"),
             banco=request.POST.get("banco"),
             agencia=request.POST.get("agencia"),
             conta=request.POST.get("conta"),
-            objetivo=request.POST.get("objetivo"),
-            data=request.POST.get("data") or None,
             chefia=request.POST.get("chefia"),
         )
-        return redirect("lista_servidores")  # rota para listar servidores
-
+        return redirect("cadastrar_usuario")  # rota para segunda etapa de cadastro
+    
     # Se for GET, mostra o formulário
     return render(request, "servidores/cadastro_servidor.html")
 

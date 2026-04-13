@@ -10,15 +10,16 @@
 
         h3 { text-align: center; margin-bottom: 30px; }
         img { display: block; margin: 0 auto; width: 120px; height: auto; margin-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 120px; }
         tr, td { border: 2px solid #000000; padding: 8px; text-align: left; }
     </style>
 </head>
 <body>
-    {% load static %}
-    <img src="{% static 'img/brasao.png' %}" alt="Logo">
-    <h3>GOVERNO DO ESTADO DO PARÁ<br><br>SECRETARIA DE ESTADO DE SAÚDE PÚBLICA<br><br>CADASTRO DE CONCESSÃO DE DIÁRIAS</h3>
     {% for servidor in servidores %}
+    <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Logo">
+
+    <h3>GOVERNO DO ESTADO DO PARÁ<br><br>SECRETARIA DE ESTADO DE SAÚDE PÚBLICA<br><br>CADASTRO DE CONCESSÃO DE DIÁRIAS</h3>
+
 
     <table>
         <tr>
@@ -65,7 +66,7 @@ Departamento de Vigilância Sanitária - DEVS/DVS/SESPA</td>
             <td colspan="5"><strong>Objetivo:</strong>{{ servidor.objetivo }}</td>
         </tr>
         <tr>
-            <td colspan="5"><strong> Férias/Licenças Oficiais:</strong> Declaramos que não foi encaminhado à Diretoria do Trabalho e de Educação na Saúde - DGTES o 
+            <td colspan="5"><strong> Férias/Licenças Oficiais:</strong> Declaramos que não foi encaminhado à Diretoria do Trabalho e de Educação na Saúde - DGTES o
 documento de marcação de férias oficiais ou qualquer licença oficial (Lei nº 5.810, de Janeiro de 1994 - RJU-PA) em nome do(a)
 servidor(a) {{ servidor.nome }} no período do deslocamento indicado neste documento.</td>
         </tr>

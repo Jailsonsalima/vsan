@@ -103,6 +103,29 @@ body {
     color: #fff;
 }
 
+.btn-disabled {
+    background-color: #bbb;
+    color: #666;
+    padding: 10px 20px;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: not-allowed;
+}
+
+.radio-group {
+    display: flex;
+    gap: 15px; /* espaço entre opções */
+    align-items: center; /* alinha verticalmente */
+    padding: 10px 0;
+}
+
+.radio-group input[type="radio"] {
+    margin-right: 5px;
+    justify-content: center;
+
+}
+
 footer {
     text-align: center;
     padding: 20px 0;

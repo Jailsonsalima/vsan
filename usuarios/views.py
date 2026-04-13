@@ -4,6 +4,7 @@ from .models import Usuario
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from atividades.models import Atividade
 
 # Create your views here.
 def home(request):
@@ -36,11 +37,31 @@ def cadastrar_usuario(request):
 def sucesso(request):
     return render(request, 'usuarios/sucesso.html')
 
+from atividades.models import Atividade
+
 @login_required
 def dashboard(request):
-    usuarios = Usuario.objects.filter(is_superuser=False)  # Exclui superusuários da lista
     setores = Setor.objects.all()
-    return render(request, 'usuarios/dashboard.html', {'usuarios': usuarios, 'setores': setores})
+
+    # Se o diretor clicar no botão "Ver todos", pegamos todos os usuários
+    if request.GET.get("mostrar") == "todos":
+        usuarios = Usuario.objects.filter(is_superuser=False)  # Exclui superusuários da lista
+    else:
+        # Por padrão, mostra apenas os inativos
+        usuarios = Usuario.objects.filter(is_superuser=False, is_active=False)
+
+    # Adiciona atividades ao contexto
+    atividades = Atividade.objects.all().order_by("-data_criacao")
+
+    return render(
+        request,
+        "usuarios/dashboard.html",
+        {
+            "usuarios": usuarios,
+            "setores": setores,
+            "atividades": atividades,
+        },
+    )
 
 def login_view(request):
     if request.method == 'POST':

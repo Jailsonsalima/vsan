@@ -10,18 +10,16 @@
         <h3>Informações Gerais</h3>
         <p>Aqui você pode colocar estatísticas, avisos ou dados comuns a todos os usuários.</p>
     </section>
-
+    
     <!-- Área restrita ao diretor -->
     {% if request.user.tipo_usuario == "diretor" %}
     <div class="form-group">
         <button class="btn-secondary"><a href="{% url 'cadastrar_setor' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Novo Setor</a></button>
-
-        <button class="btn-secondary"><a href="{% url 'cadastro_servidor' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Novo Servidor</a></button>
-
         <button class="btn-secondary"><a href="{% url 'lista_servidores' %}" style="text-decoration: none; color: inherit; font-size: large;">Gerar PDF de Servidores</a></button>
     </div>
     <section class="dashboard-section">
         <h3>Gerenciamento de Contas</h3>
+        <button class="btn-secondary"><a href="?mostrar=todos" style="text-decoration: none; color: inherit; font-size: large;">Ver Todos Usuários</a></button>
         <table class="dashboard-table">
             <thead>
                 <tr>
@@ -68,6 +66,50 @@
                             <button type="submit" class="btn-primary">Definir</button>
                         </form>
                     </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    <button class="btn-secondary"><a href="{% url 'cadastrar_atividade' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Atividade</a></button>
+    <section class="dashboard-section">
+        <h3>Atividades Registradas</h3>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Servidor</th>
+                    <th>Matrícula</th>
+                    <th>Cargo</th>
+                    <th>Tipo de Atividade</th>
+                    <th>Data Ida</th>
+                    <th>Data Retorno</th>
+                    <th>Dias/Diárias</th>
+                    <th>Pernoite</th>
+                    <th>Transporte</th>
+                    <th>Objetivo</th>
+
+                    <th>Data Criação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for atividade in atividades %}
+                <tr>
+                    <td>{{ atividade.servidor_nome }}</td>
+                    <td>{{ atividade.servidor_matricula }}</td>
+                    <td>{{ atividade.servidor_cargo }}</td>
+                    <td>{{ atividade.tipo_atividade }}</td>
+                    <td>{{ atividade.data_ida }}</td>
+                    <td>{{ atividade.data_retorno }}</td>
+                    <td>{{ atividade.dias_diarias }}</td>
+                    <td>{{ atividade.pernoite }}</td>
+                    <td>{{ atividade.transporte }}</td>
+                    <td>{{ atividade.objetivo }}</td>
+                    
+                    <td>{{ atividade.data_criacao|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="12">Nenhuma atividade cadastrada.</td>
                 </tr>
                 {% endfor %}
             </tbody>

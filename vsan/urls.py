@@ -19,6 +19,7 @@ from django.urls import path
 from usuarios import views
 from setores import views as setor_views
 from servidores import views as servidor_views
+from atividades import views as atividades_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -37,4 +38,5 @@ urlpatterns = [
     path("cadastro_servidor/", servidor_views.cadastro_servidor, name="cadastro_servidor"),
     path("servidores/", servidor_views.lista_servidores, name="lista_servidores"),
     path("servidores/pdf/", servidor_views.gerar_pdf_servidores, name="gerar_pdf_servidores"),
+    path('cadastro-atividade/', atividades_views.cadastrar_atividade, name="cadastrar_atividade"),
 ]
