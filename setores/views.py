@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Setor
 from django.contrib.auth.decorators import login_required
+from django.db.models import ProtectedError
 
 # Create your views here.
 @login_required
@@ -30,6 +31,9 @@ def listar_setores(request):
 @login_required
 def excluir_setor(request, setor_id):
     setor = get_object_or_404(Setor, id=setor_id)
-    setor.delete()
-    messages.success(request, f"Setor '{setor.nome}' excluído com sucesso.")
+    try:
+        setor.delete()
+        messages.success(request, f"Setor '{setor.nome}' excluído com sucesso.")
+    except ProtectedError:
+        messages.error(request, f"Não foi possível excluir o setor '{setor.nome}' porque existem servidores vinculados a ele.")
     return redirect('cadastrar_setor')

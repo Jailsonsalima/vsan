@@ -15,7 +15,7 @@
     {% if request.user.tipo_usuario == "diretor" %}
     <div class="form-group">
         <button class="btn-secondary"><a href="{% url 'cadastrar_setor' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Novo Setor</a></button>
-        <button class="btn-secondary"><a href="{% url 'lista_servidores' %}" style="text-decoration: none; color: inherit; font-size: large;">Gerar PDF de Servidores</a></button>
+        <!-- <button class="btn-secondary"><a href="{% url 'lista_servidores' %}" style="text-decoration: none; color: inherit; font-size: large;">Gerar PDF de Servidores</a></button> -->
     </div>
     <section class="dashboard-section">
         <h3>Gerenciamento de Contas</h3>
@@ -71,16 +71,20 @@
             </tbody>
         </table>
     </section>
+    
+    {% else %}
+    <p><strong>Área de contas disponível apenas para diretores.</strong></p>
+    {% endif %}
     <button class="btn-secondary"><a href="{% url 'cadastrar_atividade' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Atividade</a></button>
     <section class="dashboard-section">
         <h3>Atividades Registradas</h3>
         <table class="dashboard-table">
             <thead>
                 <tr>
-                    <th>Servidor</th>
+                    <!--<th>Servidor</th>
                     <th>Matrícula</th>
                     <th>Cargo</th>
-                    <th>Tipo de Atividade</th>
+                    <th>Tipo de Atividade</th>-->
                     <th>Data Ida</th>
                     <th>Data Retorno</th>
                     <th>Dias/Diárias</th>
@@ -89,15 +93,16 @@
                     <th>Objetivo</th>
 
                     <th>Data Criação</th>
+                    <th>Ação</th>
                 </tr>
             </thead>
             <tbody>
                 {% for atividade in atividades %}
                 <tr>
-                    <td>{{ atividade.servidor_nome }}</td>
+                    <!--<td>{{ atividade.servidor_nome }}</td>
                     <td>{{ atividade.servidor_matricula }}</td>
                     <td>{{ atividade.servidor_cargo }}</td>
-                    <td>{{ atividade.tipo_atividade }}</td>
+                    <td>{{ atividade.tipo_atividade }}</td>-->
                     <td>{{ atividade.data_ida }}</td>
                     <td>{{ atividade.data_retorno }}</td>
                     <td>{{ atividade.dias_diarias }}</td>
@@ -106,6 +111,9 @@
                     <td>{{ atividade.objetivo }}</td>
                     
                     <td>{{ atividade.data_criacao|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-secondary">PDFs</a>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
@@ -115,8 +123,5 @@
             </tbody>
         </table>
     </section>
-    {% else %}
-    <p><strong>Área de contas disponível apenas para diretores.</strong></p>
-    {% endif %}
 </div>
 {% endblock %}

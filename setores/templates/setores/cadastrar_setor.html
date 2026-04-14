@@ -17,7 +17,6 @@
     <table class="dashboard-table">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Nome do Setor</th>
                 <th>Ações</th>
             </tr>
@@ -25,7 +24,6 @@
         <tbody>
             {% for setor in setores %}
             <tr>
-                <td>{{ setor.id }}</td>
                 <td>{{ setor.nome }}</td>
                 <td>
                     <form method="post" action="{% url 'excluir_setor' setor.id %}" style="display:inline;">

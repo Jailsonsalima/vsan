@@ -4,9 +4,9 @@ from servidores.models import Servidor
 # Create your models here.
 
 class Atividade(models.Model):
-    servidor_nome = models.CharField(max_length=200)
-    servidor_matricula = models.CharField(max_length=20, blank=True, null=True)
-    servidor_cargo = models.CharField(max_length=100, blank=True, null=True)
+    #servidor_nome = models.CharField(max_length=200)
+    #servidor_matricula = models.CharField(max_length=20, blank=True, null=True)
+    #servidor_cargo = models.CharField(max_length=100, blank=True, null=True)
 
     tipo_atividade = models.CharField(
         max_length=50,
@@ -25,5 +25,5 @@ class Atividade(models.Model):
     servidores = models.ManyToManyField(Servidor, related_name="atividades")  # vínculo
     
     def __str__(self):
-        return f"{self.tipo_atividade} - {self.servidor_nome} ({self.servidor_matricula})"
+        return f"{self.data_criacao} - {self.data_ida} ({self.data_retorno}) - {self.objetivo[:30]}..."
 

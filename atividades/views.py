@@ -5,53 +5,87 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from servidores.models import Servidor
+from django.utils.dateformat import DateFormat
+from datetime import datetime
+
+import io, zipfile
 
 # Create your views here.
 
 @login_required
 def cadastrar_atividade(request):
+    servidores = Servidor.objects.all()
     if request.method == "POST":
-        servidor = request.user.servidor if hasattr(request.user, "servidor") else None
+        data_ida_str = request.POST.get("data_ida")
+        data_retorno_str = request.POST.get("data_retorno")
+
+        data_ida = datetime.strptime(data_ida_str, "%Y-%m-%d").date() if data_ida_str else None
+        data_retorno = datetime.strptime(data_retorno_str, "%Y-%m-%d").date() if data_retorno_str else None
 
         atividade = Atividade.objects.create(
-            servidor_nome=servidor.nome if servidor else "Sem servidor",
-            servidor_matricula=servidor.matricula if servidor else None,
-            servidor_cargo=servidor.cargo if servidor else None,
-            tipo_atividade=request.POST.get("tipo_atividade"),
-            #periodo_viagem=request.POST.get("periodo_viagem"),
             dias_diarias=request.POST.get("dias_diarias"),
             pernoite=request.POST.get("pernoite"),
             transporte=request.POST.get("transporte"),
             objetivo=request.POST.get("objetivo"),
-            data_ida=request.POST.get("data_ida") or None,
-            data_retorno=request.POST.get("data_retorno") or None
+            data_ida=data_ida,
+            data_retorno=data_retorno
         )
-        return redirect("selecionar_servidores", atividade_id=atividade.id)  # rota para selecionar os servidores cadastrados para gerar o PDF
-        #return render(request, "servidores/lista_servidores.html", {"atividade": atividade})
-
-    return render(request, "atividades/cadastro_atividades.html")
-
-
-@login_required
-def selecionar_servidores(request, atividade_id):
-    atividade = get_object_or_404(Atividade, id=atividade_id)
-
-    if request.method == "POST":
         ids = request.POST.getlist("servidores")
-        servidores = Servidor.objects.filter(id__in=ids)
-        atividade.servidores.set(servidores)
+        atividade.servidores.set(Servidor.objects.filter(id__in=ids))
         atividade.save()
 
-        # gerar PDF com dados da atividade + servidores
-        html_string = render_to_string(
-            "pdf_modelo.html",
-            {"atividade": atividade, "servidores": servidores}
+        return redirect("dashboard")
+
+    return render(request, "atividades/cadastro_atividades.html", {"servidores": servidores})
+
+def formatar_periodo(data_ida, data_retorno):
+    if not data_ida or not data_retorno:
+        return ""
+
+    # Se forem no mesmo mês e ano
+    if data_ida.month == data_retorno.month and data_ida.year == data_retorno.year:
+        return f"{data_ida.day} a {data_retorno.day}/{data_ida.month:02d}/{data_ida.year}"
+    else:
+        return f"{DateFormat(data_ida).format('d/m/Y')} a {DateFormat(data_retorno).format('d/m/Y')}"
+
+@login_required
+def gerar_zip_pdfs(request, atividade_id):
+    atividade = get_object_or_404(Atividade, id=atividade_id)
+    servidores = atividade.servidores.all()
+
+    # cria um buffer em memória
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        # 1. PDF da atividade (sem servidores)
+        html_atividade = render_to_string(
+            "pdf_atividade.html",
+            {
+                "atividade": atividade,
+                "servidores": [],  # não lista servidores aqui
+                "periodo_formatado": formatar_periodo(atividade.data_ida, atividade.data_retorno),
+            }
         )
-        pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf()
+        pdf_atividade = HTML(string=html_atividade, base_url=request.build_absolute_uri('/')).write_pdf()
+        zip_file.writestr(f"atividade_{atividade.id}.pdf", pdf_atividade)
 
-        response = HttpResponse(pdf_file, content_type="application/pdf")
-        response['Content-Disposition'] = 'inline; filename="atividade.pdf"'
-        return response
+        # 2. PDFs de cada servidor vinculado à atividade
+        for servidor in servidores:
+            html_servidor = render_to_string(
+                "pdf_servidor.html",
+                {
+                    "atividade": atividade,
+                    "servidores": [servidor],
+                    "periodo_formatado": formatar_periodo(atividade.data_ida, atividade.data_retorno),
+                }
+            )
+            pdf_servidor = HTML(string=html_servidor, base_url=request.build_absolute_uri('/')).write_pdf()
 
-    servidores = Servidor.objects.all()
-    return render(request, "servidores/selecionar_servidores.html", {"servidores": servidores, "atividade": atividade})
+            zip_file.writestr(f"atividade_{atividade.id}_servidor_{servidor.id}.pdf", pdf_servidor)
+            # adiciona ao ZIP em memória
+            #filename = f"atividade_{atividade.id}_servidor_{servidor.id}.pdf"
+            #zip_file.writestr(filename, pdf_bytes)
+
+    buffer.seek(0)
+    response = HttpResponse(buffer.getvalue(), content_type="application/zip")
+    response['Content-Disposition'] = f'attachment; filename="atividade_{atividade.id}_pdfs.zip"'
+    return response

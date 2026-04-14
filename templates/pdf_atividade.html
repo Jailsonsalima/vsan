@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>pdf_servidor_diaria</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family:'Times New Roman', Times, serif; margin: 0px; font-size: 14px;}
+
+            h3 { text-align: center; margin-bottom: 30px; }
+            img { display: block; margin: 0 auto; width: 120px; height: auto; margin-bottom: 10px; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 1020px; }
+
+            tr, td { border: 2px solid #000000; padding: 8px; text-align: left; }
+        </style>
+    </head>
+    <body>
+        <h3>Dados da Atividade</h3>
+        <table>
+            <tr>
+                <td><strong>Tipo:</strong> {{ atividade.tipo_atividade }}</td>
+                <td><strong>Data Ida:</strong> {{ atividade.data_ida }}</td>
+                <td><strong>Data Retorno:</strong> {{ atividade.data_retorno }}</td>
+            </tr>
+            <tr>
+                <td><strong>Dias/Diárias:</strong> {{ atividade.dias_diarias }}</td>
+                <td><strong>Pernoite:</strong> {{ atividade.pernoite }}</td>
+                <td><strong>Transporte:</strong> {{ atividade.transporte }}</td>
+            </tr>
+            <tr>
+                <td colspan="3"><strong>Objetivo:</strong> {{ atividade.objetivo }}</td>
+            </tr>
+        </table>
+    </body>
+</html>

@@ -36,11 +36,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('definir-tipo-usuario/<int:usuario_id>/', views.definir_tipo_usuario, name='definir_tipo_usuario'),
     path("cadastro_servidor/", servidor_views.cadastro_servidor, name="cadastro_servidor"),
-
     path("servidores/", servidor_views.lista_servidores, name="lista_servidores"),
-    path("servidores/pdf/", servidor_views.gerar_pdf_servidores, name="gerar_pdf_servidores"),
-
     path('cadastro-atividade/', atividades_views.cadastrar_atividade, name="cadastrar_atividade"),
-    path('selecionar-servidores/<int:atividade_id>/', atividades_views.selecionar_servidores, name="selecionar_servidores"),
-
+    path("atividade/<int:atividade_id>/pdfs/", atividades_views.gerar_zip_pdfs, name="gerar_zip_pdfs"),
 ]

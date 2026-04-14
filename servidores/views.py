@@ -3,15 +3,17 @@ from .models import Servidor
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
+from setores.models import Setor
 
 def cadastro_servidor(request):
+    setores = Setor.objects.all()
     if request.method == "POST":
         servidor = Servidor.objects.create(
             nome=request.POST.get("nome"),
             endereco=request.POST.get("endereco"),
             vinculo=request.POST.get("vinculo"),
             matricula=request.POST.get("matricula"),
-            lotacao=request.POST.get("lotacao"),
+            lotacao_id=request.POST.get("lotacao"),
             cargo=request.POST.get("cargo"),
             funcao=request.POST.get("funcao"),
             cpf=request.POST.get("cpf"),
@@ -25,32 +27,7 @@ def cadastro_servidor(request):
         return redirect("cadastrar_usuario")  # rota para segunda etapa de cadastro
     
     # Se for GET, mostra o formulário
-    return render(request, "servidores/cadastro_servidor.html")
-
-
-def gerar_pdf_servidores(request):
-    if request.method == "POST":
-        ids = request.POST.getlist("servidores")  # lista de IDs selecionados
-        servidores = Servidor.objects.filter(id__in=ids)
-
-        # renderiza o HTML e injeta STATIC_URL
-        html_string = render_to_string(
-            "pdf_modelo.html",
-            {"servidores": servidores}
-        )
-
-        # base_url é essencial para que o WeasyPrint consiga resolver imagens e CSS
-        pdf_file = HTML(
-            string=html_string,
-            base_url=request.build_absolute_uri('/')
-        ).write_pdf()
-
-        response = HttpResponse(pdf_file, content_type="application/pdf")
-        response['Content-Disposition'] = 'inline; filename="servidores.pdf"'
-        return response
-
-    servidores = Servidor.objects.all()
-    return render(request, "servidores/selecionar_servidores.html", {"servidores": servidores})
+    return render(request, "servidores/cadastro_servidor.html", {"setores": setores})
 
 def lista_servidores(request):
     servidores = Servidor.objects.all()
