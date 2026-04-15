@@ -23,6 +23,9 @@ def cadastro_servidor(request):
             conta=request.POST.get("conta"),
             chefia=request.POST.get("chefia"),
         )
+        # Vincula o servidor ao usuário logado
+        request.user.servidor = servidor
+        request.user.save()
         return redirect("dashboard")  # rota para segunda etapa de cadastro
     
     # Se for GET, mostra o formulário

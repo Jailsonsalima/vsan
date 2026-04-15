@@ -41,6 +41,12 @@ from atividades.models import Atividade
 
 @login_required
 def dashboard(request):
+    # Superuser sempre acessa
+    if request.user.is_superuser:
+        pass
+    else:
+        if not request.user.servidor:
+            return redirect("cadastro_servidor")
     setores = Setor.objects.all()
 
     # Se o diretor clicar no botão "Ver todos", pegamos todos os usuários
@@ -70,11 +76,16 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            # Verifica se o usuário tem servidor vinculado
+
+            # Se for superuser, vai direto para o dashboard
+            if user.is_superuser:
+                return redirect('dashboard')
+
+            # Se não for superuser, verifica vínculo com servidor
             if hasattr(user, "servidor") and user.servidor is not None:
-                return redirect('dashboard')  # redireciona para a rota do dashboard
+                return redirect('dashboard')
             else:
-                return redirect('cadastro_servidor')  # redireciona para a rota de cadastro de servidor
+                return redirect('cadastro_servidor')
         else:
             messages.error(request, 'Credenciais inválidas.')
     return render(request, 'usuarios/login.html')
