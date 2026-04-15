@@ -1,106 +1,128 @@
+/* Reset básico */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Estilo global */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    line-height: 1.6;
 }
+
+/* Cabeçalho */
 .header {
     display: flex;
     justify-content: space-between;
-    background-color: #2724ee;
+    background: linear-gradient(90deg, #2724ee, #1a179b);
     color: #fff;
-    padding: 15px;
+    padding: 15px 30px;
     align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
 .header a {
     text-decoration: none;
-    font-size: 1.2em;
-    padding: 10px 15px;
-    display: block;
-    color: inherit;
+    font-size: 1.1em;
+    padding: 8px 15px;
+    color: #fff;
+    transition: color 0.3s;
+}
+
+.header a:hover {
+    color: #ffd700;
 }
 
 .menu {
     list-style: none;
     display: flex;
-    gap: 10px;
+    gap: 20px;
 }
 
-.container {
-    max-width: 600px;
-    margin: 50px auto;
+/* Container principal */
+.container, .dashboard-container {
+    max-width: 1000px;
+    margin: 40px auto;
     background: #fff;
     padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    box-shadow: 0px 6px 14px rgba(0,0,0,0.1);
 }
 
-.container h2 {
+.container h2, .dashboard-container h2 {
     text-align: center;
-    margin-bottom: 20px;
-    color: #333;
+    margin-bottom: 25px;
+    color: #2724ee;
+    font-weight: bold;
 }
 
+/* Formulários */
 .form .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .form label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    margin-bottom: 6px;
+    font-weight: 600;
     color: #444;
 }
 
-.form input {
+.form input, .form select, .form textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #bbb;
-    border-radius: 5px;
+    border-radius: 6px;
     font-size: 1em;
+    transition: border 0.3s;
 }
 
-.form-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+.form input:focus, .form select:focus, .form textarea:focus {
+    border-color: #2724ee;
+    outline: none;
+}
+
+/* Botões */
+.btn-primary, .btn-secondary, .btn-danger {
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
 }
 
 .btn-primary {
     background-color: #2724ee;
     color: #fff;
-    padding: 10px 20px;
     border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background 0.3s;
 }
 
 .btn-primary:hover {
-    background-color: #fff;
-    color: #333;
+    background-color: #1a179b;
 }
 
 .btn-secondary {
-    background-color: #2724ee;
-    color: #fff;
-    padding: 10px 20px;
-    border: 1px solid #bbb;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background 0.3s;
-    cursor: pointer;
+    background-color: #fff;
+    color: #2724ee;
+    border: 2px solid #2724ee;
 }
 
 .btn-secondary:hover {
-    background-color: #1a179b;
+    background-color: #2724ee;
     color: #fff;
+}
+
+.btn-danger {
+    background-color: #f44336;
+    color: #fff;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #d32f2f;
 }
 
 .btn-disabled {
@@ -113,42 +135,36 @@ body {
     cursor: not-allowed;
 }
 
+/* Radio e Checkboxes */
 .radio-group {
     display: flex;
-    gap: 15px; /* espaço entre opções */
-    align-items: center; /* alinha verticalmente */
-    padding: 10px 0;
+    gap: 20px;
+    align-items: center;
 }
 
-.radio-group input[type="radio"] {
-    margin-right: 5px;
-    justify-content: center;
-
+#lista-servidores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
 }
 
-footer {
-    text-align: center;
-    padding: 20px 0;
-    background-color: #2724ee;
-    color: #fff;
-    margin-top: 50px;
+#lista-servidores label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f9f9f9;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    transition: background 0.3s;
 }
 
-.dashboard-container {
-    max-width: 1000px;
-    margin: 30px auto;
-    background: #fff;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+#lista-servidores label:hover {
+    background: #eef2ff;
 }
 
-.dashboard-container h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-}
-
+/* Dashboard */
 .dashboard-section {
     margin-bottom: 30px;
 }
@@ -157,16 +173,18 @@ footer {
     width: 100%;
     border-collapse: collapse;
     margin-top: 15px;
+    border-radius: 6px;
+    overflow: hidden;
 }
 
 .dashboard-table th, .dashboard-table td {
     border: 1px solid #ddd;
-    padding: 10px;
+    padding: 12px;
     text-align: center;
 }
 
 .dashboard-table th {
-    background-color: #333;
+    background-color: #2724ee;
     color: #fff;
 }
 
@@ -174,10 +192,12 @@ footer {
     background-color: #f9f9f9;
 }
 
+/* Status */
 .status {
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 6px 12px;
+    border-radius: 6px;
     font-weight: bold;
+    font-size: 0.9em;
 }
 
 .status.ativo {
@@ -190,50 +210,29 @@ footer {
     color: #fff;
 }
 
-.select-tipo {
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #bbb;
-}
-
-.btn-danger {
-    background-color: #f44336;
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    background: #2724ee;
     color: #fff;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
+    margin-top: 50px;
 }
 
-.btn-danger:hover {
-    background-color: #d32f2f;
-}
-
-.auth-buttons {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.auth-buttons a {
-    padding: 8px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 1em;
-}
-
-@media (max-width: 600px) {
+/* Responsividade */
+@media (max-width: 768px) {
     .header {
         flex-direction: column;
         align-items: flex-start;
     }
-
+    .menu {
+        flex-direction: column;
+        gap: 10px;
+    }
     .auth-buttons {
         flex-direction: column;
         width: 100%;
     }
-
     .auth-buttons a {
         width: 100%;
         text-align: center;
@@ -247,5 +246,3 @@ footer {
     font-weight: bold;
     font-size: 1.2em;
 }
-
-

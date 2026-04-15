@@ -3,6 +3,13 @@
 {% block content %}
 <div class="dashboard-container">
     <h2>Dashboard</h2>
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <p>Bem-vindo, {{ request.user.username }}!</p>
 
     <!-- Área visível para todos -->
@@ -15,7 +22,6 @@
     {% if request.user.tipo_usuario == "diretor" %}
     <div class="form-group">
         <button class="btn-secondary"><a href="{% url 'cadastrar_setor' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Novo Setor</a></button>
-        <!-- <button class="btn-secondary"><a href="{% url 'lista_servidores' %}" style="text-decoration: none; color: inherit; font-size: large;">Gerar PDF de Servidores</a></button> -->
     </div>
     <section class="dashboard-section">
         <h3>Gerenciamento de Contas</h3>
@@ -46,6 +52,7 @@
                         {% endif %}
                     </td>
                     <td>
+                        {% if usuario != request.user %}
                         <form method="post" action="{% url 'definir_tipo_usuario' usuario.id %}">
                             {% csrf_token %}
                             <select name="tipo_usuario" class="select-tipo">
@@ -56,15 +63,18 @@
                                 <option value="coordenador">Coordenador</option>
                                 <option value="funcionario">Funcionário</option>
                             </select>
-                            <select name="setor" class="select-tipo">
+                            <!--<select name="setor" class="select-tipo">
                                 <option value="">-- Setor --</option>
                                 {% for setor in setores %}
                                     <option value="{{ setor.id }}">{{ setor.nome }}</option>
                                 {% endfor %}
-                            </select>
+                            </select>-->
 
                             <button type="submit" class="btn-primary">Definir</button>
                         </form>
+                        {% else %}
+                            <span class="info">Não é possível alterar a própria conta</span>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

@@ -70,7 +70,11 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('dashboard')  # redireciona para a rota do dashboard
+            # Verifica se o usuário tem servidor vinculado
+            if hasattr(user, "servidor") and user.servidor is not None:
+                return redirect('dashboard')  # redireciona para a rota do dashboard
+            else:
+                return redirect('cadastro_servidor')  # redireciona para a rota de cadastro de servidor
         else:
             messages.error(request, 'Credenciais inválidas.')
     return render(request, 'usuarios/login.html')
@@ -84,6 +88,10 @@ def logout_view(request):
 @login_required
 def definir_tipo_usuario(request, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
+    # Impede que o usuário altere a própria conta
+    if usuario == request.user:
+        messages.error(request, "Você não pode alterar o status da própria conta.")
+        return redirect('dashboard')
     if request.method == 'POST':
         tipo_usuario = request.POST.get('tipo_usuario')
         setor_id = request.POST.get('setor')

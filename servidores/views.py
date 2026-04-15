@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect
 from .models import Servidor
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-from weasyprint import HTML
 from setores.models import Setor
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def cadastro_servidor(request):
     setores = Setor.objects.all()
     if request.method == "POST":
@@ -24,7 +23,7 @@ def cadastro_servidor(request):
             conta=request.POST.get("conta"),
             chefia=request.POST.get("chefia"),
         )
-        return redirect("cadastrar_usuario")  # rota para segunda etapa de cadastro
+        return redirect("dashboard")  # rota para segunda etapa de cadastro
     
     # Se for GET, mostra o formulário
     return render(request, "servidores/cadastro_servidor.html", {"setores": setores})
