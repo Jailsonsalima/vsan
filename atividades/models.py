@@ -10,7 +10,7 @@ class Atividade(models.Model):
 
     tipo_atividade = models.CharField(
         max_length=50,
-        choices=[("Viagem", "Viagem")]
+        choices=[("Viagem", "Viagem")], blank=True, null=True
     )
     #periodo_viagem = models.CharField(max_length=100, blank=True, null=True)
     dias_diarias = models.CharField(max_length=50, blank=True, null=True)
