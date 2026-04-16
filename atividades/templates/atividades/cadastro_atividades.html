@@ -216,30 +216,35 @@
                 <option value="Xinguara">
             </datalist>
         </div>
+        <!-- Objetivo -->
         <div class="form-group">
             <label for="objetivo">Objetivo:</label>
             <textarea name="objetivo" id="objetivo" rows="3" required></textarea>
         </div>
+        <!-- Equipe -->
         <div class="form-group">
-    <label>Equipe:</label>
-    <div id="lista-servidores">
-        {% for servidor in servidores %}
-            <div>
-                <label>
-                    <input type="checkbox" name="servidores" value="{{ servidor.id }}">
-                    {{ servidor.nome }} - {{ servidor.matricula }}
-                </label>
+            <label>Equipe:</label>
+            <!-- Área para mostrar os selecionados -->
+            <ul id="servidores-selecionados"></ul>
+
+            <div class="form-group">
+                <label for="filtro-servidores">Pesquisar Servidor:</label>
+                <input type="text" id="filtro-servidores" placeholder="Digite o nome do servidor...">
             </div>
-        {% endfor %}
-    </div>
-    <small style="color:#777;">Selecione um ou mais servidores.</small>
-</div>
-
-<button id="btn-proximo" type="submit" class="btn btn-disabled btn-secondary" disabled>Salvar</button>
-
-
-        
-
+            <div id="lista-servidores">
+                {% for servidor in servidores %}
+                    <div class="servidor-item">
+                        <label>
+                            <input type="checkbox" name="servidores" value="{{ servidor.id }}" data-nome="{{ servidor.nome }}">
+                            {{ servidor.nome }} - {{ servidor.matricula }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+            <small style="color:#777;">Selecione um ou mais servidores.</small>
+        </div>
+        <!-- Botão -->
+        <button id="btn-proximo" type="submit" class="btn btn-disabled btn-secondary" disabled>Salvar</button>
     </form>
 </div><!--
 <script>
@@ -272,76 +277,9 @@
 </script>
 -->
 
-<script>
+{% load static %}
+<script src="{% static 'js/script.js' %}"></script>
 
-    function calcularDias() {
-        const dataIda = document.getElementById("data_ida").value;
-        const dataRetorno = document.getElementById("data_retorno").value;
-        const pernoiteSim = document.getElementById("pernoite_sim").checked;
-        const pernoiteNao = document.getElementById("pernoite_nao").checked;
-        const campoDias = document.getElementById("dias_diarias");
-
-        if (!dataIda || !dataRetorno) {
-            campoDias.value = "";
-            return;
-        }
-
-        const ida = new Date(dataIda);
-        const retorno = new Date(dataRetorno);
-
-        // diferença em dias (inclui o dia da ida)
-        const diffTime = retorno - ida;
-        const diffDays = diffTime / (1000 * 60 * 60 * 24) + 1;
-
-        let resultado = "";
-        if (pernoiteSim) {
-            resultado = `${diffDays} / ${(diffDays - 0.5).toString().replace(".", ",")}`;
-        } else if (pernoiteNao) {
-            resultado = `${diffDays} / ${(diffDays / 2).toString().replace(".", ",")}`;
-        }
-
-        campoDias.value = resultado;
-    }
-
-    // Eventos para atualizar em tempo real
-    document.getElementById("data_ida").addEventListener("change", calcularDias);
-    document.getElementById("data_retorno").addEventListener("change", calcularDias);
-    document.getElementById("pernoite_sim").addEventListener("change", function() {
-        if (!document.getElementById("data_ida").value || !document.getElementById("data_retorno").value) {
-            alert("Preencha primeiro as datas de ida e retorno.");
-            this.checked = false;
-            return;
-        }
-        calcularDias();
-    });
-    document.getElementById("pernoite_nao").addEventListener("change", function() {
-        if (!document.getElementById("data_ida").value || !document.getElementById("data_retorno").value) {
-            alert("Preencha primeiro as datas de ida e retorno.");
-            this.checked = false;
-            return;
-        }
-        calcularDias();
-    });
-</script>
-<script>
-    const checkboxes = document.querySelectorAll('input[name="servidores"]');
-    const btnProximo = document.getElementById('btn-proximo');
-
-    function atualizarBotao() {
-        const algumSelecionado = Array.from(checkboxes).some(c => c.checked);
-        btnProximo.disabled = !algumSelecionado;
-
-        if (algumSelecionado) {
-            btnProximo.classList.remove('btn-disabled');
-            btnProximo.classList.add('btn-secondary'); // azul quando ativo
-        } else {
-            btnProximo.classList.remove('btn-secondary');
-            btnProximo.classList.add('btn-disabled'); // cinza quando desabilitado
-        }
-    }
-
-    checkboxes.forEach(cb => cb.addEventListener('change', atualizarBotao));
-</script>
 
 
 {% endblock %}

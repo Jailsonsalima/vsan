@@ -94,16 +94,7 @@
         <button type="submit" class="btn-secondary">Cadastrar</button>
     </form>
 </div>
-<script>
-    document.getElementById("matricula").addEventListener("input", function (e) {
-        let valor = e.target.value.replace(/\D/g, ""); // remove tudo que não for número
-        if (valor.length > 1) {
-            // insere '/' antes do último dígito
-            valor = valor.slice(0, -1) + "/" + valor.slice(-1);
-        }
-        e.target.value = valor;
-    });
-</script>
-
+{% load static %}
+<script src="{% static 'js/script.js' %}"></script>
 
 {% endblock %}
