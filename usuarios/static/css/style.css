@@ -85,6 +85,17 @@ body {
     outline: none;
 }
 
+.form-row {
+    display: flex;
+    gap: 20px; /* espaço entre os campos */
+    flex-wrap: wrap; /* permite quebrar linha em telas pequenas */
+}
+
+.form-row .form-group {
+    flex: 1; /* cada campo ocupa espaço proporcional */
+    min-width: 200px; /* largura mínima para não ficar muito pequeno */
+}
+
 /* Botões */
 .btn-primary, .btn-secondary, .btn-danger {
     padding: 10px 20px;

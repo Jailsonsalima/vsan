@@ -1,5 +1,4 @@
 from django.db import models
-from setores.models import Setor
 
 class Servidor(models.Model):
     nome = models.CharField(max_length=200)
@@ -13,7 +12,7 @@ class Servidor(models.Model):
         ]
     )
     matricula = models.CharField(max_length=20, unique=True)
-    lotacao = models.ForeignKey(Setor, on_delete=models.PROTECT, null=True, blank=True)
+    lotacao = models.ForeignKey("setores.Setor", on_delete=models.PROTECT, null=True, blank=True)
     cargo = models.CharField(max_length=100)
     funcao = models.CharField(max_length=150, blank=True, null=True)
     cpf = models.CharField(max_length=14, unique=True)

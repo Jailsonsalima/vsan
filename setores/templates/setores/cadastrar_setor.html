@@ -16,6 +16,19 @@
         <label for="nome">Nome do Setor:</label>
         <input type="text" id="nome" name="nome" required>
     </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="chefe_imediato">Chefe Imediato:</label>
+            <select id="chefe_imediato" name="chefe_imediato" required>
+                <option value="">-- Selecione --</option>
+                {% for servidor in servidores %}
+                    <option value="{{ servidor.id }}" data-matricula="{{ servidor.matricula }}">
+                        {{ servidor.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>    
     <button type="submit" class="btn-secondary">Cadastrar</button>
 </form>
 </div>
@@ -25,6 +38,7 @@
         <thead>
             <tr>
                 <th>Nome do Setor</th>
+                <th>Chefe Imediato</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -32,11 +46,13 @@
             {% for setor in setores %}
             <tr>
                 <td>{{ setor.nome }}</td>
+                <td>{{ setor.chefe_imediato.nome}} - {{ setor.chefe_imediato.matricula}}</td>
                 <td>
                     <form method="post" action="{% url 'excluir_setor' setor.id %}" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn-danger">Excluir</button>
                     </form>
+                    <a href="{% url 'editar_setor' setor.id %}" class="btn-secondary">Editar</a>
                 </td>
             </tr>
             {% empty %}

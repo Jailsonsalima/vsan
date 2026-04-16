@@ -10,28 +10,62 @@
 
             h3 { text-align: center; margin-bottom: 30px; }
             img { display: block; margin: 0 auto; width: 120px; height: auto; margin-bottom: 10px; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 1020px; }
-
-            tr, td { border: 2px solid #000000; padding: 8px; text-align: left; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+            th { background-color: #f4f4f4; }
+            th, td { border: 2px solid #000000; padding: 8px; text-align: left; }
         </style>
     </head>
     <body>
         <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Logo">
-        <h3>GOVERNO DO ESTADO DO PARÁ<br><br>SECRETARIA DE ESTADO DE SAÚDE PÚBLICA<br><br>CADASTRO DE CONCESSÃO DE DIÁRIAS</h3>
+        <h3>SISTEMA ÚNICO DE SAÚDE<br>DIRETORIA DE VIGILÂNCIA EM SAÚDE<br>DEPARTAMENTO DE VIGILÂNCIA SANITÁRIA<br><br>Memorando</h3>
         <table>
             <tr>
-                <td><strong>Tipo:</strong> {{ atividade.tipo_atividade }}</td>
-                <td><strong>Data Ida:</strong> {{ atividade.data_ida }}</td>
-                <td><strong>Data Retorno:</strong> {{ atividade.data_retorno }}</td>
+                <td colspan="2">
+                    <strong>Do:</strong> Departamento de Vigilância Sanitária/DEVS/SESPA<br>
+                    <strong>Para:</strong> Departamento de Diárias e Passagens Aéreas - DIPA/SAGA<br>
+                </td>
+                
             </tr>
             <tr>
-                <td><strong>Dias/Diárias:</strong> {{ atividade.dias_diarias }}</td>
-                <td><strong>Pernoite:</strong> {{ atividade.pernoite }}</td>
-                <td><strong>Transporte:</strong> {{ atividade.transporte }}</td>
-            </tr>
-            <tr>
-                <td colspan="3"><strong>Objetivo:</strong> {{ atividade.objetivo }}</td>
+                <td><strong>Assunto:</strong> Solicitação de diárias com destino ao munícipio de <strong>{{ atividade.municipio }}</strong>, no período de {{ periodo_formatado }}.</td>
+                <td>
+                    <strong>Data:</strong> {{ atividade.data_criacao|date:"d/m/Y H:i" }}<br>
+                    <strong>Nº:</strong> {{ atividade.numero }}<br>
+                </td>
             </tr>
         </table>
+        <p>&emsp;Senhor(a) Chefe do Departamento de Diárias e Passagens Aéreas,</p>
+            &emsp;Solicitamos a Vossa Senhoria que tome as devidas providências no sentido de disponibilizar diárias aos 
+servidores abaixo relacionado que estarão nos munícipios de <strong>{{ atividade.municipio }}</strong>, no período de {{ periodo_formatado }}.<br>
+&emsp;<strong>Objetivo:</strong>{{ atividade.objetivo }}
+        <table>
+            <tr>
+                <th>NOME</th>
+                <th>CARGO/FUNÇÃO</th>
+            </tr>
+            
+                
+                    {% for servidor in atividade.servidores.all %}
+                    <tr>
+                    <td>
+        {{ servidor.nome }}<br>
+        </td>
+        <td>
+            {{ servidor.cargo }}
+        </td>
+        
+            </tr>
+    {% endfor %}
+                
+        </table>
+&emsp;Informamos que abaixo seguem as informações complementares exigidas pela Gestão Administrativa e
+Financeira:<br><br>
+<strong>Informações orçamentarias:</strong><br><br>
+
+&emsp;Projeto Atividade: <strong>2332</strong><br>
+&emsp;Fonte de Recursos: <strong> 01 600 0000 49 001512</strong><br>
+&emsp;Elemento de Despesa: <strong>3390-14</strong><br><br><br><br>
+&emsp;Atenciosamente,<br>
+        
     </body>
 </html>

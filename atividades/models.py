@@ -17,6 +17,7 @@ class Atividade(models.Model):
     PERNOITE_CHOICES = [("Sim", "Sim"), ("Não", "Não")]
     pernoite = models.CharField(max_length=3, choices=PERNOITE_CHOICES, default="Não")
     transporte = models.CharField(max_length=50, blank=True, null=True)
+    municipio = models.CharField(max_length=100, blank=True, null=True)
     objetivo = models.TextField(blank=True, null=True)
     data_ida = models.DateField(blank=True, null=True)
     data_retorno = models.DateField(blank=True, null=True)

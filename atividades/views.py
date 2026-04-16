@@ -26,6 +26,7 @@ def cadastrar_atividade(request):
             dias_diarias=request.POST.get("dias_diarias"),
             pernoite=request.POST.get("pernoite"),
             transporte=request.POST.get("transporte"),
+            municipio=request.POST.get("municipio"),
             objetivo=request.POST.get("objetivo"),
             data_ida=data_ida,
             data_retorno=data_retorno
