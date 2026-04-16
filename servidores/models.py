@@ -23,5 +23,8 @@ class Servidor(models.Model):
     conta = models.CharField(max_length=30, blank=True, null=True)
     chefia = models.CharField(max_length=150, blank=True, null=True)
 
+    def primeiro_nome(self):
+        return self.nome.split()[0]
+
     def __str__(self):
         return f"{self.nome} - {self.matricula}"

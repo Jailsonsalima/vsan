@@ -97,9 +97,11 @@
                     <th>Tipo de Atividade</th>-->
                     <th>Data Ida</th>
                     <th>Data Retorno</th>
-                    <th>Dias/Diárias</th>
+                    <!--<th>Dias/Diárias</th>
                     <th>Pernoite</th>
-                    <th>Transporte</th>
+                    <th>Transporte</th>-->
+                    <th>Município</th>
+                    <th>Equipe</th>
                     <th>Objetivo</th>
 
                     <th>Data Criação</th>
@@ -115,9 +117,17 @@
                     <td>{{ atividade.tipo_atividade }}</td>-->
                     <td>{{ atividade.data_ida }}</td>
                     <td>{{ atividade.data_retorno }}</td>
-                    <td>{{ atividade.dias_diarias }}</td>
+                    <!--<td>{{ atividade.dias_diarias }}</td>
                     <td>{{ atividade.pernoite }}</td>
-                    <td>{{ atividade.transporte }}</td>
+                    <td>{{ atividade.transporte }}</td>-->
+                    <td>{{ atividade.municipio }}</td>
+                    <td>
+                        {% for servidor in atividade.servidores.all %}
+                            - {{ servidor.primeiro_nome }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            Nenhum servidor vinculado
+                        {% endfor %}
+                    </td>
                     <td>{{ atividade.objetivo }}</td>
                     
                     <td>{{ atividade.data_criacao|date:"d/m/Y H:i" }}</td>
