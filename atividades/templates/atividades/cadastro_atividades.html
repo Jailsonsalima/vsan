@@ -11,57 +11,61 @@
                 <option value="Viagem">Viagem</option>
             </select>
         </div>-->
+        <!-- Período da Viagem -->
         <div class="form-group">
             <strong>Período da Viagem</strong>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="data_ida">Data de Ida :</label>
+                    <label for="data_ida">Data de Ida:</label>
                     <input type="date" name="data_ida" id="data_ida" required>
                 </div>
                 <div class="form-group">
-                    <label for="data_retorno">Data de Retorno :</label>
+                    <label for="data_retorno">Data de Retorno:</label>
                     <input type="date" name="data_retorno" id="data_retorno" required>
                 </div>
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label for="dias_diarias">Nº Dias / Diárias:</label>
-                <input type="text" name="dias_diarias" id="dias_diarias" readonly
-                style="background-color: #f0f0f0; color: #555; font-weight: bold;">
-                <small style="color: #777;">Este campo é preenchido automaticamente.</small>
-            </div>
-        <!--
-            <div class="form-group">
-                <label for="pernoite">Pernoite:</label>
-                <input type="text" name="pernoite" id="pernoite" readonly
-                    style="background-color: #f0f0f0; color: #555; font-weight: bold;">
-                <small style="color:#777;">Este campo é preenchido automaticamente.</small>
-            </div>
-        -->
-        <div>
-            <label>Pernoite:</label>
-            <div class="radio-group">
-                <div class="radio-group">
-                    <input type="radio" id="pernoite_sim" name="pernoite" value="Sim" required>
-                    <label for="pernoite_sim">Sim</label>
-                </div>
-                <div class="radio-group">
-                    <input type="radio" id="pernoite_nao" name="pernoite" value="Não" required>
-                    <label for="pernoite_nao">Não</label>
-                </div>
-            </div>
-        </div>
+        <!-- Nº Dias / Diárias -->
         <div class="form-group">
-            <label for="transporte">Meio de Transporte:</label>
-            <select name="transporte" id="transporte" required>
-                <option value=""> -- Selecione -- </option>
-                <option value="Aéreo">Aéreo</option>
-                <option value="Veículo oficial">Veículo oficial</option>
-                <option value="Fluvial">Fluvial</option>
-            </select>
-        </div>
-        </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="dias_diarias">Nº Dias / Diárias:</label>
+                    <input type="text" name="dias_diarias" id="dias_diarias" readonly
+                        style="background-color: #f0f0f0; color: #555; font-weight: bold;">
+                    <small style="color: #777;">Este campo é preenchido automaticamente.</small>
+                </div>
+                <!--
+                    <div class="form-group">
+                        <label for="pernoite">Pernoite:</label>
+                        <input type="text" name="pernoite" id="pernoite" readonly
+                            style="background-color: #f0f0f0; color: #555; font-weight: bold;">
+                        <small style="color:#777;">Este campo é preenchido automaticamente.</small>
+                    </div>
+                -->
+                <!-- Pernoite -->
+                <div>
+                    <label>Pernoite:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="pernoite_sim" name="pernoite" value="Sim" required>
+                        <label for="pernoite_sim">Sim</label>
+
+                        <input type="radio" id="pernoite_nao" name="pernoite" value="Não" required>
+                        <label for="pernoite_nao">Não</label>
+                    </div>
+                </div>
+                <!-- Meio de Transporte -->
+                <div class="form-group">
+                    <label for="transporte">Meio de Transporte:</label>
+                    <select name="transporte" id="transporte" required>
+                        <option value="">-- Selecione --</option>
+                        <option value="Aéreo">Aéreo</option>
+                        <option value="Veículo oficial">Veículo oficial</option>
+                        <option value="Fluvial">Fluvial</option>
+                    </select>
+                </div>
+            </div>
+        </div>        
+        <!-- Município -->
         <div class="form-group">
             <label for="municipio">Município:</label>
             <input list="municipios" name="municipio" id="municipio" required>
