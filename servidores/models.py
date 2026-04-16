@@ -27,4 +27,4 @@ class Servidor(models.Model):
         return self.nome.split()[0]
 
     def __str__(self):
-        return f"{self.nome} - {self.matricula}"
+        return f"{self.nome}"
