@@ -67,7 +67,7 @@ def gerar_zip_pdfs(request, atividade_id):
             }
         )
         pdf_atividade = HTML(string=html_atividade, base_url=request.build_absolute_uri('/')).write_pdf()
-        zip_file.writestr(f"atividade_{atividade.id}.pdf", pdf_atividade)
+        zip_file.writestr(f"memorando_{atividade.id}.pdf", pdf_atividade)
 
         # 2. PDFs de cada servidor vinculado à atividade
         for servidor in servidores:
@@ -81,12 +81,12 @@ def gerar_zip_pdfs(request, atividade_id):
             )
             pdf_servidor = HTML(string=html_servidor, base_url=request.build_absolute_uri('/')).write_pdf()
 
-            zip_file.writestr(f"atividade_{atividade.id}_servidor_{servidor.id}.pdf", pdf_servidor)
+            zip_file.writestr(f"{servidor.primeiro_e_ultimo_nome()}_{servidor.id}.pdf", pdf_servidor)
             # adiciona ao ZIP em memória
             #filename = f"atividade_{atividade.id}_servidor_{servidor.id}.pdf"
             #zip_file.writestr(filename, pdf_bytes)
 
     buffer.seek(0)
     response = HttpResponse(buffer.getvalue(), content_type="application/zip")
-    response['Content-Disposition'] = f'attachment; filename="atividade_{atividade.id}_pdfs.zip"'
+    response['Content-Disposition'] = f'attachment; filename="{atividade.municipio}_{atividade.id}_pdfs.zip"'
     return response

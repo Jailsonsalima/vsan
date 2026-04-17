@@ -8,18 +8,30 @@
             <label for="nome">Nome do Setor:</label>
             <input type="text" id="nome" name="nome" value="{{ setor.nome }}" required>
         </div>
+
         <div class="form-group">
             <label for="chefe_imediato">Chefe Imediato:</label>
-            <select id="chefe_imediato" name="chefe_imediato" required>
-                <option value="">-- Selecione --</option>
-                {% for servidor in servidores %}
-                    <option value="{{ servidor.id }}" {% if setor.chefe_imediato.id == servidor.id %}selected{% endif %}>
-                        {{ servidor.nome }} - {{ servidor.matricula }}
-                    </option>
-                {% endfor %}
-            </select>
+            <input type="text" id="chefe_imediato" name="chefe_imediato" value="{{ setor.chefe_imediato }}" required>
         </div>
+
+        <div class="form-group">
+            <label for="cargo_chefe">Cargo do Chefe:</label>
+            <input type="text" id="cargo_chefe" name="cargo_chefe" value="{{ setor.cargo_chefe }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="matricula">Matrícula:</label>
+            <input type="text" id="matricula" name="matricula" value="{{ setor.matricula_chefe }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="portaria_chefe">Portaria:</label>
+            <input type="text" id="portaria_chefe" name="portaria_chefe" value="{{ setor.portaria_chefe }}" required>
+        </div>
+
         <button type="submit" class="btn-primary">Salvar Alterações</button>
     </form>
 </div>
+{% load static %}
+<script src="{% static 'js/script.js' %}"></script>
 {% endblock %}

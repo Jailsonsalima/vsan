@@ -7,12 +7,12 @@
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { font-family:'Times New Roman', Times, serif; margin: 0px; font-size: 14px;}
-
             h3 { text-align: center; margin-bottom: 30px; }
             img { display: block; margin: 0 auto; width: 120px; height: auto; margin-bottom: 10px; }
             table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
             th { background-color: #f4f4f4; }
-            th, td { border: 2px solid #000000; padding: 8px; text-align: left; }
+            th, td { border: 2px solid #000000; padding: 4px; text-align: left; }
+            .footer-devs { text-align: center; font-size: 11px; color: #000; line-height: 1.5; margin-top: 20px; position: fixed; bottom: 0; width: 100%; }
         </style>
     </head>
     <body>
@@ -24,48 +24,46 @@
                     <strong>Do:</strong> Departamento de Vigilância Sanitária/DEVS/SESPA<br>
                     <strong>Para:</strong> Departamento de Diárias e Passagens Aéreas - DIPA/SAGA<br>
                 </td>
-                
             </tr>
             <tr>
                 <td><strong>Assunto:</strong> Solicitação de diárias com destino ao munícipio de <strong>{{ atividade.municipio }}</strong>, no período de {{ periodo_formatado }}.</td>
-                <td>
+                <td style="width:20%;">
                     <strong>Data:</strong> {{ atividade.data_criacao|date:"d/m/Y" }}<br>
                     <strong>Nº:</strong> {{ atividade.numero }}<br>
                 </td>
             </tr>
         </table>
-        <p>&emsp;Senhor(a) Chefe do Departamento de Diárias e Passagens Aéreas,</p>
-            &emsp;Solicitamos a Vossa Senhoria que tome as devidas providências no sentido de disponibilizar diárias aos 
-servidores abaixo relacionado que estarão nos munícipios de <strong>{{ atividade.municipio }}</strong>, no período de {{ periodo_formatado }}.<br>
-&emsp;<strong>Objetivo:</strong>{{ atividade.objetivo }}
+        <p>&emsp;&emsp;Senhor(a) Chefe do Departamento de Diárias e Passagens Aéreas,</p><br>
+        &emsp;&emsp;Solicitamos a Vossa Senhoria que tome as devidas providências no sentido de disponibilizar diárias aos 
+        servidores abaixo relacionado que estarão nos munícipios de <strong>{{ atividade.municipio }}</strong>, no período de {{ periodo_formatado }}.<br>
+        <p><strong>&emsp;&emsp;Objetivo:</strong>{{ atividade.objetivo }}</p><br>
         <table>
             <tr>
-                <th>NOME</th>
-                <th>CARGO/FUNÇÃO</th>
+                <th style="text-align: center;">NOME</th>
+                <th style="text-align: center;">CARGO/FUNÇÃO</th>
             </tr>
-            
-                
-                    {% for servidor in atividade.servidores.all %}
-                    <tr>
+            {% for servidor in atividade.servidores.all %}
+                <tr>
                     <td>
-        {{ servidor.nome }}<br>
-        </td>
-        <td>
-            {{ servidor.cargo }}
-        </td>
-        
-            </tr>
-    {% endfor %}
-                
+                        {{ servidor.nome }}<br>
+                    </td>
+                    <td>
+                        {{ servidor.cargo }}
+                    </td>
+                </tr>
+            {% endfor %}
         </table>
-&emsp;Informamos que abaixo seguem as informações complementares exigidas pela Gestão Administrativa e
-Financeira:<br><br>
-<strong>Informações orçamentarias:</strong><br><br>
-
-&emsp;Projeto Atividade: <strong>2332</strong><br>
-&emsp;Fonte de Recursos: <strong> 01 600 0000 49 001512</strong><br>
-&emsp;Elemento de Despesa: <strong>3390-14</strong><br><br><br><br>
-&emsp;Atenciosamente,<br>
+        &emsp;&emsp;Informamos que abaixo seguem as informações complementares exigidas pela Gestão Administrativa e
+        Financeira:<br><br>
+        <strong><u>Informações orçamentarias:</u></strong><br><br>
         
+        &emsp;&emsp;Fonte de Recursos: <strong> 01 600 0000 49 001512</strong><br>
+        &emsp;&emsp;Elemento de Despesa: <strong>3390-14</strong><br>
+        &emsp;&emsp;Projeto Atividade: <strong>2332</strong><br><br><br><br>
+        &emsp;&emsp;Atenciosamente,<br>
+        <footer class="footer-devs">
+            Departamento de Vigilância Sanitária - DEVS/DVS/SESPA End: Trav. Lomas Valentinas, nº 2190 - Marco/Belém/PA<br>
+            CEP: 66.093-667 - Contato: 4006-4830 - E-mail: <a href="mailto:devs@sespa.pa.gov.br">devs@sespa.pa.gov.br</a>
+        </footer>
     </body>
 </html>

@@ -13,22 +13,27 @@ def cadastrar_setor(request):
     servidores = Servidor.objects.all()  # lista de servidores para o select
     if request.method == 'POST':
         nome = request.POST.get('nome')
-        chefe_id = request.POST.get("chefe_imediato")
+        chefe_id = request.POST.get("chefe_imediato")  # agora vem o ID do setor
+        cargo = request.POST.get("cargo_chefe")
+        portaria = request.POST.get("portaria_chefe")
+        matricula = request.POST.get("matricula")
         
         # Verifica se já existe setor com esse nome
         if Setor.objects.filter(nome__iexact=nome).exists():
             messages.error(request, f"O setor '{nome}' já está cadastrado.")
         else:
-            chefe = Servidor.objects.get(id=chefe_id)
+            chefe_setor = Setor.objects.get(id=chefe_id) if chefe_id else None
             setor = Setor.objects.create(
                 nome=nome,
-                chefe_imediato=chefe,
-                matricula_chefe=chefe.matricula
+                chefe_imediato=chefe_setor.chefe_imediato if chefe_setor else None,
+                cargo_chefe=cargo,
+                portaria_chefe=portaria,
+                matricula_chefe=matricula
             )
             messages.success(request, f"Setor '{setor.nome}' cadastrado com sucesso.")
             return redirect('cadastrar_setor')
     
-    return render(request, 'setores/cadastrar_setor.html', {'setores': setores, "servidores": servidores})
+    return render(request, 'setores/cadastrar_setor.html', {'setores': setores})
 
 
 @login_required
@@ -49,17 +54,16 @@ def excluir_setor(request, setor_id):
 @login_required
 def editar_setor(request, setor_id):
     setor = get_object_or_404(Setor, id=setor_id)
-    servidores = Servidor.objects.all()
 
     if request.method == "POST":
         setor.nome = request.POST.get("nome")
-        chefe_id = request.POST.get("chefe_imediato")
-        if chefe_id:
-            chefe = Servidor.objects.get(id=chefe_id)
-            setor.chefe_imediato = chefe
-            setor.matricula_chefe = chefe.matricula
+        setor.chefe_imediato = request.POST.get("chefe_imediato")
+        setor.cargo_chefe = request.POST.get("cargo_chefe")
+        setor.matricula_chefe = request.POST.get("matricula")
+        setor.portaria_chefe = request.POST.get("portaria_chefe")
         setor.save()
         messages.success(request, f"Setor '{setor.nome}' atualizado com sucesso.")
         return redirect("cadastrar_setor")
 
-    return render(request, "setores/editar_setor.html", {"setor": setor, "servidores": servidores})
+    return render(request, "setores/editar_setor.html", {"setor": setor})
+

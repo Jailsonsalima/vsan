@@ -16,17 +16,23 @@
         <label for="nome">Nome do Setor:</label>
         <input type="text" id="nome" name="nome" required>
     </div>
+    <div class="form-group">
+        <label for="chefe_imediato">Chefe Imediato:</label>
+        <input type="text" id="chefe_imediato" name="chefe_imediato" required>
+    </div>
     <div class="form-row">
         <div class="form-group">
-            <label for="chefe_imediato">Chefe Imediato:</label>
-            <select id="chefe_imediato" name="chefe_imediato" required>
-                <option value="">-- Selecione --</option>
-                {% for servidor in servidores %}
-                    <option value="{{ servidor.id }}" data-matricula="{{ servidor.matricula }}">
-                        {{ servidor.nome }}
-                    </option>
-                {% endfor %}
-            </select>
+            <label for="cargo_chefe">Cargo do Chefe:</label>
+            <input type="text" id="cargo_chefe" name="cargo_chefe" required>
+        </div>
+
+        <div class="form-group">
+            <label for="portaria_chefe">Portaria:</label>
+            <input type="text" id="portaria_chefe" name="portaria_chefe" required>
+        </div>
+        <div class="form-group">
+            <label for="matricula">Matricula:</label>
+            <input type="text" id="matricula" name="matricula" required>
         </div>
     </div>    
     <button type="submit" class="btn-secondary">Cadastrar</button>
@@ -39,6 +45,9 @@
             <tr>
                 <th>Nome do Setor</th>
                 <th>Chefe Imediato</th>
+                <th>Cargo</th>
+                <th>Matrícula</th>
+                <th>Portaria</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -46,7 +55,10 @@
             {% for setor in setores %}
             <tr>
                 <td>{{ setor.nome }}</td>
-                <td>{{ setor.chefe_imediato.nome}} - {{ setor.chefe_imediato.matricula}}</td>
+                <td>{{ setor.chefe_imediato}}</td>
+                <td>{{ setor.cargo_chefe }}</td>
+                <td>{{ setor.matricula_chefe }}</td>
+                <td>{{ setor.portaria_chefe }}</td>
                 <td>
                     <form method="post" action="{% url 'excluir_setor' setor.id %}" style="display:inline;">
                         {% csrf_token %}
@@ -63,5 +75,6 @@
         </tbody>
     </table>
 </div>
-
+{% load static %}
+<script src="{% static 'js/script.js' %}"></script>
 {% endblock %}

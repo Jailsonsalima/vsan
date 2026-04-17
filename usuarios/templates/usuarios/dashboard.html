@@ -42,7 +42,7 @@
                 <tr>
                     <td>{{ usuario.username }}</td>
                     <td>{{ usuario.email }}</td>
-                    <td>{{ usuario.setor.nome }}</td>
+                    <td>{{ usuario.servidor.lotacao }}</td>
                     <td>{{ usuario.tipo_usuario|default:"Não definido" }}</td>
                     <td>
                         {% if usuario.is_active %}

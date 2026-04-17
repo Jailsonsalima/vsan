@@ -12,7 +12,7 @@ def cadastro_servidor(request):
             endereco=request.POST.get("endereco"),
             vinculo=request.POST.get("vinculo"),
             matricula=request.POST.get("matricula"),
-            lotacao_id=request.POST.get("lotacao"),
+            lotacao=request.POST.get("lotacao"),
             cargo=request.POST.get("cargo"),
             funcao=request.POST.get("funcao"),
             cpf=request.POST.get("cpf"),

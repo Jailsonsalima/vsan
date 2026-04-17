@@ -43,14 +43,13 @@
             </div>
 
             <div class="form-group">
-                <label for="lotacao">Lotação :</label>
+                <label for="lotacao">Lotação:</label>
                 <select name="lotacao" id="lotacao" required>
                     <option value="">-- Selecione uma Lotação --</option>
-                    {% for setor in setores %}
-                        <option value="{{ setor.id }}" data-chefe="{{ setor.chefe_imediato }}">
-                            {{ setor.nome }}
-                        </option>
-                    {% endfor %}
+                    <option value="DEVS/DVS/SESPA">DEVS/DVS/SESPA</option>
+                    <option value="DIVPD/DEVS/DVS/SESPA">DIVPD/DEVS/DVS/SESPA</option>
+                    <option value="DIVEST/DEVS/DVS/SESPA">DIVEST/DEVS/DVS/SESPA</option>
+                    <option value="DIVSEV/DEVS/DVS/SESPA">DIVSEV/DEVS/DVS/SESPA</option>
                 </select>
             </div>
         </div>
@@ -59,13 +58,24 @@
                 <label for="cargo">Cargo:</label>
                 <select name="cargo" id="cargo" required>
                     <option value="">-- Selecione um cargo --</option>
+                    <option value="Administrador">Administrador</option>
                     <option value="Agente Administrativo">Agente Administrativo</option>
                     <option value="Biomédico">Biomédico</option>
+                    <option value="Agente de Saúde">Agente de Saúde</option>
+                    <option value="Agente de Vigilância Sanitária">Agente de Vigilância Sanitária</option>
+                    <option value="Comissionado">Comissionado</option>
                     <option value="Enfermeiro">Enfermeiro</option>
+                    <option value="Engenheiro">Engenheiro</option>
+                    <option value="Engenheiro Cívil">Engenheiro Cívil</option>
+                    <option value="Engenheiro Sanitarista">Engenheiro Sanitarista</option>
                     <option value="Farmacêutico">Farmacêutico</option>
+                    <option value="Farmaceutico-bioquimico">Farmaceutico-bioquimico</option>
+                    <option value="Médico Veterinário">Médico Veterinário</option>
                     <option value="Motorista">Motorista</option>
+                    <option value="Nutricionista ">Nutricionista </option>
+                    <option value="Nutricionista/SESMA - 2º teto ">Nutricionista/SESMA - 2º teto</option>
                     <option value="Quimico industrial">Quimico industrial</option>
-                    <option value="Técnico em enfermagem">Técnico em enfermagem</option>
+                    <option value="Técnico de enfermagem">Técnico de enfermagem</option>
                 </select>
             </div>
 
@@ -81,11 +91,15 @@
         </div>-->
         
         <div class="form-group">
-            <label for="chefia">Chefia Imediata:</label>
-            <input type="text" id="chefia" name="chefia" readonly 
-            style="background-color: #f0f0f0; color: #555; font-weight: bold;">
-            <small style="color: #777;">Este campo é preenchido automaticamente.</small>
+            <label for="chefe_imediato">Chefe Imediato:</label>
+            <select id="chefe_imediato" name="chefe_imediato" required>
+                <option value="">-- Selecione --</option>
+                {% for setor in setores %}
+                    <option value="{{ setor.id }}">{{ setor.chefe_imediato }} -- ({{ setor.cargo_chefe }})</option>
+                {% endfor %}
+            </select>
         </div>
+
         <div class="form-row">
             <div class="form-group">
                 <label for="banco">Banco:</label>
