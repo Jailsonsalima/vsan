@@ -1,5 +1,6 @@
 from django.db import models
 from servidores.models import Servidor
+from setores.models import Setor
 
 # Create your models here.
 
@@ -24,6 +25,8 @@ class Atividade(models.Model):
     data_criacao = models.DateTimeField(auto_now_add=True)
 
     servidores = models.ManyToManyField(Servidor, related_name="atividades")  # vínculo
+    n_memorando = models.CharField(max_length=10, verbose_name='Nº do Memorando', unique=True, blank=True, null=True)
+    chefe_imediato = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name="atividades_chefiadas")
     
     def __str__(self):
         return f"{self.data_criacao} - {self.data_ida} ({self.data_retorno}) - {self.objetivo[:30]}..."

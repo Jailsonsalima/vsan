@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from .models import Servidor
 from setores.models import Setor
 from django.contrib.auth.decorators import login_required
+from datetime import date, datetime
+from django.contrib import messages
 
 @login_required
 def cadastro_servidor(request):
@@ -9,6 +11,21 @@ def cadastro_servidor(request):
     if request.method == "POST":
         setor_id = request.POST.get("setor")
         setor = Setor.objects.get(id=setor_id) if setor_id else None
+        nascimento_str = request.POST.get("nascimento")
+        nascimento = None
+        if nascimento_str:
+            try:
+                nascimento = datetime.strptime(nascimento_str, "%Y-%m-%d").date()
+                # Calcula idade
+                hoje = date.today()
+                idade = hoje.year - nascimento.year - ((hoje.month, hoje.day) < (nascimento.month, nascimento.day))
+                if idade < 18:
+                    messages.error(request, "O servidor deve ter pelo menos 18 anos.")
+                    return render(request, "servidores/cadastro_servidor.html", {"setores": setores})
+            except ValueError:
+                messages.error(request, "Data de nascimento inválida.")
+                return render(request, "servidores/cadastro_servidor.html", {"setores": setores})
+            
         servidor = Servidor.objects.create(
             nome=request.POST.get("nome"),
             endereco=request.POST.get("endereco"),
@@ -43,6 +60,21 @@ def cadastro_servidor_publico(request):
     if request.method == "POST":
         setor_id = request.POST.get("setor")
         setor = Setor.objects.get(id=setor_id) if setor_id else None
+        nascimento_str = request.POST.get("nascimento")
+        nascimento = None
+        if nascimento_str:
+            try:
+                nascimento = datetime.strptime(nascimento_str, "%Y-%m-%d").date()
+                # Calcula idade
+                hoje = date.today()
+                idade = hoje.year - nascimento.year - ((hoje.month, hoje.day) < (nascimento.month, nascimento.day))
+                if idade < 18:
+                    messages.error(request, "O servidor deve ter pelo menos 18 anos.")
+                    return render(request, "servidores/cadastro_servidor.html", {"setores": setores})
+            except ValueError:
+                messages.error(request, "Data de nascimento inválida.")
+                return render(request, "servidores/cadastro_servidor.html", {"setores": setores})
+            
         Servidor.objects.create(
             nome=request.POST.get("nome"),
             endereco=request.POST.get("endereco"),

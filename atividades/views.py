@@ -16,13 +16,22 @@ import io, zipfile
 @login_required
 def cadastrar_atividade(request):
     servidores = Servidor.objects.all()
+    # Filtra setores cujo cargo_chefe NÃO começa com "Diretor"
+    setores = Setor.objects.exclude(cargo_chefe__startswith="Diretor")
     if request.method == "POST":
+        setor_id = request.POST.get("setor")
+        setor = Setor.objects.get(id=setor_id) if setor_id else None
+        chefe_id = request.POST.get("chefe_imediato")  # pega o chefe selecionado
+        chefe = Setor.objects.get(id=chefe_id) if chefe_id else None
+
         data_ida_str = request.POST.get("data_ida")
         data_retorno_str = request.POST.get("data_retorno")
 
         data_ida = datetime.strptime(data_ida_str, "%Y-%m-%d").date() if data_ida_str else None
         data_retorno = datetime.strptime(data_retorno_str, "%Y-%m-%d").date() if data_retorno_str else None
-
+        n_memorando = request.POST.get("n_memorando")
+        chefe_id = request.POST.get("chefe_imediato")
+        chefe = Setor.objects.get(id=chefe_id) if chefe_id else None
         atividade = Atividade.objects.create(
             dias_diarias=request.POST.get("dias_diarias"),
             pernoite=request.POST.get("pernoite"),
@@ -30,7 +39,10 @@ def cadastrar_atividade(request):
             municipio=request.POST.get("municipio"),
             objetivo=request.POST.get("objetivo"),
             data_ida=data_ida,
-            data_retorno=data_retorno
+            data_retorno=data_retorno,
+            n_memorando = n_memorando,
+            # se quiser salvar o chefe selecionado, adicione um campo no model Atividade
+            chefe_imediato=chefe,  # aqui vai a instância de Setor
         )
         ids = request.POST.getlist("servidores")
         atividade.servidores.set(Servidor.objects.filter(id__in=ids))
@@ -38,7 +50,10 @@ def cadastrar_atividade(request):
 
         return redirect("dashboard")
 
-    return render(request, "atividades/cadastro_atividades.html", {"servidores": servidores})
+    return render(request, "atividades/cadastro_atividades.html", {
+        "servidores": servidores,
+        "setores": setores
+    })
 
 def formatar_periodo(data_ida, data_retorno):
     if not data_ida or not data_retorno:

@@ -34,14 +34,6 @@
                         style="background-color: #f0f0f0; color: #555; font-weight: bold;">
                     <small style="color: #777;">Este campo é preenchido automaticamente.</small>
                 </div>
-                <!--
-                    <div class="form-group">
-                        <label for="pernoite">Pernoite:</label>
-                        <input type="text" name="pernoite" id="pernoite" readonly
-                            style="background-color: #f0f0f0; color: #555; font-weight: bold;">
-                        <small style="color:#777;">Este campo é preenchido automaticamente.</small>
-                    </div>
-                -->
                 <!-- Pernoite -->
                 <div>
                     <label>Pernoite:</label>
@@ -221,19 +213,38 @@
             <label for="objetivo">Objetivo:</label>
             <textarea name="objetivo" id="objetivo" rows="3" required></textarea>
         </div>
-        
-        
-       
+        <div class="form-row">
+                
+                <div class="form-group">
+                    <label for="chefe_imediato">Chefe Imediato :</label>
+                    <select id="chefe_imediato" name="chefe_imediato" required>
+                        <option value=""> -- Selecione -- </option>
+                        {% for setor in setores %}
+                            <option value="{{ setor.id }}">
+                                {{ setor.chefe_imediato }} - ({{ setor.cargo_chefe }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="n_memorando">Nº do Memorando:</label>
+                    <input type="text" id="n_memorando" name="n_memorando" required>
+                </div>
+            </div>
         <div class="form-group">
             <small style="color:#777;">Selecione um ou mais servidores.</small>
             <label>Equipe:</label>
             <!-- Área para mostrar os selecionados -->
             <ul id="servidores-selecionados"></ul>
-
+            
             <div class="form-group">
                 <label for="filtro-servidores">Pesquisar Servidor:</label>
                 <input type="text" id="filtro-servidores" placeholder="Digite o nome do servidor...">
             </div>
+            
+
+            
+
              <!-- Botão -->
         <button id="btn-proximo" type="submit" class="btn btn-disabled btn-secondary" disabled>Salvar</button>
         </div>
@@ -249,36 +260,7 @@
             {% endfor %}
         </div>
     </form>
-</div><!--
-<script>
-    const dataIda = document.getElementById("data_ida");
-    const dataRetorno = document.getElementById("data_retorno");
-    const diasDiarias = document.getElementById("dias_diarias");
-    const pernoite = document.getElementById("pernoite");
-
-    function calcularCampos() {
-        const ida = new Date(dataIda.value);
-        const retorno = new Date(dataRetorno.value);
-
-        if (dataIda.value && dataRetorno.value) {
-            // Calcula diferença em dias
-            const diffTime = retorno - ida;
-            const diffDays = diffTime / (1000 * 60 * 60 * 24) + 1;
-            // Preenche dias/diárias
-            diasDiarias.value = `${diffDays} / ${(diffDays - 0.5).toString().replace(".", ",")}`;
-            // Preenche pernoite
-            if (diffDays === 1) {
-                pernoite.value = "Não";
-            } else {
-                pernoite.value = "Sim";
-            }
-        }
-    }
-
-    dataIda.addEventListener("change", calcularCampos);
-    dataRetorno.addEventListener("change", calcularCampos);
-</script>
--->
+</div>
 
 {% load static %}
 <script src="{% static 'js/script.js' %}"></script>
