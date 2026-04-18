@@ -34,9 +34,9 @@
             </tr>
         </table>
         <p>&emsp;&emsp;Senhor(a) Chefe do Departamento de Diárias e Passagens Aéreas,</p><br>
-        &emsp;&emsp;Solicitamos a Vossa Senhoria que tome as devidas providências no sentido de disponibilizar diárias aos 
-        servidores abaixo relacionado que estarão nos munícipios de <strong>{{ atividade.municipio }}</strong>, no período de {{ periodo_formatado }}.<br>
-        <p><strong>&emsp;&emsp;Objetivo:</strong>{{ atividade.objetivo }}</p><br>
+        &emsp;&emsp;<p style="line-height: 1.4;">Solicitamos a Vossa Senhoria que tome as devidas providências no sentido de disponibilizar diárias aos 
+        servidores abaixo relacionado que estarão nos munícipios de <strong>{{ atividade.municipio }}</strong>, no período de {{ periodo_formatado }}.</p>
+        <p style="line-height: 1.6;"><strong>&emsp;&emsp;Objetivo:</strong>{{ atividade.objetivo }}</p><br>
         <table>
             <tr>
                 <th style="text-align: center;">NOME</th>
@@ -60,7 +60,28 @@
         &emsp;&emsp;Fonte de Recursos: <strong> 01 600 0000 49 001512</strong><br>
         &emsp;&emsp;Elemento de Despesa: <strong>3390-14</strong><br>
         &emsp;&emsp;Projeto Atividade: <strong>2332</strong><br><br><br><br>
-        &emsp;&emsp;Atenciosamente,<br>
+        &emsp;&emsp;Atenciosamente,<br><br>
+
+
+
+<div>
+{% for setor in setores %}
+    
+    <div style="text-align: center; margin-top: 150px; line-height: 1.4;">
+        <strong>{{ setor.chefe_imediato }}</strong><br>
+        {{ setor.cargo_chefe }}/{{ setor.nome }}<br>
+        Portaria nº {{ setor.portaria_chefe }}<br>
+        Matrícula nº {{ setor.matricula_chefe }}
+    </div>
+
+    
+    {% empty %}
+
+        <p>Nenhum setor encontrado.</p>
+    
+    {% endfor %}
+    </div>
+
         <footer class="footer-devs">
             Departamento de Vigilância Sanitária - DEVS/DVS/SESPA End: Trav. Lomas Valentinas, nº 2190 - Marco/Belém/PA<br>
             CEP: 66.093-667 - Contato: 4006-4830 - E-mail: <a href="mailto:devs@sespa.pa.gov.br">devs@sespa.pa.gov.br</a>

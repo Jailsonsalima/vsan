@@ -12,7 +12,7 @@ class Usuario(AbstractUser):
         ('coordenador', 'Coordenador'),
         ('funcionario', 'Funcionário'),
     ]
-    setor = models.ForeignKey(Setor, on_delete=models.CASCADE, verbose_name='Setor', null=True, blank=True)
+    
     tipo_usuario = models.CharField(max_length=20, choices=TIPO_USUARIO_CHOICES, verbose_name='Tipo de Usuário', null=True, blank=True)
 
     # Matrícula informada no cadastro de usuário
@@ -32,4 +32,4 @@ class Usuario(AbstractUser):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.username} - {self.setor.nome if self.setor else 'Sem setor'} - {self.tipo_usuario if self.tipo_usuario else 'Inativo'}"
+        return f"{self.username} - {self.tipo_usuario if self.tipo_usuario else 'Inativo'}"

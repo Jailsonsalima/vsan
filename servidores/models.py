@@ -1,4 +1,5 @@
 from django.db import models
+from setores.models import Setor
 
 class Servidor(models.Model):
     nome = models.CharField(max_length=200)
@@ -12,7 +13,6 @@ class Servidor(models.Model):
         ]
     )
     matricula = models.CharField(max_length=20, unique=True)
-    lotacao = models.CharField(max_length=150, verbose_name="Lotação", blank=True, null=True)
     cargo = models.CharField(max_length=100)
     funcao = models.CharField(max_length=150, blank=True, null=True)
     cpf = models.CharField(max_length=14, unique=True)
@@ -21,7 +21,8 @@ class Servidor(models.Model):
     banco = models.CharField(max_length=50, blank=True, null=True)
     agencia = models.CharField(max_length=20, blank=True, null=True)
     conta = models.CharField(max_length=30, blank=True, null=True)
-    chefia = models.CharField(max_length=150, blank=True, null=True)
+    # Relacionamento com Setor
+    setor = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True)
 
     def primeiro_nome(self):
         return self.nome.split()[0]

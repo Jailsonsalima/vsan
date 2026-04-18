@@ -7,6 +7,7 @@ from weasyprint import HTML
 from servidores.models import Servidor
 from django.utils.dateformat import DateFormat
 from datetime import datetime
+from setores.models import Setor
 
 import io, zipfile
 
@@ -51,6 +52,9 @@ def formatar_periodo(data_ida, data_retorno):
 
 @login_required
 def gerar_zip_pdfs(request, atividade_id):
+    # Filtra setores cujo cargo_chefe começa com "Diretor"
+    setores = Setor.objects.filter(cargo_chefe__startswith="Diretor")
+
     atividade = get_object_or_404(Atividade, id=atividade_id)
     servidores = atividade.servidores.all()
 
@@ -62,6 +66,7 @@ def gerar_zip_pdfs(request, atividade_id):
             "pdf_atividade.html",
             {
                 "atividade": atividade,
+                "setores": setores,  # adiciona setores filtrados
                 "servidores": [],  # não lista servidores aqui
                 "periodo_formatado": formatar_periodo(atividade.data_ida, atividade.data_retorno),
             }
@@ -71,11 +76,14 @@ def gerar_zip_pdfs(request, atividade_id):
 
         # 2. PDFs de cada servidor vinculado à atividade
         for servidor in servidores:
+            setor = servidor.setor if servidor.setor else None  # pega setor vinculado
+
             html_servidor = render_to_string(
                 "pdf_servidor.html",
                 {
                     "atividade": atividade,
                     "servidores": [servidor],
+                    "setor": setor,  # adiciona setor no contexto
                     "periodo_formatado": formatar_periodo(atividade.data_ida, atividade.data_retorno),
                 }
             )

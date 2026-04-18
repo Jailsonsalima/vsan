@@ -60,7 +60,7 @@
                         <strong>Matrícula:</strong><br>{{ servidor.matricula }}
                     </td>
                     <td colspan="4" style="width:75%;">
-                        <strong>Lotação:</strong><br>{{ servidor.lotacao }}
+                        <strong>Lotação:</strong><br>{{ servidor.setor.nome }}
                     </td>
                 </tr>
                 <tr>
@@ -127,9 +127,9 @@
                     </td>
                     <td colspan="4">
                         <strong>Chefia Imediata:</strong><br><br>
-                        <p style="text-align: center;">{{ servidor.chefia }}<br>
-                            Respondendo pelo Departamento de Vigilância Sanitária/DEVS/SESPA<br>
-                            Matrícula: {{ servidor.chefia.matricula }}
+                        <p style="text-align: center;">{{ servidor.setor.chefe_imediato }}<br>
+                            Respondendo pelo Departamento de Vigilância Sanitária/{{ servidor.setor.nome }}<br>
+                            Matrícula: {{ servidor.setor.matricula_chefe }}
                         </p>
                     </td>
                 </tr>

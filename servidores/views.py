@@ -7,12 +7,13 @@ from django.contrib.auth.decorators import login_required
 def cadastro_servidor(request):
     setores = Setor.objects.all()
     if request.method == "POST":
+        setor_id = request.POST.get("setor")
+        setor = Setor.objects.get(id=setor_id) if setor_id else None
         servidor = Servidor.objects.create(
             nome=request.POST.get("nome"),
             endereco=request.POST.get("endereco"),
             vinculo=request.POST.get("vinculo"),
             matricula=request.user.matricula,  # usa matrícula do usuário
-            lotacao=request.POST.get("lotacao"),
             cargo=request.POST.get("cargo"),
             funcao=request.POST.get("funcao"),
             cpf=request.POST.get("cpf"),
@@ -21,7 +22,8 @@ def cadastro_servidor(request):
             banco=request.POST.get("banco"),
             agencia=request.POST.get("agencia"),
             conta=request.POST.get("conta"),
-            chefia=request.POST.get("chefia"),
+            setor=setor,  # vínculo com setor
+           
         )
         # Vincula o servidor ao usuário logado
         request.user.servidor = servidor
@@ -39,12 +41,13 @@ def lista_servidores(request):
 def cadastro_servidor_publico(request):
     setores = Setor.objects.all()
     if request.method == "POST":
+        setor_id = request.POST.get("setor")
+        setor = Setor.objects.get(id=setor_id) if setor_id else None
         Servidor.objects.create(
             nome=request.POST.get("nome"),
             endereco=request.POST.get("endereco"),
             vinculo=request.POST.get("vinculo"),
             matricula=request.POST.get("matricula"),  # matrícula obrigatória
-            lotacao=request.POST.get("lotacao"),
             cargo=request.POST.get("cargo"),
             funcao=request.POST.get("funcao"),
             cpf=request.POST.get("cpf"),
@@ -53,7 +56,7 @@ def cadastro_servidor_publico(request):
             banco=request.POST.get("banco"),
             agencia=request.POST.get("agencia"),
             conta=request.POST.get("conta"),
-            chefia=request.POST.get("chefia"),
+            setor=setor,  # vínculo com setor
         )
         return redirect("sucesso")
 

@@ -33,15 +33,7 @@
             <label for="matricula">Matrícula do Servidor:</label>
             <input type="text" name="matricula" id="matricula" required>
         </div>
-        <div class="form-group">
-            <label for="setor">Setor:</label>
-            <select id="setor" name="setor" required  class="select-tipo">
-                <option value="">Selecione um setor</option>
-                {% for setor in setores %}
-                    <option value="{{ setor.id }}">{{ setor.nome }}</option>
-                {% endfor %}
-            </select>
-        </div>
+        
         <button type="submit" class="btn-secondary">Cadastrar</button>
     </form>
 </div>

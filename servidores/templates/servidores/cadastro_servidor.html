@@ -44,15 +44,16 @@
             </div>
 
             <div class="form-group">
-                <label for="lotacao">Lotação:</label>
-                <select name="lotacao" id="lotacao" required>
-                    <option value="">-- Selecione uma Lotação --</option>
-                    <option value="DEVS/DVS/SESPA">DEVS/DVS/SESPA</option>
-                    <option value="DIVPD/DEVS/DVS/SESPA">DIVPD/DEVS/DVS/SESPA</option>
-                    <option value="DIVEST/DEVS/DVS/SESPA">DIVEST/DEVS/DVS/SESPA</option>
-                    <option value="DIVSEV/DEVS/DVS/SESPA">DIVSEV/DEVS/DVS/SESPA</option>
-                </select>
-            </div>
+    <label for="setor">Lotação:</label>
+    <select name="setor" id="setor" required>
+        <option value="">-- Selecione um setor --</option>
+        {% for setor in setores %}
+            <option value="{{ setor.id }}">{{ setor.nome }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+
         </div>
         <div class="form-row">
             <div class="form-group">
