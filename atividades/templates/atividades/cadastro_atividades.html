@@ -221,8 +221,11 @@
             <label for="objetivo">Objetivo:</label>
             <textarea name="objetivo" id="objetivo" rows="3" required></textarea>
         </div>
-        <!-- Equipe -->
+        
+        
+       
         <div class="form-group">
+            <small style="color:#777;">Selecione um ou mais servidores.</small>
             <label>Equipe:</label>
             <!-- Área para mostrar os selecionados -->
             <ul id="servidores-selecionados"></ul>
@@ -231,20 +234,20 @@
                 <label for="filtro-servidores">Pesquisar Servidor:</label>
                 <input type="text" id="filtro-servidores" placeholder="Digite o nome do servidor...">
             </div>
-            <div id="lista-servidores">
-                {% for servidor in servidores %}
-                    <div class="servidor-item">
-                        <label>
-                            <input type="checkbox" name="servidores" value="{{ servidor.id }}" data-nome="{{ servidor.nome }}">
-                            {{ servidor.nome }} - {{ servidor.matricula }}
-                        </label>
-                    </div>
-                {% endfor %}
-            </div>
-            <small style="color:#777;">Selecione um ou mais servidores.</small>
-        </div>
-        <!-- Botão -->
+             <!-- Botão -->
         <button id="btn-proximo" type="submit" class="btn btn-disabled btn-secondary" disabled>Salvar</button>
+        </div>
+        <!-- Equipe -->
+        <div id="lista-servidores">
+            {% for servidor in servidores %}
+                <div class="servidor-item">
+                    <label>
+                        <input type="checkbox" name="servidores" value="{{ servidor.id }}" data-nome="{{ servidor.nome }}">
+                        {{ servidor.nome }} - {{ servidor.matricula }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
     </form>
 </div><!--
 <script>

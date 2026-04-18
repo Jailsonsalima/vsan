@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from atividades.models import Atividade
+from servidores.models import Servidor
 
 # Create your views here.
 def home(request):
@@ -24,13 +25,22 @@ def cadastrar_usuario(request):
         setor_id = request.POST.get('setor')
         password1 = request.POST.get('password')
         password2 = request.POST.get('password2')
+        matricula = request.POST.get('matricula')
 
         if password1 != password2:
             messages.error(request, 'As senhas não coincidem.')
         else:
             setor = Setor.objects.get(id=setor_id)
-            usuario = Usuario.objects.create_user(username=username, email=email, setor=setor, password=password1)
-            usuario.save()
+            usuario = Usuario.objects.create_user(username=username, email=email, setor=setor, password=password1, matricula=matricula)
+            # Se já existir servidor com essa matrícula, vincula e deixa inativo
+            servidor_existente = Servidor.objects.filter(matricula=matricula).first()
+            if servidor_existente:
+                usuario.servidor = servidor_existente
+                usuario.is_active = False  # conta fica inativa até ser ativada pelo diretor
+                usuario.save()
+            else:
+                # Se não existir servidor, apenas salva o usuário sem vínculo
+                usuario.save()
             return render(request, 'usuarios/sucesso.html')
     return render(request, 'usuarios/cadastrar_usuario.html', {'setores': setores})
 
@@ -82,7 +92,9 @@ def login_view(request):
                 return redirect('dashboard')
 
             # Se não for superuser, verifica vínculo com servidor
-            if hasattr(user, "servidor") and user.servidor is not None:
+            #if hasattr(user, "servidor") and user.servidor is not None:
+            # Se não for superuser, verifica vínculo com servidor
+            if user.servidor:
                 return redirect('dashboard')
             else:
                 return redirect('cadastro_servidor')

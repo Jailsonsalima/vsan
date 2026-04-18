@@ -42,7 +42,14 @@
                 <tr>
                     <td>{{ usuario.username }}</td>
                     <td>{{ usuario.email }}</td>
-                    <td>{{ usuario.servidor.lotacao }}</td>
+                    <td>
+                        Matrícula: {{ usuario.matricula|default:"Não informada" }}<br>
+                        {% if usuario.servidor %}
+                            Lotação: {{ usuario.servidor.lotacao }}
+                        {% else %}
+                            Servidor não vinculado
+                        {% endif %}
+                    </td>
                     <td>{{ usuario.tipo_usuario|default:"Não definido" }}</td>
                     <td>
                         {% if usuario.is_active %}

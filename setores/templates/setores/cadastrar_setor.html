@@ -60,7 +60,7 @@
                 <td>{{ setor.matricula_chefe }}</td>
                 <td>{{ setor.portaria_chefe }}</td>
                 <td>
-                    <form method="post" action="{% url 'excluir_setor' setor.id %}" style="display:inline;">
+                    <form method="post" action="{% url 'excluir_setor' setor.id %}" style="display:flex; flex-wrap: wrap;">
                         {% csrf_token %}
                         <button type="submit" class="btn-danger">Excluir</button>
                     </form>

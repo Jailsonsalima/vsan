@@ -15,6 +15,9 @@ class Usuario(AbstractUser):
     setor = models.ForeignKey(Setor, on_delete=models.CASCADE, verbose_name='Setor', null=True, blank=True)
     tipo_usuario = models.CharField(max_length=20, choices=TIPO_USUARIO_CHOICES, verbose_name='Tipo de Usuário', null=True, blank=True)
 
+    # Matrícula informada no cadastro de usuário
+    matricula = models.CharField(max_length=20, unique=True, null=True, blank=True)
+
     # Relacionamento 1-1 com Servidor (se o objeto pai for excluído, o filho também será excluído automaticamente)
     servidor = models.OneToOneField(Servidor, on_delete=models.CASCADE, null=True, blank=True, related_name="usuario")
 

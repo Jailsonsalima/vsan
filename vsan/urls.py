@@ -40,5 +40,5 @@ urlpatterns = [
     path('cadastro-atividade/', atividades_views.cadastrar_atividade, name="cadastrar_atividade"),
     path("atividade/<int:atividade_id>/pdfs/", atividades_views.gerar_zip_pdfs, name="gerar_zip_pdfs"),
     path("setores/editar/<int:setor_id>/", setor_views.editar_setor, name="editar_setor"),
-
+    path("cadastro-servidor-publico/", servidor_views.cadastro_servidor_publico, name="cadastro_servidor_publico"),
 ]
