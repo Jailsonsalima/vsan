@@ -7,17 +7,40 @@
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { font-family:'Times New Roman', Times, serif; margin: 0px; font-size: 14px;}
-            h3 { text-align: center; margin-bottom: 20px; }
-            img { display: block; margin: 0 auto; width: 120px; height: auto; margin-bottom: 10px; }
+            .brasao { position: fixed; top: 0; margin-bottom: 10px; left: 50%; transform: translateX(-50%); width: 60px; height: auto; }
+            .top-text { font-family: 'Arial Narrow'; font-size: 10px; text-align: center; margin-top: 20px;}
+            /* Linha superior centralizada */
+            .linha-topo { position: fixed; top: 120px; left: 0; width: 100%; height: auto; }
+            h3 { text-align: center; margin-bottom: 20px; margin-top: 25px;}
             table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
             th { background-color: #f4f4f4; }
             th, td { border: 2px solid #000000; padding: 4px; text-align: left; }
-            .footer-devs { text-align: center; font-size: 11px; color: #000; line-height: 1.5; margin-top: 20px; position: fixed; bottom: 0; width: 100%; }
+            /* Remove margens padrão do PDF */
+            @page { margin: 0; padding: 0; }
+            body { margin: 20px; padding: 20px; font-family: 'Times New Roman', Times, serif; font-size: 14px; }
+            /* Estrela canto inferior esquerdo */
+            .estrela { position: fixed; bottom: 0; left: 0; width: 100px; /* ajuste conforme necessário */ height: auto; z-index: 2; }
+            .assinaturas { margin-bottom: 10px; width: 100%; text-align: center; line-height: 1.4; }
+            /* Linha inferior centralizada */
+            .linha-boton { position: fixed; bottom: 35px; right: 0; width: 95%; height: auto; z-index: 1; }
+            .footer-devs { font-family: 'Arial Narrow'; text-align: center; font-size: 11px; color: #000; line-height: 1.5; bottom: 10px; position: fixed; width: 100%; }
         </style>
     </head>
     <body>
-        <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Logo">
-        <h3>SISTEMA ÚNICO DE SAÚDE<br>DIRETORIA DE VIGILÂNCIA EM SAÚDE<br>DEPARTAMENTO DE VIGILÂNCIA SANITÁRIA<br><br>Memorando</h3>
+        {% load static %}
+        <img src="file:///home/vsan/vsan/static/img/estrela_para.png" alt="Estrela" class="estrela">
+        <img src="file:///home/vsan/vsan/static/img/linha_boton.png" alt="Linha inferior" class="linha-boton">
+        <img src="file:///home/vsan/vsan/static/img/linha_topo.png" alt="Linha superior" class="linha-topo">
+        <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Brasao" class="brasao">
+        <!--<img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Logo">-->
+        <div  class="top-text">
+            GOVERNO DO ESTADO DO PARÁ<br>
+            SECRETARIA DE ESTADO DE SAÚDE PÚBLICA<br>
+            SECRETARIA ADJUNTA DE GESTÃO EM POLÍTICAS DE SAÚDE<br>
+            DIRETORIA DE VIGILÂNCIA EM SAÚDE<br>
+            DEPARTAMENTO DE VIGILÂNCIA SANITÁRIA
+        </div>
+        <h3>Memorando</h3>
         <table>
             <tr>
                 <td colspan="2">
@@ -34,9 +57,9 @@
             </tr>
         </table>
         <p>&emsp;&emsp;Senhor(a) Chefe do Departamento de Diárias e Passagens Aéreas,</p>
-        &emsp;&emsp;<p style="line-height: 1.4;">Solicitamos a Vossa Senhoria que tome as devidas providências no sentido de disponibilizar diárias aos 
+        <p style="line-height: 1.4;">&emsp;&emsp;Solicitamos a Vossa Senhoria que tome as devidas providências no sentido de disponibilizar diárias aos 
         servidores abaixo relacionado que estarão nos munícipios de <strong>{{ atividade.municipio }}</strong>, no período de {{ periodo_formatado }}.</p>
-        <p style="line-height: 1.6;"><strong>&emsp;&emsp;Objetivo:</strong>{{ atividade.objetivo }}</p><br>
+        <p style="line-height: 1.6;"><strong>&emsp;&emsp;Objetivo:</strong> {{ atividade.objetivo }}</p><br>
         <table>
             <tr>
                 <th style="text-align: center;">NOME</th>
@@ -60,38 +83,28 @@
         &emsp;&emsp;Fonte de Recursos: <strong> 01 600 0000 49 001512</strong><br>
         &emsp;&emsp;Elemento de Despesa: <strong>3390-14</strong><br>
         &emsp;&emsp;Projeto Atividade: <strong>2332</strong><br><br><br><br>
-        &emsp;&emsp;Atenciosamente,<br>
+        &emsp;&emsp;Atenciosamente,<br>      
+        <div>
+            {% for setor in setores %}
+                <div class="assinaturas">
+                    <p style="color: #00b0f0;">(Assinatura eletrônica)</p>
+                    <strong>{{ atividade.chefe_imediato.chefe_imediato }}</strong><br>
+                    {{ atividade.chefe_imediato.cargo_chefe }}<br>
+                    Portaria nº {{ atividade.chefe_imediato.portaria_chefe }}<br>
+                    Matrícula nº {{ atividade.chefe_imediato.matricula_chefe }}<br><br>
 
-        
-
-
-
-<div>
-{% for setor in setores %}
-    
-    <div style="text-align: center; margin-top: 20px; line-height: 1.4;">
-        <strong>{{ atividade.chefe_imediato.chefe_imediato }}</strong><br>
-        {{ atividade.chefe_imediato.cargo_chefe }}<br>
-        Portaria nº {{ atividade.chefe_imediato.portaria_chefe }}<br>
-        Matrícula nº {{ atividade.chefe_imediato.matricula_chefe }}<br><br>
-
-
-        <strong>{{ setor.chefe_imediato }}</strong><br>
-        {{ setor.cargo_chefe }}/{{ setor.nome }}<br>
-        Portaria nº {{ setor.portaria_chefe }}<br>
-        Matrícula nº {{ setor.matricula_chefe }}
-    </div>
-
-    
-    {% empty %}
-
-        <p>Nenhum setor encontrado.</p>
-    
-    {% endfor %}
-    </div>
-
+                    <p style="color: #00b0f0;">(Assinatura eletrônica)</p>
+                    <strong>{{ setor.chefe_imediato }}</strong><br>
+                    {{ setor.cargo_chefe }}/{{ setor.nome }}<br>
+                    Portaria nº {{ setor.portaria_chefe }}<br>
+                    Matrícula nº {{ setor.matricula_chefe }}
+                </div>
+            {% empty %}
+                <p>Nenhum setor encontrado.</p>
+            {% endfor %}
+        </div>
         <footer class="footer-devs">
-            Departamento de Vigilância Sanitária - DEVS/DVS/SESPA End: Trav. Lomas Valentinas, nº 2190 - Marco/Belém/PA<br>
+            Departamento Estadual de Vigilância Sanitária/SESPA - Tv. Lomas Valentinas, 2190– Marco – Belém – Pará - CEP 66.093-677<br>
             CEP: 66.093-667 - Contato: 4006-4830 - E-mail: <a href="mailto:devs@sespa.pa.gov.br">devs@sespa.pa.gov.br</a>
         </footer>
     </body>

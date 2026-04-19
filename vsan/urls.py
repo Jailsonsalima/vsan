@@ -21,6 +21,8 @@ from setores import views as setor_views
 from servidores import views as servidor_views
 from atividades import views as atividades_views
 
+from django.contrib.auth import views as auth_views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
@@ -41,4 +43,14 @@ urlpatterns = [
     path("atividade/<int:atividade_id>/pdfs/", atividades_views.gerar_zip_pdfs, name="gerar_zip_pdfs"),
     path("setores/editar/<int:setor_id>/", setor_views.editar_setor, name="editar_setor"),
     path("cadastro-servidor-publico/", servidor_views.cadastro_servidor_publico, name="cadastro_servidor_publico"),
+    path("atividade/editar/<int:atividade_id>/", atividades_views.editar_atividade, name="editar_atividade"),
+
+    # Solicitar redefinição
+    path('reset_password/', auth_views.PasswordResetView.as_view(), name='reset_password'),
+    # Confirmação de envio de e-mail
+    path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    # Link recebido por e-mail
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    # Finalização da redefinição
+    path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]

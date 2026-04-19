@@ -10,19 +10,16 @@
             {% endfor %}
         </div>
     {% endif %}
-    <p>Bem-vindo, {{ request.user.username }}!</p>
+   
 
     <!-- Área visível para todos -->
-    <section class="dashboard-section">
-        <h3>Informações Gerais</h3>
-        <p>Aqui você pode colocar estatísticas, avisos ou dados comuns a todos os usuários.</p>
-    </section>
+
     
     <!-- Área restrita ao diretor -->
     {% if request.user.tipo_usuario == "diretor" %}
-    <div class="form-group">
+    <!--<div class="form-group">
         <button class="btn-secondary"><a href="{% url 'cadastrar_setor' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Novo Setor</a></button>
-    </div>
+    </div>-->
     <section class="dashboard-section">
         <h3>Gerenciamento de Contas</h3>
         <button class="btn-secondary"><a href="?mostrar=todos" style="text-decoration: none; color: inherit; font-size: large;">Ver Todos Usuários</a></button>
@@ -130,7 +127,7 @@
                     <td>{{ atividade.municipio }}</td>
                     <td>
                         {% for servidor in atividade.servidores.all %}
-                            - {{ servidor.primeiro_nome }}{% if not forloop.last %}<br> {% endif %}
+                            -{{ servidor.primeiro_nome }}{% if not forloop.last %}<br> {% endif %}
                         {% empty %}
                             Nenhum servidor vinculado
                         {% endfor %}
@@ -138,8 +135,9 @@
                     <td>{{ atividade.objetivo }}</td>
                     
                     <td>{{ atividade.data_criacao|date:"d/m/Y H:i" }}</td>
-                    <td>
+                    <td  style="display:flex; flex-wrap: wrap; gap: 10px;">
                         <a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-secondary">PDFs</a>
+                        <a href="{% url 'editar_atividade' atividade.id %}" class="btn-primary">Editar</a>
                     </td>
                 </tr>
                 {% empty %}

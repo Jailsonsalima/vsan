@@ -26,5 +26,11 @@
             <button type="submit" class="btn-secondary">Entrar</button>
         </div>
     </form>
+    <!-- Link para recuperação de senha -->
+    <div class="password-reset">
+        <p>
+            <a href="{% url 'reset_password' %}">Esqueceu sua senha?</a>
+        </p>
+    </div>
 </div>
 {% endblock %}

@@ -129,3 +129,13 @@ MEDIA_ROOT = '/home/vsan/vsan/media'
 MEDIA_URL = '/media/'
 STATIC_ROOT = '/home/vsan/vsan/static'
 STATIC_URL = '/static/'
+
+
+# Exemplo usando Gmail
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "admin.vsan@gmail.com"
+EMAIL_HOST_PASSWORD = "ahdk jsww etgy tpae"
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

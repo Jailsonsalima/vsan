@@ -1,16 +1,20 @@
 {% load static %}
 <header class="header">
-    <a href="{% url 'home' %}" class="logo">VSAN</a>
-    <nav>
+    <a href="{% url 'login' %}" class="logo">VSAN</a>
+    <!--<nav>
         <ul class="menu">
-            <li><a href="{% url 'home' %}" class='btn-primary'>Inicio</a></li>
+            <li><a href="{% url 'login' %}" class='btn-primary'>Inicio</a></li>
             <li><a href="{% url 'about' %}" class='btn-primary'>Sobre</a></li>
             <li><a href="{% url 'contact' %}" class='btn-primary'>Contato</a></li>
         </ul>
-    </nav>
+    </nav>-->
     <div class="auth-buttons">
     {% if user.is_authenticated %}
         <span class="user-info">Olá, {{ user.username }}!</span>
+        {% if request.user.tipo_usuario == "diretor" %}
+            <a href="{% url 'cadastrar_setor' %}" class="btn-primary">Cadastrar Novo Setor</a>
+        {% endif %}
+        
         <a href="{% url 'dashboard' %}" class='btn-primary'>Dashboard</a>
         <a href="{% url 'logout' %}" class='btn-primary'>Logout</a>
     {% else %}

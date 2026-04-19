@@ -258,3 +258,11 @@ footer {
     font-weight: bold;
     font-size: 1.2em;
 }
+
+.checkbox-list {
+    margin: 10px 0;
+}
+.checkbox-list label {
+    display: block;
+    margin-bottom: 5px;
+}

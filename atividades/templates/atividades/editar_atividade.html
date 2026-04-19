@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <h2>Editar Atividade</h2>
+        <form method="post" class="form">
+            {% csrf_token %}
+            <!-- Período da Viagem -->
+            <div class="form-group">
+                <strong>Período da Viagem</strong>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nº Memorando:</label>
+                        <input type="text" name="n_memorando" value="{{ atividade.n_memorando }}" readonly
+                        style="background-color: #f0f0f0; color: #555; font-weight: bold;">
+                        <small style="color: #777;">Este campo é preenchido automaticamente.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_ida">Data de Ida:</label>
+                        <input type="date" name="data_ida" id="data_ida" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_retorno">Data de Retorno:</label>
+                        <input type="date" name="data_retorno" id="data_retorno" required>
+                    </div>
+                </div>
+            </div>
+            <!-- Nº Dias / Diárias -->
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dias_diarias">Nº Dias / Diárias:</label>
+                        <input type="text" name="dias_diarias" id="dias_diarias" readonly
+                            style="background-color: #f0f0f0; color: #555; font-weight: bold;">
+                        <small style="color: #777;">Este campo é preenchido automaticamente.</small>
+                    </div>
+                    <!-- Pernoite -->
+                    <div>
+                        <label>Pernoite:</label>
+                        <div class="radio-group">
+                            <input type="radio" id="pernoite_sim" name="pernoite" value="Sim" required>
+                            <label for="pernoite_sim">Sim</label>
+
+                            <input type="radio" id="pernoite_nao" name="pernoite" value="Não" required>
+                            <label for="pernoite_nao">Não</label>
+                        </div>
+                    </div>
+                    <!-- Meio de Transporte -->
+                    <div class="form-group">
+                        <label for="transporte">Meio de Transporte:</label>
+                        <select name="transporte" id="transporte" required>
+                            <option value="">-- Selecione --</option>
+                            <option value="Aéreo">Aéreo</option>
+                            <option value="Veículo oficial">Veículo oficial</option>
+                            <option value="Fluvial">Fluvial</option>
+                        </select>
+                    </div>
+                </div>
+            </div>        
+            <!-- Município -->
+            <div class="form-group">
+                <label for="municipio">Município:</label>
+                <input list="municipios" name="municipio" id="municipio" placeholder="{{ atividade.municipio }}" required>
+                <datalist id="municipios">
+                    <option value="Abaetetuba">
+                    <option value="Abel Figueiredo">
+                    <option value="Acará">
+                    <option value="Afuá">
+                    <option value="Água Azul do Norte">
+                    <option value="Alenquer">
+                    <option value="Almeirim">
+                    <option value="Altamira">
+                    <option value="Anajás">
+                    <option value="Ananindeua">
+                    <option value="Anapu">
+                    <option value="Augusto Corrêa">
+                    <option value="Aurora do Pará">
+                    <option value="Aveiro">
+                    <option value="Bagre">
+                    <option value="Baião">
+                    <option value="Bannach">
+                    <option value="Barcarena">
+                    <option value="Belém">
+                    <option value="Belterra">
+                    <option value="Benevides">
+                    <option value="Bom Jesus do Tocantins">
+                    <option value="Bonito">
+                    <option value="Bragança">
+                    <option value="Brasil Novo">
+                    <option value="Brejo Grande do Araguaia">
+                    <option value="Breu Branco">
+                    <option value="Breves">
+                    <option value="Bujaru">
+                    <option value="Cachoeira do Arari">
+                    <option value="Cachoeira do Piriá">
+                    <option value="Cametá">
+                    <option value="Canaã dos Carajás">
+                    <option value="Capanema">
+                    <option value="Capitão Poço">
+                    <option value="Castanhal">
+                    <option value="Chaves">
+                    <option value="Colares">
+                    <option value="Conceição do Araguaia"> <!-- Colônia do Gurupi -->
+                    <option value="Concórdia do Pará">
+                    <option value="Cumaru do Norte">
+                    <option value="Curionópolis">
+                    <option value="Curralinho">
+                    <option value="Curuá">
+                    <option value="Curuçá">
+                    <option value="Dom Eliseu">
+                    <option value="Eldorado dos Carajás">
+                    <option value="Faro">
+                    <option value="Floresta do Araguaia">
+                    <option value="Garrafão do Norte">
+                    <option value="Goianésia do Pará">
+                    <option value="Gurupá">
+                    <option value="Igarapé-Açu">
+                    <option value="Igarapé-Miri">
+                    <option value="Inhangapi">
+                    <option value="Ipixuna do Pará">
+                    <option value="Irituia">
+                    <option value="Itaituba">
+                    <option value="Itupiranga">
+                    <option value="Jacareacanga">
+                    <option value="Jacundá">
+                    <option value="Juruti">
+                    <option value="Limoeiro do Ajuru">
+                    <option value="Mãe do Rio">
+                    <option value="Magalhães Barata">
+                    <option value="Marabá">
+                    <option value="Maracanã">
+                    <option value="Marapanim">
+                    <option value="Marituba">
+                    <option value="Medicilândia">
+                    <option value="Melgaço">
+                    <option value="Mocajuba">
+                    <option value="Moju">
+                    <option value="Mojuí dos Campos">
+                    <option value="Monte Alegre">
+                    <option value="Muaná">
+                    <option value="Nova Esperança do Piriá">
+                    <option value="Nova Ipixuna">
+                    <option value="Nova Timboteua">
+                    <option value="Novo Progresso">
+                    <option value="Novo Repartimento">
+                    <option value="Óbidos">
+                    <option value="Oeiras do Pará">
+                    <option value="Oriximiná">
+                    <option value="Ourém">
+                    <option value="Ourilândia do Norte">
+                    <option value="Pacajá">
+                    <option value="Palestina do Pará">
+                    <option value="Paragominas">
+                    <option value="Parauapebas">
+                    <option value="Pau d'Arco">
+                    <option value="Peixe-Boi">
+                    <option value="Piçarra">
+                    <option value="Placas">
+                    <option value="Ponta de Pedras">
+                    <option value="Portel">
+                    <option value="Porto de Moz">
+                    <option value="Prainha">
+                    <option value="Primavera">
+                    <option value="Quatipuru">
+                    <option value="Redenção">
+                    <option value="Rio Maria">
+                    <option value="Rondon do Pará">
+                    <option value="Rurópolis">
+                    <option value="Salinópolis">
+                    <option value="Salvaterra">
+                    <option value="Santa Bárbara do Pará">
+                    <option value="Santa Cruz do Arari">
+                    <option value="Santa Isabel do Pará">
+                    <option value="Santa Luzia do Pará">
+                    <option value="Santa Maria das Barreiras">
+                    <option value="Santa Maria do Pará">
+                    <option value="Santana do Araguaia">
+                    <option value="Santarém">
+                    <option value="Santarém Novo">
+                    <option value="Santo Antônio do Tauá">
+                    <option value="São Caetano de Odivelas">
+                    <option value="São Domingos do Araguaia">
+                    <option value="São Domingos do Capim">
+                    <option value="São Félix do Xingu">
+                    <option value="São Francisco do Pará">
+                    <option value="São Geraldo do Araguaia">
+                    <option value="São João da Ponta">
+                    <option value="São João de Pirabas">
+                    <option value="São João do Araguaia">
+                    <option value="São Miguel do Guamá">
+                    <option value="São Sebastião da Boa Vista">
+                    <option value="Sapucaia"> <!--São Sebastião do Uatumã-->
+                    <option value="Senador José Porfírio"> <!--Serra do Navio-->
+                    <option value="Soure">
+                    <option value="Tailândia">
+                    <option value="Terra Alta">
+                    <option value="Terra Santa">
+                    <option value="Tomé-Açu">
+                    <option value="Tracuateua">
+                    <option value="Trairão">
+                    <option value="Tucumã">
+                    <option value="Tucuruí">
+                    <option value="Ulianópolis">
+                    <option value="Uruará">
+                    <option value="Vigia">
+                    <option value="Viseu">
+                    <option value="Vitória do Xingu">
+                    <option value="Xinguara">
+                </datalist>
+            </div>
+            <!-- Objetivo -->
+            <div class="form-group">
+                <label for="objetivo">Objetivo:</label>
+                <textarea name="objetivo" id="objetivo" rows="3" required>{{ atividade.objetivo }}</textarea>
+            </div>
+            
+                <div class="form-group">
+                    <label for="chefe_imediato">Chefe Imediato:</label>
+                    <select id="chefe_imediato" name="chefe_imediato" required>
+                        <option value="">-- Selecione --</option>
+                        {% for setor in setores %}
+                            <option value="{{ setor.id }}" {% if atividade.chefe_imediato and atividade.chefe_imediato.id == setor.id %}selected{% endif %}>
+                                {{ setor.chefe_imediato }} - ({{ setor.cargo_chefe }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            
+            <div class="form-group">
+                <small style="color:#777;">Selecione um ou mais servidores.</small>
+                <label>Equipe:</label>
+                <!-- Área para mostrar os selecionados -->
+                <ul id="servidores-selecionados"></ul>
+                
+                <div class="form-group">
+                    <label for="filtro-servidores">Pesquisar Servidor:</label>
+                    <input type="text" id="filtro-servidores" placeholder="Digite o nome do servidor...">
+                </div>
+                <!-- Botão -->
+                <button id="btn-proximo" type="submit" class="btn btn-disabled btn-secondary" disabled>Salvar</button>
+            </div>
+            <label>Servidores:</label>
+            <div class="checkbox-list form-row"  id="lista-servidores">
+                {% for servidor in servidores %}
+                <div class="servidor-item">
+                    <label>
+                        <input type="checkbox" name="servidores" value="{{ servidor.id }}" {% if servidor in atividade.servidores.all %}checked{% endif %} data-nome="{{ servidor.nome }}">
+                        {{ servidor.primeiro_e_ultimo_nome }}
+                    </label><br>
+                </div>
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+    {% load static %}
+<script src="{% static 'js/script.js' %}"></script>
+{% endblock %}

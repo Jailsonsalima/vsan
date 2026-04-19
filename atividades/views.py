@@ -8,8 +8,9 @@ from servidores.models import Servidor
 from django.utils.dateformat import DateFormat
 from datetime import datetime
 from setores.models import Setor
-
+from django.contrib import messages
 import io, zipfile
+from django.db import IntegrityError
 
 # Create your views here.
 
@@ -19,36 +20,39 @@ def cadastrar_atividade(request):
     # Filtra setores cujo cargo_chefe NÃO começa com "Diretor"
     setores = Setor.objects.exclude(cargo_chefe__startswith="Diretor")
     if request.method == "POST":
-        setor_id = request.POST.get("setor")
-        setor = Setor.objects.get(id=setor_id) if setor_id else None
-        chefe_id = request.POST.get("chefe_imediato")  # pega o chefe selecionado
-        chefe = Setor.objects.get(id=chefe_id) if chefe_id else None
+        try:
+            setor_id = request.POST.get("setor")
+            setor = Setor.objects.get(id=setor_id) if setor_id else None
+            chefe_id = request.POST.get("chefe_imediato")  # pega o chefe selecionado
+            chefe = Setor.objects.get(id=chefe_id) if chefe_id else None
 
-        data_ida_str = request.POST.get("data_ida")
-        data_retorno_str = request.POST.get("data_retorno")
+            data_ida_str = request.POST.get("data_ida")
+            data_retorno_str = request.POST.get("data_retorno")
 
-        data_ida = datetime.strptime(data_ida_str, "%Y-%m-%d").date() if data_ida_str else None
-        data_retorno = datetime.strptime(data_retorno_str, "%Y-%m-%d").date() if data_retorno_str else None
-        n_memorando = request.POST.get("n_memorando")
-        chefe_id = request.POST.get("chefe_imediato")
-        chefe = Setor.objects.get(id=chefe_id) if chefe_id else None
-        atividade = Atividade.objects.create(
-            dias_diarias=request.POST.get("dias_diarias"),
-            pernoite=request.POST.get("pernoite"),
-            transporte=request.POST.get("transporte"),
-            municipio=request.POST.get("municipio"),
-            objetivo=request.POST.get("objetivo"),
-            data_ida=data_ida,
-            data_retorno=data_retorno,
-            n_memorando = n_memorando,
-            # se quiser salvar o chefe selecionado, adicione um campo no model Atividade
-            chefe_imediato=chefe,  # aqui vai a instância de Setor
-        )
-        ids = request.POST.getlist("servidores")
-        atividade.servidores.set(Servidor.objects.filter(id__in=ids))
-        atividade.save()
-
-        return redirect("dashboard")
+            data_ida = datetime.strptime(data_ida_str, "%Y-%m-%d").date() if data_ida_str else None
+            data_retorno = datetime.strptime(data_retorno_str, "%Y-%m-%d").date() if data_retorno_str else None
+            n_memorando = request.POST.get("n_memorando")
+            chefe_id = request.POST.get("chefe_imediato")
+            chefe = Setor.objects.get(id=chefe_id) if chefe_id else None
+            atividade = Atividade.objects.create(
+                dias_diarias=request.POST.get("dias_diarias"),
+                pernoite=request.POST.get("pernoite"),
+                transporte=request.POST.get("transporte"),
+                municipio=request.POST.get("municipio"),
+                objetivo=request.POST.get("objetivo"),
+                data_ida=data_ida,
+                data_retorno=data_retorno,
+                n_memorando = n_memorando,
+                # se quiser salvar o chefe selecionado, adicione um campo no model Atividade
+                chefe_imediato=chefe,  # aqui vai a instância de Setor
+            )
+            ids = request.POST.getlist("servidores")
+            atividade.servidores.set(Servidor.objects.filter(id__in=ids))
+            atividade.save()
+            messages.success(request, "Atividade salva com sucesso!")
+            return redirect("dashboard")
+        except IntegrityError:
+            messages.error(request, "Já existe uma atividade cadastrada com este número de memorando.")
 
     return render(request, "atividades/cadastro_atividades.html", {
         "servidores": servidores,
@@ -113,3 +117,43 @@ def gerar_zip_pdfs(request, atividade_id):
     response = HttpResponse(buffer.getvalue(), content_type="application/zip")
     response['Content-Disposition'] = f'attachment; filename="{atividade.municipio}_{atividade.id}_pdfs.zip"'
     return response
+
+@login_required
+def editar_atividade(request, atividade_id):
+    atividade = get_object_or_404(Atividade, id=atividade_id)
+    servidores = Servidor.objects.all()
+    setores = Setor.objects.all()
+
+    if request.method == "POST":
+        try:
+            atividade.tipo_atividade = request.POST.get("tipo_atividade")
+            atividade.dias_diarias = request.POST.get("dias_diarias")
+            atividade.pernoite = request.POST.get("pernoite")
+            atividade.transporte = request.POST.get("transporte")
+            atividade.municipio = request.POST.get("municipio")
+            atividade.objetivo = request.POST.get("objetivo")
+            atividade.n_memorando = request.POST.get("n_memorando")
+
+            data_ida_str = request.POST.get("data_ida")
+            data_retorno_str = request.POST.get("data_retorno")
+            atividade.data_ida = datetime.strptime(data_ida_str, "%Y-%m-%d").date() if data_ida_str else None
+            atividade.data_retorno = datetime.strptime(data_retorno_str, "%Y-%m-%d").date() if data_retorno_str else None
+
+            chefe_id = request.POST.get("chefe_imediato")
+            atividade.chefe_imediato = Setor.objects.get(id=chefe_id) if chefe_id else None
+
+            ids = request.POST.getlist("servidores")
+            atividade.servidores.set(Servidor.objects.filter(id__in=ids))
+
+            atividade.save()
+            messages.success(request, "Atividade atualizada com sucesso!")
+            return redirect("dashboard")
+        except IntegrityError:
+            messages.error(request, "Já existe uma atividade cadastrada com este número de memorando.")
+            return redirect("editar_atividade", atividade_id=atividade.id)
+
+    return render(request, "atividades/editar_atividade.html", {
+        "atividade": atividade,
+        "servidores": servidores,
+        "setores": setores,
+    })
