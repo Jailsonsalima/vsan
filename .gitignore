@@ -16,9 +16,7 @@ __pycache__/
 .venv
 
 # Diretórios de mídia e estáticos gerados
-/media/
-staticfiles/
-static/
+
 
 # Arquivos de migração compilados
 *.mo
