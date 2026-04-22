@@ -1,9 +1,9 @@
 from django.contrib import admin
+from .models import Atividade
 
-from atividades.models import Atividade
-
-# Register your models here.
 @admin.register(Atividade)
 class AtividadeAdmin(admin.ModelAdmin):
-    list_display = ("data_ida", "data_retorno", "dias_diarias", "pernoite", "transporte", "objetivo", "data_ida", "data_retorno", "data_criacao")
-    search_fields = ("data_ida", "data_retorno", "dias_diarias", "data_criacao")
+    list_display = ("n_memorando", "tipo_atividade", "municipio", "data_ida", "data_retorno", "pernoite")
+    list_filter = ("tipo_atividade", "pernoite", "data_ida", "data_retorno")
+    search_fields = ("n_memorando", "municipio", "objetivo")
+    filter_horizontal = ("servidores",)

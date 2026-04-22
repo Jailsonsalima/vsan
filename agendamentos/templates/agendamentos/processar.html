@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Processar Agendamento</h2>
+
+    <!-- Informações da solicitação -->
+    <div class="dashboard-container" >
+        <!-- Exibe detalhes do agendamento para o diretor -->
+        <p><strong>Solicitante:</strong> {{ agendamento.solicitante.username }}</p>
+        <p><strong>Servidor:</strong> {{ agendamento.servidor.nome }}</p>
+        <p><strong>Município:</strong> {{ agendamento.municipio }}</p>
+        <p><strong>Data Ida:</strong> {{ agendamento.data_ida }}</p>
+        <p><strong>Data Retorno:</strong> {{ agendamento.data_retorno }}</p>
+        <p><strong>Motivo:</strong> {{ agendamento.motivo }}</p>
+    </div>
+
+    <!-- Formulário de processamento -->
+    <form method="post" class="form">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group">
+                <label for="id_numero_processo"><strong>Número do Processo</strong></label>
+                {{ form.numero_processo }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_tipo"><strong>Tipo de Motorista</strong></label>
+                {{ form.tipo }}
+            </div>
+        </div>
+        <!-- Select dinâmico: motoristas internos -->
+        <div class="form-group" id="motorista-servidor">
+            <label for="id_motorista_servidor"><strong>Motorista (Servidor)</strong></label>
+            {{ form.motorista_servidor }}
+        </div>
+
+        <!-- Select dinâmico: motoristas externos -->
+        <div class="form-group" id="motorista-externo">
+            <label for="id_motorista_externo"><strong></strong>Motorista (Outro Departamento)</strong></label>
+            {{ form.motorista_externo }}
+        </div>
+
+        <!-- Calendário de disponibilidade -->
+        <div class="calendar-section">
+            <h3>Disponibilidade dos Motoristas</h3>
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Motorista</th>
+                        <th>Status</th>
+                        <th>Período</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for motorista in motoristas %}
+                    <tr>
+                        <td>{{ motorista.tipo }}</td>
+                        <td>{{ motorista.nome }}</td>
+                        <td>
+                            {% if motorista.status == "em_viagem" %}
+                                <span class="status inativo">Em viagem</span>
+                            {% elif motorista.status == "indisponivel" %}
+                                <span class="status indisponivel">Indisponível</span>
+                            {% else %}
+                                <span class="status ativo">Disponível</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if motorista.periodo %}
+                                {{ motorista.periodo }}
+                            {% else %}
+                                Livre
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">Nenhum motorista cadastrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Confirmar Processamento</button>
+    </form>
+</div>
+
+<!-- Script para alternar selects dinamicamente -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const tipoSelect = document.getElementById("id_tipo");
+        const motoristaServidor = document.getElementById("motorista-servidor");
+        const motoristaExterno = document.getElementById("motorista-externo");
+
+        function atualizarCampos() {
+            if (tipoSelect.value === "servidor") {
+                motoristaServidor.style.display = "block";
+                motoristaExterno.style.display = "none";
+            } else if (tipoSelect.value === "outros") {
+                motoristaServidor.style.display = "none";
+                motoristaExterno.style.display = "block";
+            } else {
+                motoristaServidor.style.display = "none";
+                motoristaExterno.style.display = "none";
+            }
+        }
+
+        tipoSelect.addEventListener("change", atualizarCampos);
+        atualizarCampos(); // inicializa corretamente
+    });
+</script>
+{% endblock %}

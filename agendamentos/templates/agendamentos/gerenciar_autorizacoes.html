@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Gerenciar Autorizações de Agendamento</h2>
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if request.user.tipo_usuario == "diretor" %}
+    <form method="post" class="form">
+        {% csrf_token %}
+        <table  class="dashboard-table">
+            <tr>
+                <th>Usuário</th>
+                <th>Visualizar</th>
+                <th>Processar</th>
+            </tr>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.username }}</td>
+                <td><input type="checkbox" name="visualizar_{{ usuario.id }}"></td>
+                <td><input type="checkbox" name="processar_{{ usuario.id }}"></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button type="submit" class="btn btn-primary" style="margin-top: 20px; margin-left: calc(50% - 100px); width: 200px;">Salvar</button>
+    </form>
+    {% endif %}
+</div>
+<div class="container">
+    <!-- Form de motoristas disponíveis -->
+    <form method="post" action="{% url 'gerenciar_motoristas' %}" class="form" style="margin-top:40px;">
+        {% csrf_token %}
+        <h3 style="margin-top:30px;">Motoristas (Servidores)</h3>
+        <table class="dashboard-table">
+            <tr>
+                <th>Nome</th>
+                <th>Matrícula</th>
+                <th>Disponível</th>
+            </tr>
+            {% for motorista in motoristas_servidores %}
+            <tr>
+                <td>{{ motorista.nome }}</td>
+                <td>{{ motorista.matricula }}</td>
+                <td><input type="checkbox" name="motorista_servidor_{{ motorista.id }}" {% if motorista.disponivel %}checked{% endif %}></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">Nenhum servidor com cargo de Motorista encontrado.</td>
+            </tr>
+            {% endfor %}
+
+        </table>
+
+        <h3 style="margin-top:30px;">Motoristas Externos</h3>
+        <table class="dashboard-table">
+            <tr>
+                <th>Nome</th>
+                <th>Disponível</th>
+            </tr>
+            {% for motorista in motoristas_externos %}
+            <tr>
+                <td>{{ motorista.nome_completo }}</td>
+                <td><input type="checkbox" name="motorista_externo_{{ motorista.id }}" {% if motorista.disponivel %}checked{% endif %}></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Nenhum motorista externo cadastrado.</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+
+        <button type="submit" class="btn btn-primary">Salvar Motoristas</button>
+    </form>
+</div>
+
+{% endblock %}

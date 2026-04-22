@@ -10,17 +10,25 @@
             {% endfor %}
         </div>
     {% endif %}
-   
+    {% if agendamentos_pendentes %}
+    <div class="alert alert-warning"  style="margin-top: 15px;">
+        Existem {{ agendamentos_pendentes.count }} agendamentos pendentes para processar.
+        
+    </div>
+    {% endif %}
 
+        
+  
     <!-- Área visível para todos -->
-
+    
     
     <!-- Área restrita ao diretor -->
     {% if request.user.tipo_usuario == "diretor" %}
     <!--<div class="form-group">
         <button class="btn-secondary"><a href="{% url 'cadastrar_setor' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Novo Setor</a></button>
     </div>-->
-    <section class="dashboard-section">
+    
+    <section class="dashboard-section" style="margin-top: 20px;">
         <h3>Gerenciamento de Contas</h3>
         <button class="btn-secondary"><a href="?mostrar=todos" style="text-decoration: none; color: inherit; font-size: large;">Ver Todos Usuários</a></button>
         <table class="dashboard-table">

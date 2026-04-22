@@ -41,6 +41,20 @@ body {
     display: flex;
     gap: 20px;
 }
+.container-login {
+    
+    max-width: 600px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 6px 14px rgba(0,0,0,0.1);
+    align-items: center;
+    text-align: center;
+}
+label {
+    text-align:left;
+}
 
 /* Container principal */
 .container, .dashboard-container {
@@ -83,6 +97,10 @@ body {
 .form input:focus, .form select:focus, .form textarea:focus {
     border-color: #2724ee;
     outline: none;
+}
+
+main {
+    min-height: 70vh;
 }
 
 .form-row {
@@ -239,7 +257,7 @@ footer {
     }
     .menu {
         flex-direction: column;
-        gap: 10px;
+        gap: 10px;        
     }
     .auth-buttons {
         flex-direction: column;
@@ -265,4 +283,72 @@ footer {
 .checkbox-list label {
     display: block;
     margin-bottom: 5px;
+}
+
+.card-container {
+    max-width: 1000px;
+    background: #fff;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 6px 14px rgba(0,0,0,0.1);
+    margin: 40px auto;
+}
+
+.card-container a {
+    text-decoration: none;
+    color: #1a179b;
+    font-weight: bold;
+}
+.card {
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    width: 180px;
+    height: 130px;
+    position: relative; /* necessário para posicionar o ícone */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    padding: 10px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    background-color: #d0cfff;
+}
+.card .icon {
+    font-size: 2.5em;
+    color: #2724ee;
+    margin-bottom: 10px;
+}
+
+.icon {
+    font-size: 28px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+
+.card-text {
+    margin-top: 50px; /* espaço para não sobrepor o ícone */
+    font-size: 1.1em;
+    margin-right: 33px;
+    
+}
+.card-container p {
+    font-size: 2em;
+    color: #2724ee;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+    
 }

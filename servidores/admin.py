@@ -1,9 +1,8 @@
 from django.contrib import admin
-
-# Register your models here.
 from .models import Servidor
+
 @admin.register(Servidor)
 class ServidorAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'matricula', 'cpf', 'vinculo')
-    search_fields = ('nome', 'matricula', 'cpf', 'vinculo')
-    
+    list_display = ("nome", "matricula", "cargo", "setor", "disponivel")
+    list_filter = ("vinculo", "setor", "disponivel")
+    search_fields = ("nome", "matricula", "cpf")

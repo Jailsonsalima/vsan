@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>Solicitar Agendamento</h2>
+
+    <!-- Mensagens de feedback -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Formulário de solicitação -->
+    <form method="post" class="form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="data_ida">Data de Ida</label>
+            {{ form.data_ida }}
+        </div>
+
+        <div class="form-group">
+            <label for="data_retorno">Data de Retorno</label>
+            {{ form.data_retorno }}
+        </div>
+
+        <!-- Município -->
+        <div class="form-group">
+            <label for="municipio">Município:</label>
+            <input list="municipios" name="municipio" id="municipio" required>
+            <datalist id="municipios">
+                <option value="Belém">
+                <option value="Ananindeua">
+                <option value="Marabá">
+                <option value="Santarém">
+                <option value="Parauapebas">
+                <option value="Castanhal">
+                <!-- ... demais municípios ... -->
+            </datalist>
+        </div>
+
+        <div class="form-group">
+            <label for="motivo">Motivo do Agendamento</label>
+            {{ form.motivo }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Enviar Solicitação</button>
+    </form>
+</div>
+
+<!-- Importa o script.js para validações -->
+<script src="{% static 'js/script.js' %}"></script>
+{% endblock %}

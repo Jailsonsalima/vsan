@@ -22,6 +22,7 @@ from servidores import views as servidor_views
 from atividades import views as atividades_views
 
 from django.contrib.auth import views as auth_views
+from agendamentos import views as agendamento_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -53,4 +54,11 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     # Finalização da redefinição
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    # Agendamentos
+    path('solicitar-agendamento/', agendamento_views.solicitar_agendamento, name='solicitar_agendamento'),
+    path('processar-agendamento/<int:agendamento_id>/', agendamento_views.processar_agendamento, name='processar_agendamento'),
+    path("agendamentos/", agendamento_views.listar_agendamentos, name="listar_agendamentos"),
+    path("gerenciar-autorizacoes/", agendamento_views.gerenciar_autorizacoes, name="gerenciar_autorizacoes"),
+    path("gerenciar_motoristas/", agendamento_views.gerenciar_motoristas, name="gerenciar_motoristas"),
+    path("cadastro_motorista_externo/", agendamento_views.cadastrar_motorista_externo, name="cadastrar_motorista_externo"),
 ]

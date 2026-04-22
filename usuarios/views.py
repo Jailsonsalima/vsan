@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from atividades.models import Atividade
 from servidores.models import Servidor
+from agendamentos.models import Agendamento
 
 # Create your views here.
 def home(request):
@@ -65,14 +66,16 @@ def dashboard(request):
 
     # Adiciona atividades ao contexto
     atividades = Atividade.objects.all().order_by("-data_criacao")
+    pendentes = Agendamento.objects.filter(processado=False) #agendamentos pendentes para exibir no dashboard
 
     return render(
         request,
-        "usuarios/dashboard.html",
+        'usuarios/dashboard.html',
         {
             "usuarios": usuarios,
             "setores": setores,
             "atividades": atividades,
+            "agendamentos_pendentes": pendentes, #agendamentos pendentes para exibir no dashboard
         },
     )
 

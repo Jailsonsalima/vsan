@@ -24,6 +24,9 @@ class Servidor(models.Model):
     # Relacionamento com Setor
     setor = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True)
 
+    # Novo campo para disponibilidade
+    disponivel = models.BooleanField(default=True)
+
     def primeiro_nome(self):
         return self.nome.split()[0]
     

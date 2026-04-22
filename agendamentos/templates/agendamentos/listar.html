@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Solicitações de Agendamento</h2>
+    
+    <!-- Mensagens de feedback -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Tabela de solicitações -->
+    <table class="dashboard-table">
+        <thead>
+            <tr>
+                <th>Solicitante</th>
+                <th>Servidor</th>
+                <th>Município</th>
+                <th>Data Ida</th>
+                <th>Data Retorno</th>
+                <th>Motivo</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for agendamento in agendamentos %}
+            <tr>
+                <td>{{ agendamento.solicitante.username }}</td>
+                <td>{{ agendamento.servidor.nome }}</td>
+                <td>{{ agendamento.municipio }}</td>
+                <td>{{ agendamento.data_ida }}</td>
+                <td>{{ agendamento.data_retorno }}</td>
+                <td>{{ agendamento.motivo }}</td>
+                <td>
+                    {% if agendamento.processado %}
+                        <span class="status ativo">Processado</span>
+                    {% else %}
+                        <span class="status inativo">Pendente</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not agendamento.processado %}
+                        <a href="{% url 'processar_agendamento' agendamento.id %}" class="btn btn-primary">Processar</a>
+                    {% else %}
+                        <span class="info">Já processado</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8">Nenhuma solicitação de agendamento encontrada.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

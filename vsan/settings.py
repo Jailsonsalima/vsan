@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'setores.apps.SetoresConfig',
     'servidores.apps.ServidoresConfig',
     'atividades.apps.AtividadesConfig',
+    'agendamentos.apps.AgendamentosConfig',
 ]
 
 MIDDLEWARE = [
