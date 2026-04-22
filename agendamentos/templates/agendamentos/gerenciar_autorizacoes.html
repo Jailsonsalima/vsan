@@ -22,8 +22,8 @@
             {% for usuario in usuarios %}
             <tr>
                 <td>{{ usuario.username }}</td>
-                <td><input type="checkbox" name="visualizar_{{ usuario.id }}"></td>
-                <td><input type="checkbox" name="processar_{{ usuario.id }}"></td>
+                <td><input type="checkbox" name="visualizar_{{ usuario.id }}" {% if usuario.autorizacao.pode_visualizar %}checked{% endif %}></td>
+                <td><input type="checkbox" name="processar_{{ usuario.id }}" {% if usuario.autorizacao.pode_processar %}checked{% endif %}></td>
             </tr>
             {% endfor %}
         </table>

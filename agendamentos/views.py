@@ -51,6 +51,12 @@ def gerenciar_autorizacoes(request):
         return redirect('dashboard')
 
     usuarios = Usuario.objects.filter(is_superuser=False).exclude(id=request.user.id)
+
+    # garante que cada usuário tenha um objeto de autorização
+    for usuario in usuarios:
+        autorizacao, _ = AutorizacaoAgendamento.objects.get_or_create(usuario=usuario)
+        usuario.autorizacao = autorizacao
+        
     motoristas_servidores = Servidor.objects.filter(cargo__icontains="Motorista")
     motoristas_externos = MotoristaExterno.objects.all()
 
@@ -59,9 +65,9 @@ def gerenciar_autorizacoes(request):
             visualizar = request.POST.get(f"visualizar_{usuario.id}") == "on"
             processar = request.POST.get(f"processar_{usuario.id}") == "on"
             autorizacao, _ = AutorizacaoAgendamento.objects.get_or_create(usuario=usuario)
-            autorizacao.pode_visualizar = visualizar
-            autorizacao.pode_processar = processar
-            autorizacao.save()
+            usuario.autorizacao.pode_visualizar = visualizar
+            usuario.autorizacao.pode_processar = processar
+            usuario.autorizacao.save()
         messages.success(request, "Autorizações de usuários atualizadas com sucesso.")
         return redirect('gerenciar_autorizacoes')
 
