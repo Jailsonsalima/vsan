@@ -361,3 +361,37 @@ footer {
     width: 100%;
     
 }
+
+.container-btn-dashboard {
+    max-width: 1000px;
+    margin: 40px auto;
+
+}
+.btn-card {
+    
+    color: #080694;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0px 6px 14px rgba(0,0,0,0.1);
+    
+}
+
+.btn-card:hover {
+    transform: translateY(-5px);
+    background-color: #d0cfff;
+}
+.messages {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-align: center;
+    color: red;
+    font-size: 1.8em;
+}

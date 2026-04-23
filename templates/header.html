@@ -11,7 +11,6 @@
             <span class="user-info">Olá, {{ user.username }}!</span>
         <ul class="menu">
             <li><a href="{% url 'logout' %}" class='btn-primary'>Logout</a></li>
-            <li><a href="{% url 'dashboard' %}" class='btn-primary'>📊 Dashboard</a></li>
         </ul>
         {% else %}
         <ul class="menu">
@@ -20,16 +19,17 @@
         </ul>
         {% endif %}
     </nav>
-<!--
-    <div class="auth-buttons">
-        {% if user.is_authenticated %}
-            <span class="user-info">Olá, {{ user.username }}!</span>
-            <a href="{% url 'logout' %}" class='btn-primary'>Logout</a>
-            <a href="{% url 'dashboard' %}" class='btn-primary'>📊 Dashboard</a>
-        {% else %}
-            <a href="{% url 'login' %}" class='btn-primary'>Login</a>
-            <a href="{% url 'cadastrar_usuario' %}" class="btn-primary">Criar conta</a>
-        {% endif %}
-    </div>
-    -->
+    
 </header>
+{% if request.path != '/dashboard/' %}
+<div class="messages">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+</div>
+<div class="container-btn-dashboard">
+    <a href="{% url 'dashboard' %}" class="btn-card">📊 Dashboard</a>
+</div>
+{% endif %}
