@@ -21,7 +21,7 @@
     </nav>
     
 </header>
-{% if request.path != '/dashboard/' %}
+{% if user.is_authenticated and request.path != '/dashboard/' %}
 <div class="messages">
     {% if messages %}
         {% for message in messages %}
