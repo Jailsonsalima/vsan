@@ -130,3 +130,29 @@ def definir_tipo_usuario(request, usuario_id):
         usuario.save()  # ativa automaticamente se tiver tipo definido
         messages.success(request, f"Usuário {usuario.username} atualizado com sucesso.")
     return redirect('dashboard')
+
+from django.core.paginator import Paginator
+
+@login_required
+def gerenciar_contas(request):
+    if request.user.tipo_usuario != "diretor":
+        messages.error(request, "Apenas diretores podem acessar o gerenciamento de contas.")
+        return redirect("dashboard")
+
+    usuarios = Usuario.objects.filter(is_superuser=False).exclude(id=request.user.id)
+
+    # Filtro "mostrar"
+    if request.GET.get("mostrar") != "todos":
+        usuarios = usuarios.filter(is_active=False)
+
+    # Paginação
+    paginator = Paginator(usuarios, 10)  # 10 usuários por página
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    setores = Setor.objects.all()
+
+    return render(request, "usuarios/gerenciar_contas.html", {
+        "page_obj": page_obj,
+        "setores": setores,
+    })

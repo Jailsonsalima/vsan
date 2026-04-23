@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Atividades Registradas</h2>
+
+    <!-- Formulário de filtros -->
+    <form method="get" class="form" style="margin-bottom:20px;">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="municipio">Município:</label>
+                <input type="text" name="municipio" id="municipio" value="{{ municipio }}">
+            </div>
+            <div class="form-group">
+                <label for="data_inicio">Data Início:</label>
+                <input type="date" name="data_inicio" id="data_inicio" value="{{ data_inicio }}">
+            </div>
+            <div class="form-group">
+                <label for="data_fim">Data Fim:</label>
+                <input type="date" name="data_fim" id="data_fim" value="{{ data_fim }}">
+            </div>
+        </div>
+        <button type="submit" class="btn-primary">Filtrar</button>
+        <a href="{% url 'listar_atividades' %}" class="btn-secondary">Limpar</a>
+    </form>
+
+    <!-- Tabela de atividades -->
+    <table class="dashboard-table">
+        <thead>
+            <tr>
+                <th>Data Ida</th>
+                <th>Data Retorno</th>
+                <th>Município</th>
+                <th>Equipe</th>
+                <th>Objetivo</th>
+                <th>Data Criação</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for atividade in page_obj %}
+            <tr>
+                <td>{{ atividade.data_ida }}</td>
+                <td>{{ atividade.data_retorno }}</td>
+                <td>{{ atividade.municipio }}</td>
+                <td>
+                    {% for servidor in atividade.servidores.all %}
+                        - {{ servidor.primeiro_nome }}{% if not forloop.last %}<br>{% endif %}
+                    {% empty %}
+                        Nenhum servidor vinculado
+                    {% endfor %}
+                </td>
+                <td>{{ atividade.objetivo }}</td>
+                <td>{{ atividade.data_criacao|date:"d/m/Y H:i" }}</td>
+                <td>
+                    <a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-secondary">PDFs</a>
+                    <a href="{% url 'editar_atividade' atividade.id %}" class="btn-primary">Editar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">Nenhuma atividade encontrada.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Paginação -->
+    <div class="pagination" style="margin-top:20px; text-align:center;">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&municipio={{ municipio }}&data_inicio={{ data_inicio }}&data_fim={{ data_fim }}" class="btn-secondary">Anterior</a>
+        {% endif %}
+
+        <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&municipio={{ municipio }}&data_inicio={{ data_inicio }}&data_fim={{ data_fim }}" class="btn-secondary">Próxima</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

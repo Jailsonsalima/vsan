@@ -6,83 +6,30 @@
     <!-- Botão hamburger -->
     <!--<button class="menu-toggle" aria-label="Abrir Menu">&#9776;</button>-->
     
-    <!--<nav class="nav">
+    <nav class="nav">
+        {% if user.is_authenticated %}
+            <span class="user-info">Olá, {{ user.username }}!</span>
         <ul class="menu">
-            <li><a href="{% url 'login' %}">Início</a></li>
-            <li><a href="{% url 'about' %}">Sobre</a></li>
-            <li><a href="{% url 'contact' %}">Contato</a></li>
+            <li><a href="{% url 'logout' %}" class='btn-primary'>Logout</a></li>
+            <li><a href="{% url 'dashboard' %}" class='btn-primary'>📊 Dashboard</a></li>
         </ul>
-    </nav>-->
-
+        {% else %}
+        <ul class="menu">
+            <li><a href="{% url 'login' %}" class='btn-primary'>Login</a></li>
+            <li><a href="{% url 'cadastrar_usuario' %}" class="btn-primary">Criar conta</a></li>
+        </ul>
+        {% endif %}
+    </nav>
+<!--
     <div class="auth-buttons">
         {% if user.is_authenticated %}
             <span class="user-info">Olá, {{ user.username }}!</span>
             <a href="{% url 'logout' %}" class='btn-primary'>Logout</a>
+            <a href="{% url 'dashboard' %}" class='btn-primary'>📊 Dashboard</a>
         {% else %}
-            <a href="{% url 'login' %}" class='btn-primary'>
-                Login
-            </a>
-            <a href="{% url 'cadastrar_usuario' %}" class="btn-primary">
-                Criar conta
-            </a>
+            <a href="{% url 'login' %}" class='btn-primary'>Login</a>
+            <a href="{% url 'cadastrar_usuario' %}" class="btn-primary">Criar conta</a>
         {% endif %}
     </div>
+    -->
 </header>
-{% if user.is_authenticated %}
-<div class="card-container">
-    <p>Painel de Controle</p>
-    <!-- Card 1 -->
-     {% if request.user.tipo_usuario != "funcionario" %}
-    <a href="{% url 'cadastrar_setor' %}" >
-        <div class="card">
-            <div class="icon">📝</div>
-            <div class="card-text">Cadastrar Novo Setor</div>
-        </div>
-    </a>
-
-    <!-- Card 2 -->
-    <a href="{% url 'listar_agendamentos' %}" >
-        <div class="card">
-            <div class="icon">📋</div>
-            <div class="card-text">Solicitações de Viagens</div>
-        </div>
-    </a>
-
-    <!-- Card 3 -->
-    <a href="{% url 'gerenciar_autorizacoes' %}" >
-        <div class="card">
-            <div class="icon">✅</div>
-            <div class="card-text">Gerenciar Autorizações</div>
-        </div>
-    </a>
-    <!-- Card 4 -->
-    <a href="{% url 'cadastrar_motorista_externo' %}">
-        <div class="card">
-            <div class="icon">🧑‍✈️</div>
-            <div class="card-text">Motorista (Externo)</div>
-        </div>
-    </a>
-    {% endif %}
-    <!-- Card 5 -->
-    <a href="{% url 'solicitar_agendamento' %}" >
-        <div class="card">
-            <div class="icon">🛫</div>
-            <div class="card-text">Agendamento de Viagem</div>
-        </div>
-    </a>
-    <!-- Card 6 -->
-    <a href="{% url 'dashboard' %}" >
-        <div class="card">
-            <div class="icon">📊</div>
-            <div class="card-text">Dashboard</div>
-        </div>
-    </a>
-    <!-- Card 7 -->
-    <a href="{% url 'cadastro_servidor_publico' %}" >
-        <div class="card">
-            <div class="icon">👤</div>
-            <div class="card-text">Cadastro Público</div>
-        </div>
-    </a>
-</div>
-{% endif %}

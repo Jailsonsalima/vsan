@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="dashboard-container">
-    <h2>Dashboard</h2>
+
     {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -16,145 +15,69 @@
         
     </div>
     {% endif %}
+{% if user.is_authenticated %}
+<div class="card-container">
+    <p>Painel de Controle</p>
+    <!-- Card 1 -->
+     {% if request.user.tipo_usuario != "funcionario" %}
+    <a href="{% url 'cadastrar_setor' %}" >
+        <div class="card">
+            <div class="icon">📝</div>
+            <div class="card-text">Cadastrar Novo Setor</div>
+        </div>
+    </a>
 
-        
-  
-    <!-- Área visível para todos -->
-    
-    
-    <!-- Área restrita ao diretor -->
-    {% if request.user.tipo_usuario == "diretor" %}
-    <!--<div class="form-group">
-        <button class="btn-secondary"><a href="{% url 'cadastrar_setor' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Novo Setor</a></button>
-    </div>-->
-    
-    <section class="dashboard-section" style="margin-top: 20px;">
-        <h3>Gerenciamento de Contas</h3>
-        <button class="btn-secondary"><a href="?mostrar=todos" style="text-decoration: none; color: inherit; font-size: large;">Ver Todos Usuários</a></button>
-        <table class="dashboard-table">
-            <thead>
-                <tr>
-                    <th>Usuário</th>
-                    <th>Email</th>
-                    <th>Setor</th>
-                    <th>Tipo de Usuário</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for usuario in usuarios %}
-                <tr>
-                    <td>{{ usuario.username }}</td>
-                    <td>{{ usuario.email }}</td>
-                    <td>
-                        Matrícula: {{ usuario.matricula|default:"Não informada" }}<br>
-                        {% if usuario.servidor %}
-                            Lotação: {{ usuario.servidor.lotacao }}
-                        {% else %}
-                            Servidor não vinculado
-                        {% endif %}
-                    </td>
-                    <td>{{ usuario.tipo_usuario|default:"Não definido" }}</td>
-                    <td>
-                        {% if usuario.is_active %}
-                            <span class="status ativo">Ativo</span>
-                        {% else %}
-                            <span class="status inativo">Inativo</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if usuario != request.user %}
-                        <form method="post" action="{% url 'definir_tipo_usuario' usuario.id %}">
-                            {% csrf_token %}
-                            <select name="tipo_usuario" class="select-tipo">
-                                {% if usuario.is_active %}
-                                    <option value="inativo" selected>Inativo</option>
-                               {% endif %}
-                                <option value="diretor">Diretor</option>
-                                <option value="coordenador">Coordenador</option>
-                                <option value="funcionario">Funcionário</option>
-                            </select>
-                            <!--<select name="setor" class="select-tipo">
-                                <option value="">-- Setor --</option>
-                                {% for setor in setores %}
-                                    <option value="{{ setor.id }}">{{ setor.nome }}</option>
-                                {% endfor %}
-                            </select>-->
+    <!-- Card 2 -->
+    <a href="{% url 'listar_agendamentos' %}" >
+        <div class="card">
+            <div class="icon">📋</div>
+            <div class="card-text">Listar/Processar Viagens</div>
+        </div>
+    </a>
 
-                            <button type="submit" class="btn-primary">Definir</button>
-                        </form>
-                        {% else %}
-                            <span class="info">Não é possível alterar a própria conta</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
-    
-    {% else %}
-    <p><strong>Área de contas disponível apenas para diretores.</strong></p>
+    <!-- Card 3 -->
+    <a href="{% url 'gerenciar_autorizacoes' %}" >
+        <div class="card">
+            <div class="icon">✅</div>
+            <div class="card-text">Gerenciar Autorizações</div>
+        </div>
+    </a>
+    <!-- Card 4 -->
+    <a href="{% url 'cadastrar_motorista_externo' %}">
+        <div class="card">
+            <div class="icon">🧑‍✈️</div>
+            <div class="card-text">Motorista (Externo)</div>
+        </div>
+    </a>
     {% endif %}
-    <button class="btn-secondary"><a href="{% url 'cadastrar_atividade' %}" style="text-decoration: none; color: inherit; font-size: large;">Cadastrar Atividade</a></button>
-    <section class="dashboard-section">
-        <h3>Atividades Registradas</h3>
-        <table class="dashboard-table">
-            <thead>
-                <tr>
-                    <!--<th>Servidor</th>
-                    <th>Matrícula</th>
-                    <th>Cargo</th>
-                    <th>Tipo de Atividade</th>-->
-                    <th>Data Ida</th>
-                    <th>Data Retorno</th>
-                    <!--<th>Dias/Diárias</th>
-                    <th>Pernoite</th>
-                    <th>Transporte</th>-->
-                    <th>Município</th>
-                    <th>Equipe</th>
-                    <th>Objetivo</th>
-
-                    <th>Data Criação</th>
-                    <th>Ação</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for atividade in atividades %}
-                <tr>
-                    <!--<td>{{ atividade.servidor_nome }}</td>
-                    <td>{{ atividade.servidor_matricula }}</td>
-                    <td>{{ atividade.servidor_cargo }}</td>
-                    <td>{{ atividade.tipo_atividade }}</td>-->
-                    <td>{{ atividade.data_ida }}</td>
-                    <td>{{ atividade.data_retorno }}</td>
-                    <!--<td>{{ atividade.dias_diarias }}</td>
-                    <td>{{ atividade.pernoite }}</td>
-                    <td>{{ atividade.transporte }}</td>-->
-                    <td>{{ atividade.municipio }}</td>
-                    <td>
-                        {% for servidor in atividade.servidores.all %}
-                            -{{ servidor.primeiro_nome }}{% if not forloop.last %}<br> {% endif %}
-                        {% empty %}
-                            Nenhum servidor vinculado
-                        {% endfor %}
-                    </td>
-                    <td>{{ atividade.objetivo }}</td>
-                    
-                    <td>{{ atividade.data_criacao|date:"d/m/Y H:i" }}</td>
-                    <td  style="display:flex; flex-wrap: wrap; gap: 10px;">
-                        <a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-secondary">PDFs</a>
-                        <a href="{% url 'editar_atividade' atividade.id %}" class="btn-primary">Editar</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="12">Nenhuma atividade cadastrada.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
+    <!-- Card 5 -->
+    <a href="{% url 'solicitar_agendamento' %}" >
+        <div class="card">
+            <div class="icon">🛫</div>
+            <div class="card-text">Solicitação de viagem</div>
+        </div>
+    </a>
+    <!-- Card 6 -->
+    <a href="{% url 'gerenciar_contas' %}" >
+        <div class="card">
+            <div class="icon">🔐</div>
+            <div class="card-text">Gerenciar Contas</div>
+        </div>
+    </a>
+    <!-- Card 7 -->
+    <a href="{% url 'cadastro_servidor_publico' %}" >
+        <div class="card">
+            <div class="icon">👤</div>
+            <div class="card-text">Cadastro Público</div>
+        </div>
+    </a>
+    <!-- Card 8 -->
+    <a href="{% url 'listar_atividades' %}" >
+        <div class="card">
+            <div class="icon">📃</div>
+            <div class="card-text">Listar Atividades</div>
+        </div>
+    </a>
 </div>
+{% endif %}
 {% endblock %}

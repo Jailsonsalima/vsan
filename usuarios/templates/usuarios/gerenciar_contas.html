@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h2>Gerenciamento de Contas</h2>
+
+    {% if request.user.tipo_usuario == "diretor" %}
+    <section class="dashboard-section" style="margin-top: 20px;">
+        <h3>Gerenciamento de Usuários</h3>
+
+        {% if request.GET.mostrar == "todos" %}
+            <a href="{% url 'gerenciar_contas' %}" class="btn-secondary">Ver Inativos</a>
+        {% else %}
+            <a href="{% url 'gerenciar_contas' %}?mostrar=todos" class="btn-primary">Ver Todos</a>
+        {% endif %}
+
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>Email</th>
+                    <th>Setor</th>
+                    <th>Tipo de Usuário</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in page_obj %}
+                <tr>
+                    <td>{{ usuario.username }}</td>
+                    <td>{{ usuario.email }}</td>
+                    <td>
+                        Matrícula: {{ usuario.matricula|default:"Não informada" }}<br>
+                        {% if usuario.servidor %}
+                            Lotação: {{ usuario.servidor.lotacao }}
+                        {% else %}
+                            Servidor não vinculado
+                        {% endif %}
+                    </td>
+                    <td>{{ usuario.tipo_usuario|default:"Não definido" }}</td>
+                    <td>
+                        {% if usuario.is_active %}
+                            <span class="status ativo">Ativo</span>
+                        {% else %}
+                            <span class="status inativo">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if usuario != request.user %}
+                        <form method="post" action="{% url 'definir_tipo_usuario' usuario.id %}">
+                            {% csrf_token %}
+                            <select name="tipo_usuario" class="select-tipo">
+                                <option value="diretor" {% if usuario.tipo_usuario == "diretor" %}selected{% endif %}>Diretor</option>
+                                <option value="coordenador" {% if usuario.tipo_usuario == "coordenador" %}selected{% endif %}>Coordenador</option>
+                                <option value="funcionario" {% if usuario.tipo_usuario == "funcionario" %}selected{% endif %}>Funcionário</option>
+                                <option value="inativo" {% if not usuario.is_active %}selected{% endif %}>Inativo</option>
+                            </select>
+                            <button type="submit" class="btn-primary">Definir</button>
+                        </form>
+                        {% else %}
+                            <span class="info">Não é possível alterar a própria conta</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Paginação -->
+        <div class="pagination" style="margin-top:20px; text-align:center;">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}&mostrar={{ request.GET.mostrar }}" class="btn-secondary">Anterior</a>
+            {% endif %}
+
+            <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&mostrar={{ request.GET.mostrar }}" class="btn-secondary">Próxima</a>
+            {% endif %}
+        </div>
+    </section>
+    {% else %}
+        <p><strong>Área de contas disponível apenas para diretores.</strong></p>
+    {% endif %}
+</div>
+{% endblock %}

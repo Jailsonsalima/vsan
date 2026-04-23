@@ -121,12 +121,14 @@ main {
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s;
+    
 }
 
 .btn-primary {
     background-color: #2724ee;
-    color: #fff;
+    color: #000;
     border: none;
+    
 }
 
 .btn-primary:hover {
@@ -251,13 +253,20 @@ footer {
 
 /* Responsividade */
 @media (max-width: 768px) {
+    .btn-primary {
+        width: 200px;   /* largura fixa */
+        text-align: center; /* centraliza o texto */
+        display: block; /* garante que ocupe a largura definida */
+    }
     .header {
         flex-direction: column;
         align-items: flex-start;
     }
     .menu {
         flex-direction: column;
-        gap: 10px;        
+        gap: 20px; 
+        margin-top: 10px;
+        width: 100%;
     }
     .auth-buttons {
         flex-direction: column;

@@ -157,3 +157,33 @@ def editar_atividade(request, atividade_id):
         "servidores": servidores,
         "setores": setores,
     })
+
+from django.core.paginator import Paginator
+
+@login_required
+def listar_atividades(request):
+    atividades = Atividade.objects.all().order_by("-data_criacao")
+
+    # Filtros
+    municipio = request.GET.get("municipio")
+    data_inicio = request.GET.get("data_inicio")
+    data_fim = request.GET.get("data_fim")
+
+    if municipio:
+        atividades = atividades.filter(municipio__icontains=municipio)
+    if data_inicio:
+        atividades = atividades.filter(data_ida__gte=data_inicio)
+    if data_fim:
+        atividades = atividades.filter(data_retorno__lte=data_fim)
+
+    # Paginação
+    paginator = Paginator(atividades, 10)  # 10 registros por página
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "atividades/listar_atividades.html", {
+        "page_obj": page_obj,
+        "municipio": municipio,
+        "data_inicio": data_inicio,
+        "data_fim": data_fim,
+    })
