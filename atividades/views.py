@@ -40,6 +40,7 @@ def cadastrar_atividade(request):
                 transporte=request.POST.get("transporte"),
                 municipio=request.POST.get("municipio"),
                 objetivo=request.POST.get("objetivo"),
+                recurso=request.POST.get("recurso"),
                 data_ida=data_ida,
                 data_retorno=data_retorno,
                 n_memorando = n_memorando,
@@ -133,7 +134,7 @@ def editar_atividade(request, atividade_id):
             atividade.municipio = request.POST.get("municipio")
             atividade.objetivo = request.POST.get("objetivo")
             atividade.n_memorando = request.POST.get("n_memorando")
-
+            atividade.recurso = request.POST.get("recurso")
             data_ida_str = request.POST.get("data_ida")
             data_retorno_str = request.POST.get("data_retorno")
             atividade.data_ida = datetime.strptime(data_ida_str, "%Y-%m-%d").date() if data_ida_str else None

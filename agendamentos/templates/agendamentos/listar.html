@@ -4,15 +4,6 @@
 <div class="container">
     <h2>Solicitações de Agendamento</h2>
     
-    <!-- Mensagens de feedback -->
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert {{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
     <!-- Tabela de solicitações -->
     <table class="dashboard-table">
         <thead>

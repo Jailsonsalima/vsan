@@ -21,15 +21,17 @@
     </nav>
     
 </header>
-{% if user.is_authenticated and request.path != '/dashboard/' %}
-<div class="messages">
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert {{ message.tags }}">{{ message }}</div>
-        {% endfor %}
+{% if user.is_authenticated  %}
+    {% if request.path != '/dashboard/' %}
+        <div class="container-btn-dashboard">
+            <a href="{% url 'dashboard' %}" class="btn-card">📊 Dashboard</a>
+        </div>
     {% endif %}
-</div>
-<div class="container-btn-dashboard">
-    <a href="{% url 'dashboard' %}" class="btn-card">📊 Dashboard</a>
-</div>
+    <div class="messages">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    </div>
 {% endif %}

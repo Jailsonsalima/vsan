@@ -386,12 +386,3 @@ footer {
     transform: translateY(-5px);
     background-color: #d0cfff;
 }
-.messages {
-    margin-bottom: 20px;
-    padding: 10px;
-    border-radius: 6px;
-    font-weight: bold;
-    text-align: center;
-    color: red;
-    font-size: 1.8em;
-}

@@ -23,7 +23,7 @@ class Atividade(models.Model):
     data_ida = models.DateField(blank=True, null=True)
     data_retorno = models.DateField(blank=True, null=True)
     data_criacao = models.DateTimeField(auto_now_add=True)
-
+    recurso = models.CharField(max_length=2, blank=True, null=True, choices=[("01", "Exercício"), ("02", "Superávit")], default="01")
     servidores = models.ManyToManyField(Servidor, related_name="atividades")  # vínculo
     n_memorando = models.CharField(max_length=10, verbose_name='Nº do Memorando', unique=True, blank=True, null=True)
     chefe_imediato = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name="atividades_chefiadas")
