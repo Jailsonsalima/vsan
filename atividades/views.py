@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Atividade
+from .models import Atividade, RecursoAtivo
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -34,13 +34,17 @@ def cadastrar_atividade(request):
             n_memorando = request.POST.get("n_memorando")
             chefe_id = request.POST.get("chefe_imediato")
             chefe = Setor.objects.get(id=chefe_id) if chefe_id else None
+
+            # Busca ou cria recurso ativo padrão
+            recurso_ativo, _ = RecursoAtivo.objects.get_or_create(id=1, defaults={"codigo": "01"})
+
             atividade = Atividade.objects.create(
                 dias_diarias=request.POST.get("dias_diarias"),
                 pernoite=request.POST.get("pernoite"),
                 transporte=request.POST.get("transporte"),
                 municipio=request.POST.get("municipio"),
                 objetivo=request.POST.get("objetivo"),
-                recurso=request.POST.get("recurso"),
+                recurso_codigo=recurso_ativo.codigo,  # associa o código do recurso ativo
                 data_ida=data_ida,
                 data_retorno=data_retorno,
                 n_memorando = n_memorando,
@@ -51,7 +55,7 @@ def cadastrar_atividade(request):
             atividade.servidores.set(Servidor.objects.filter(id__in=ids))
             atividade.save()
             messages.success(request, "Atividade salva com sucesso!")
-            return redirect("dashboard")
+            return redirect("listar_atividades")
         except IntegrityError:
             messages.error(request, "Já existe uma atividade cadastrada com este número de memorando.")
 
@@ -134,7 +138,8 @@ def editar_atividade(request, atividade_id):
             atividade.municipio = request.POST.get("municipio")
             atividade.objetivo = request.POST.get("objetivo")
             atividade.n_memorando = request.POST.get("n_memorando")
-            atividade.recurso = request.POST.get("recurso")
+            recurso_ativo = RecursoAtivo.objects.first()
+            atividade.recurso = recurso_ativo
             data_ida_str = request.POST.get("data_ida")
             data_retorno_str = request.POST.get("data_retorno")
             atividade.data_ida = datetime.strptime(data_ida_str, "%Y-%m-%d").date() if data_ida_str else None
@@ -164,7 +169,7 @@ from django.core.paginator import Paginator
 @login_required
 def listar_atividades(request):
     atividades = Atividade.objects.all().order_by("-data_criacao")
-
+    recurso_ativo = RecursoAtivo.objects.first()
     # Filtros
     municipio = request.GET.get("municipio")
     data_inicio = request.GET.get("data_inicio")
@@ -187,4 +192,28 @@ def listar_atividades(request):
         "municipio": municipio,
         "data_inicio": data_inicio,
         "data_fim": data_fim,
+        "recurso_ativo": recurso_ativo,  # passa para template
     })
+
+@login_required
+def adicionar_processo_atividade(request, atividade_id):
+    atividade = get_object_or_404(Atividade, id=atividade_id)
+    if request.method == "POST":
+        numero = request.POST.get("numero_processo")
+        atividade.numero_processo = numero
+        atividade.save()
+        messages.success(request, "Número do processo adicionado à atividade com sucesso.")
+        return redirect("listar_atividades")
+
+@login_required
+def definir_recurso(request):
+    recurso_ativo, _ = RecursoAtivo.objects.get_or_create(id=1, defaults={"codigo": "01"})
+
+    if request.method == "POST":
+        codigo = request.POST.get("recurso")
+        recurso_ativo.codigo = codigo
+        recurso_ativo.save()
+        messages.success(request, f"Recurso alterado para {codigo}")
+        return redirect("definir_recurso")
+
+    return render(request, "setores/cadastrar_setor.html", {"recurso_ativo": recurso_ativo})

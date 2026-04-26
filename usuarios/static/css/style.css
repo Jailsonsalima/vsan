@@ -115,6 +115,11 @@ main {
 }
 
 /* Botões */
+.btn{
+    margin-top: 20px;
+    margin-left: calc(50% - 100px);
+    width: 200px;
+}
 .btn-primary, .btn-secondary, .btn-danger {
     padding: 10px 20px;
     border-radius: 6px;
@@ -126,8 +131,9 @@ main {
 
 .btn-primary {
     background-color: #2724ee;
-    color: #000;
+    color: #fff;
     border: none;
+    text-decoration: none;
     
 }
 

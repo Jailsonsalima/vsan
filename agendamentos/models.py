@@ -37,6 +37,7 @@ class MotoristaExterno(models.Model):
     conta_corrente = models.CharField(max_length=30, blank=True, null=True)
     # Novo campo para controle de disponibilidade
     disponivel = models.BooleanField(default=True)
+    telefone = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.nome_completo
@@ -52,12 +53,12 @@ class AutorizacaoAgendamento(models.Model):
         return f"{self.usuario.username} - Visualizar: {self.pode_visualizar}, Processar: {self.pode_processar}"
 
 class ProcessamentoAgendamento(models.Model):
-    agendamento = models.OneToOneField(Agendamento, on_delete=models.CASCADE)
-    numero_processo = models.CharField(max_length=50)
-    tipo = models.CharField(max_length=20, choices=[('servidor','Servidor'),('outros','Outros')])
+    agendamento = models.OneToOneField(Agendamento, on_delete=models.CASCADE, related_name="processamento")
+    tipo = models.CharField(max_length=20, choices=[('Da Vigilância','Da Vigilância'),('outros','Outros')])
     motorista_servidor = models.ForeignKey('servidores.Servidor', on_delete=models.SET_NULL, null=True, blank=True)
     motorista_externo = models.ForeignKey(MotoristaExterno, on_delete=models.SET_NULL, null=True, blank=True)
     data_processamento = models.DateTimeField(auto_now_add=True)
+    numero_processo = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
-        return f"Processamento {self.numero_processo} - {self.agendamento}"
+        return f"Processamento {self.agendamento}"

@@ -1,74 +1,254 @@
 {% extends 'base.html' %}
-
-{% block content %}
-<div class="container">
-<h2>Cadastrar Setor</h2>
-
-<form method="post" class="form">
-    {% csrf_token %}
-    <div class="form-group">
-        <label for="nome">Nome do Setor:</label>
-        <input type="text" id="nome" name="nome" required>
-    </div>
-    <div class="form-group">
-        <label for="chefe_imediato">Chefe Imediato:</label>
-        <input type="text" id="chefe_imediato" name="chefe_imediato" required>
-    </div>
-    <div class="form-row">
-        <div class="form-group">
-            <label for="cargo_chefe">Cargo do Chefe:</label>
-            <input type="text" id="cargo_chefe" name="cargo_chefe" required>
-        </div>
-
-        <div class="form-group">
-            <label for="portaria_chefe">Portaria:</label>
-            <input type="text" id="portaria_chefe" name="portaria_chefe" required>
-        </div>
-        <div class="form-group">
-            <label for="matricula">Matricula:</label>
-            <input type="text" id="matricula" name="matricula" required>
-        </div>
-    </div>    
-    <button type="submit" class="btn-secondary">Cadastrar</button>
-</form>
-</div>
-<div class="dashboard-container">
-    <h2>Lista de Setores</h2>
-    <table class="dashboard-table">
-        <thead>
-            <tr>
-                <th>Nome do Setor</th>
-                <th>Chefe Imediato</th>
-                <th>Cargo</th>
-                <th>Matrícula</th>
-                <th>Portaria</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for setor in setores %}
-            <tr>
-                <td>{{ setor.nome }}</td>
-                <td>{{ setor.chefe_imediato}}</td>
-                <td>{{ setor.cargo_chefe }}</td>
-                <td>{{ setor.matricula_chefe }}</td>
-                <td>{{ setor.portaria_chefe }}</td>
-                <td style="display:flex; flex-wrap: wrap;">
-                    <form method="post" action="{% url 'excluir_setor' setor.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-danger">Excluir</button>
-                    </form>
-                    <a href="{% url 'editar_setor' setor.id %}" class="btn-secondary">Editar</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3">Nenhum setor cadastrado.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
 {% load static %}
+{% block content %}
+
+<div class="container">
+
+  <!-- Abas -->
+  <div class="tabs">
+    <button class="tab-button active" onclick="openTab(event, 'setor')">Cadastrar Setor</button>
+    <button class="tab-button" onclick="openTab(event, 'chefe')">Cadastrar Chefe do Setor</button>
+  </div>
+
+  <!-- Conteúdo das abas -->
+  <div id="setor" class="tab-content active">
+    
+    <h2>Definir Recurso Financeiro</h2>
+    <h3>Recurso atual: <b>{{ recurso_ativo.get_codigo_display }}</b></h3>
+    <div style="display: flex; flex-wrap: wrap; align-items:center; gap: 10px;">
+      <div>
+        <form method="post" action="{% url 'definir_recurso' %}" class="form" style="width: 200px;">
+            {% csrf_token %}
+            <select name="recurso" id="recurso" required>
+                <option value="01" {% if recurso_ativo.codigo == "01" %}selected{% endif %}>01 - Exercício</option>
+                <option value="02" {% if recurso_ativo.codigo == "02" %}selected{% endif %}>02 - Superávit</option>
+            </select>
+          </div>
+          <div>
+          <button type="submit" class="btn-primary">Salvar</button>
+          </div>
+      </form>
+    </div>
+    <hr style="margin-top: 20px; margin-bottom: 20px;">
+    <h2>Cadastrar Setor</h2>
+    <form method="post" action="{% url 'cadastrar_setor' %}" class="form">
+      {% csrf_token %}
+      <div style="display: flex; flex-wrap: wrap; align-items:flex-end; gap: 10px; flex-direction: row;" >
+      <div >
+        <label for="nome">Nome do Setor:</label>
+        <input type="text" id="nome" name="nome" required style="width: 600px;">
+      </div>
+      <div>
+      <button type="submit" class="btn-primary">Cadastrar Setor</button>
+      </div>
+      </div>
+    </form>
+
+
+
+  <hr style="margin-top: 20px;">
+
+  <!-- Tabela de setores e chefes -->
+  <h2>Lista de Setores e Chefes</h2>
+<table class="dashboard-table">
+  <thead>
+    <tr>
+      <th>Nome do Setor</th>
+      <th>Chefe Imediato</th>
+      <th>Cargo</th>
+      <th>Matrícula</th>
+      <th>Portaria</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for setor in setores %}
+    {% if not setor.chefe_imediato and not setor.cargo_chefe and not setor.matricula_chefe and not setor.portaria_chefe %}
+        <!-- Linha inteira com mensagem -->
+        <tr>
+            <td>{{ setor.nome }}</td>
+          <td colspan="4" style="text-align:center; font-weight:bold; color:red;">
+            Cadastre o Chefe desse Setor
+          </td>
+          <td>
+          <form method="post" action="{% url 'excluir_setor' setor.id %}" onsubmit="return confirm('Tem certeza que deseja excluir este setor?');" >
+          {% csrf_token %}
+          <button type="submit" class="btn-danger">Excluir</button>
+        </form>
+        </td>
+        </tr>
+      {% else %}
+        <!-- Linha normal com dados -->
+      <td>{{ setor.nome }}</td>
+      <td>{{ setor.chefe_imediato }}</td>
+      <td>{{ setor.cargo_chefe }}</td>
+      <td>{{ setor.matricula_chefe }}</td>
+      <td>{{ setor.portaria_chefe }}</td>
+      <td style="display:flex; gap:5px;">
+        <!-- Botão de editar -->
+         <a href="{% url 'editar_setor' setor.id %}" class="btn-secondary">Editar</a>
+
+        
+
+        <!-- Botão de excluir -->
+        <form method="post" action="{% url 'excluir_setor' setor.id %}" onsubmit="return confirm('Tem certeza que deseja excluir este setor?');" >
+          {% csrf_token %}
+          <button type="submit" class="btn-danger">Excluir</button>
+        </form>
+      </td>
+    </tr>
+    {% endif %}
+    {% empty %}
+    <tr>
+      <td colspan="6">Nenhum setor cadastrado.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+  </div>
+
+  <div id="chefe" class="tab-content">
+    <h2>Cadastrar Chefe do Setor</h2>
+    <form method="post" action="{% url 'cadastrar_chefe' %}" class="form">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="setor">Selecione o Setor:</label>
+        <select id="setor" name="setor" required>
+          <option value="">-- Selecione --</option>
+          {% for setor in setores %}
+            <option value="{{ setor.id }}">{{ setor.nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="chefe_imediato">Nome do Chefe:</label>
+        <input type="text" id="chefe_imediato" name="chefe_imediato" required>
+      </div>
+      <div class="form-group">
+        <label for="cargo_chefe">Cargo do Chefe:</label>
+        <input type="text" id="cargo_chefe" name="cargo_chefe">
+      </div>
+      <div class="form-group">
+        <label for="portaria_chefe">Portaria:</label>
+        <input type="text" id="portaria_chefe" name="portaria_chefe">
+      </div>
+      <div class="form-group">
+        <label for="matricula">Matrícula do Chefe:</label>
+        <input type="text" id="matricula" name="matricula">
+      </div>
+      <button type="submit" class="btn-secondary">Cadastrar Chefe</button>
+    </form>
+
+    
+  <hr style="margin-top: 20px;">
+
+  <!-- Tabela de setores e chefes -->
+  <h2>Lista de Setores e Chefes</h2>
+<table class="dashboard-table">
+  <thead>
+    <tr>
+      <th>Nome do Setor</th>
+      <th>Chefe Imediato</th>
+      <th>Cargo</th>
+      <th>Matrícula</th>
+      <th>Portaria</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for setor in setores %}
+    <tr>
+      <td>{{ setor.nome }}</td>
+      <td>{{ setor.chefe_imediato }}</td>
+      <td>{{ setor.cargo_chefe }}</td>
+      <td>{{ setor.matricula_chefe }}</td>
+      <td>{{ setor.portaria_chefe }}</td>
+      <td class="form-row">
+        <!-- Botão de editar -->
+         
+         <a href="{% url 'editar_setor' setor.id %}" class="btn-secondary">Editar</a>
+
+        
+        
+        <!-- Botão de excluir -->
+        <form method="post" action="{% url 'excluir_setor' setor.id %}" onsubmit="return confirm('Tem certeza que deseja excluir este setor?');">
+          {% csrf_token %}
+          <button type="submit" class="btn-danger">Excluir</button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="6">Nenhum setor cadastrado.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+  </div>
+
+
+</div>
 <script src="{% static 'js/script.js' %}"></script>
+<style>
+  .tabs {
+    margin-bottom: 15px;
+  }
+  .tab-button {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background: #ddd;
+    margin-right: 5px;
+  }
+  .tab-button.active {
+    background: #aaa;
+    font-weight: bold;
+  }
+  .tab-content {
+    display: none;
+  }
+  .tab-content.active {
+    display: block;
+  }
+
+</style>
+
+<script>
+  function openTab(evt, tabId) {
+    // Esconde todos os conteúdos
+    var contents = document.getElementsByClassName("tab-content");
+    for (var i = 0; i < contents.length; i++) {
+      contents[i].classList.remove("active");
+    }
+
+    // Remove "active" dos botões de aba
+    var buttons = document.getElementsByClassName("tab-button");
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].classList.remove("active");
+    }
+
+    // Mostra o conteúdo da aba clicada
+    document.getElementById(tabId).classList.add("active");
+    evt.currentTarget.classList.add("active");
+
+    // Alterna a classe dos botões de submit
+    var btnSetor = document.getElementById("btn-setor");
+    var btnChefe = document.getElementById("btn-chefe");
+
+    if (tabId === "setor") {
+      btnSetor.classList.add("btn-primary");
+      btnSetor.classList.remove("btn-secondary");
+      btnChefe.classList.add("btn-secondary");
+      btnChefe.classList.remove("btn-primary");
+    } else {
+      btnChefe.classList.add("btn-primary");
+      btnChefe.classList.remove("btn-secondary");
+      btnSetor.classList.add("btn-secondary");
+      btnSetor.classList.remove("btn-primary");
+    }
+  }
+</script>
 {% endblock %}

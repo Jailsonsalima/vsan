@@ -3,13 +3,13 @@ from .models import Agendamento, MotoristaExterno, AutorizacaoAgendamento, Proce
 
 @admin.register(Agendamento)
 class AgendamentoAdmin(admin.ModelAdmin):
-    list_display = ("id", "servidor", "municipio", "data_ida", "data_retorno", "solicitante", "processado")
+    list_display = ("id", "servidor", "municipio", "data_ida", "data_retorno", "solicitante", "processado", "data_solicitacao")
     list_filter = ("processado", "municipio", "data_ida", "data_retorno")
     search_fields = ("servidor__nome", "municipio", "solicitante__username")
 
 @admin.register(MotoristaExterno)
 class MotoristaExternoAdmin(admin.ModelAdmin):
-    list_display = ("nome_completo", "cpf", "matricula", "cargo", "disponivel")
+    list_display = ("nome_completo", "cpf", "matricula", "cargo", "disponivel",)
     list_filter = ("disponivel", "vinculo")
     search_fields = ("nome_completo", "cpf", "matricula")
 
@@ -21,6 +21,6 @@ class AutorizacaoAgendamentoAdmin(admin.ModelAdmin):
 
 @admin.register(ProcessamentoAgendamento)
 class ProcessamentoAgendamentoAdmin(admin.ModelAdmin):
-    list_display = ("numero_processo", "tipo", "agendamento", "data_processamento")
+    list_display = ("tipo", "agendamento", "data_processamento")
     list_filter = ("tipo", "data_processamento")
-    search_fields = ("numero_processo", "agendamento__municipio")
+    search_fields = ("agendamento__municipio",)

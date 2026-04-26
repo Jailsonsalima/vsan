@@ -22,13 +22,12 @@
     </a>
 
     <!-- Card 2 -->
-    <a href="{% url 'listar_agendamentos' %}" >
+    <a href="{% url 'gerenciar_contas' %}" >
         <div class="card">
-            <div class="icon">📋</div>
-            <div class="card-text">Listar/Processar Viagens</div>
+            <div class="icon">🔐</div>
+            <div class="card-text">Gerenciar Contas</div>
         </div>
     </a>
-
     <!-- Card 3 -->
     <a href="{% url 'gerenciar_autorizacoes' %}" >
         <div class="card">
@@ -36,14 +35,14 @@
             <div class="card-text">Gerenciar Autorizações</div>
         </div>
     </a>
+    {% endif %}
     <!-- Card 4 -->
-    <a href="{% url 'cadastrar_motorista_externo' %}">
+    <a href="{% url 'cadastro_servidor_publico' %}" >
         <div class="card">
-            <div class="icon">🧑‍✈️</div>
-            <div class="card-text">Motorista (Externo)</div>
+            <div class="icon">👤</div>
+            <div class="card-text">Cadastro Público</div>
         </div>
     </a>
-    {% endif %}
     <!-- Card 5 -->
     <a href="{% url 'solicitar_agendamento' %}" >
         <div class="card">
@@ -52,19 +51,14 @@
         </div>
     </a>
     <!-- Card 6 -->
-    <a href="{% url 'gerenciar_contas' %}" >
+    <a href="{% url 'listar_agendamentos' %}" >
         <div class="card">
-            <div class="icon">🔐</div>
-            <div class="card-text">Gerenciar Contas</div>
+            <div class="icon">📋</div>
+            <div class="card-text">Listar/Processar Viagens</div>
         </div>
     </a>
     <!-- Card 7 -->
-    <a href="{% url 'cadastro_servidor_publico' %}" >
-        <div class="card">
-            <div class="icon">👤</div>
-            <div class="card-text">Cadastro Público</div>
-        </div>
-    </a>
+  
     <!-- Card 8 -->
     <a href="{% url 'listar_atividades' %}" >
         <div class="card">

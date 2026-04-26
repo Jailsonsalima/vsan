@@ -4,6 +4,13 @@ from setores.models import Setor
 
 # Create your models here.
 
+class RecursoAtivo(models.Model):
+    codigo = models.CharField(max_length=2, choices=[("01", "Exercício"), ("02", "Superávit")])
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.codigo}"
+
 class Atividade(models.Model):
     #servidor_nome = models.CharField(max_length=200)
     #servidor_matricula = models.CharField(max_length=20, blank=True, null=True)
@@ -23,11 +30,11 @@ class Atividade(models.Model):
     data_ida = models.DateField(blank=True, null=True)
     data_retorno = models.DateField(blank=True, null=True)
     data_criacao = models.DateTimeField(auto_now_add=True)
-    recurso = models.CharField(max_length=2, blank=True, null=True, choices=[("01", "Exercício"), ("02", "Superávit")], default="01")
+    recurso_codigo = models.CharField(max_length=2, choices=[("01", "Exercício"), ("02", "Superávit")], default="01")
     servidores = models.ManyToManyField(Servidor, related_name="atividades")  # vínculo
     n_memorando = models.CharField(max_length=10, verbose_name='Nº do Memorando', unique=True, blank=True, null=True)
     chefe_imediato = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name="atividades_chefiadas")
+    numero_processo = models.CharField(max_length=50, blank=True, null=True)
     
     def __str__(self):
         return f"{self.data_criacao} - {self.data_ida} ({self.data_retorno}) - {self.objetivo[:30]}..."
-

@@ -1,8 +1,23 @@
 // script.js
 
+document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.btn-adicionar-processo');
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                const agendamentoId = this.getAttribute('data-id');
+                const input = document.getElementById(`processo-${agendamentoId}`);
+                const btnSalvar = document.getElementById(`btn-salvar-${agendamentoId}`);
+                
+                // Exibe o campo de input e o botão de salvar
+                input.style.display = 'inline-block';
+                btnSalvar.style.display = 'inline-block';
+                
+                // Esconde o botão "Adicionar Processo"
+                this.style.display = 'none';
+            });
+        });
+    });
 document.addEventListener("DOMContentLoaded", function () {
-    
-    
     // --- Matrícula ---
     const matriculaInput = document.getElementById("matricula");
     if (matriculaInput) {

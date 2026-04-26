@@ -45,6 +45,7 @@ def cadastro_servidor(request):
         # Vincula o servidor ao usuário logado
         request.user.servidor = servidor
         request.user.save()
+        messages.success(request, "Servidor cadastrado com sucesso! ")
         return redirect("dashboard")  # rota para segunda etapa de cadastro
     
     # Se for GET, mostra o formulário
@@ -90,6 +91,8 @@ def cadastro_servidor_publico(request):
             conta=request.POST.get("conta"),
             setor=setor,  # vínculo com setor
         )
+        messages.success(request, "Servidor público cadastrado com sucesso! ")
         return redirect("sucesso")
+    
 
     return render(request, "servidores/cadastro_servidor_publico.html", {"setores": setores})

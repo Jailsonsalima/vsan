@@ -12,7 +12,7 @@ class Usuario(AbstractUser):
         ('coordenador', 'Coordenador'),
         ('funcionario', 'Funcionário'),
     ]
-    
+    setor = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name="usuarios")
     tipo_usuario = models.CharField(max_length=20, choices=TIPO_USUARIO_CHOICES, verbose_name='Tipo de Usuário', null=True, blank=True)
 
     # Matrícula informada no cadastro de usuário

@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 <div class="container">
+    <div class="container-btn-dashboard"  >
+        <a href="{% url 'cadastrar_motorista_externo' %}" class="btn-card">🧑‍✈️ Cadastrar Motorista Externo</a>
+    </div>
     <h2>Solicitações de Agendamento</h2>
-    
     <!-- Tabela de solicitações -->
     <table class="dashboard-table">
         <thead>
             <tr>
+                <th>Nº Processo</th>
                 <th>Solicitante</th>
-                <th>Servidor</th>
                 <th>Município</th>
                 <th>Data Ida</th>
                 <th>Data Retorno</th>
@@ -21,7 +23,12 @@
         <tbody>
             {% for agendamento in agendamentos %}
             <tr>
-                <td>{{ agendamento.solicitante.username }}</td>
+                <td>{% if agendamento.processamento %}
+                        {{ agendamento.processamento.numero_processo }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
                 <td>{{ agendamento.servidor.nome }}</td>
                 <td>{{ agendamento.municipio }}</td>
                 <td>{{ agendamento.data_ida }}</td>
@@ -35,10 +42,20 @@
                     {% endif %}
                 </td>
                 <td>
-                    {% if not agendamento.processado %}
-                        <a href="{% url 'processar_agendamento' agendamento.id %}" class="btn btn-primary">Processar</a>
-                    {% else %}
+                    {% if agendamento.processado %}
                         <span class="info">Já processado</span>
+                        {% if agendamento.processamento.numero_processo %}
+                            <span style="margin-left:10px;">Processo nº: {{ agendamento.processamento.numero_processo }}</span>
+                        {% else %}
+                            <form method="post" action="{% url 'adicionar_processo' agendamento.id %}" class="form">
+                                {% csrf_token %}
+                                <button type="button" class="btn-secondary btn-adicionar-processo" data-id="{{ agendamento.id }}">Adicionar Processo</button>
+                                <input type="text" name="numero_processo" id="processo-{{ agendamento.id }}" placeholder="Digite nº do processo" style="display:none; margin-left:10px;">
+                                <button type="submit" class="btn btn-primary" id="btn-salvar-{{ agendamento.id }}" style="display:none;">Salvar</button>
+                            </form>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'processar_agendamento' agendamento.id %}" class="btn-primary">Processar</a>
                     {% endif %}
                 </td>
             </tr>
@@ -50,4 +67,5 @@
         </tbody>
     </table>
 </div>
+<script src="{% static 'js/script.js' %}"></script>
 {% endblock %}

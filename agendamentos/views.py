@@ -82,6 +82,12 @@ def gerenciar_autorizacoes(request):
 def processar_agendamento(request, agendamento_id):
     agendamento = Agendamento.objects.get(id=agendamento_id)
 
+     # Verifica se o usuário tem permissão para processar
+    autorizacao = AutorizacaoAgendamento.objects.filter(usuario=request.user, pode_processar=True).first()
+    if not autorizacao and request.user.tipo_usuario != 'diretor':
+        messages.error(request, "Você não tem permissão para processar agendamentos.")
+        return redirect('listar_agendamentos')
+    
     # Impede reprocessamento
     if agendamento.processado or ProcessamentoAgendamento.objects.filter(agendamento=agendamento).exists():
         messages.error(request, "Este agendamento já foi processado e não pode ser alterado novamente.")
@@ -94,7 +100,7 @@ def processar_agendamento(request, agendamento_id):
 
     def verificar_disponibilidade(motorista, tipo="servidor"):
         filtro = {}
-        if tipo == "servidor":
+        if tipo == "Da Vigilância":
             filtro["motorista_servidor"] = motorista
         else:
             filtro["motorista_externo"] = motorista
@@ -123,11 +129,10 @@ def processar_agendamento(request, agendamento_id):
 
     # monta lista de motoristas para exibição
     for m in motoristas_servidores:
-        motoristas.append(verificar_disponibilidade(m, "servidor"))
+        motoristas.append(verificar_disponibilidade(m, "Da Vigilância"))
     for m in motoristas_externos:
         motoristas.append(verificar_disponibilidade(m, "externo"))
 
-    # filtra motoristas disponíveis para os selects
     # filtra motoristas disponíveis para os selects
     motoristas_servidores_disponiveis = motoristas_servidores.filter(disponivel=True).exclude(
         id__in=ProcessamentoAgendamento.objects.filter(
@@ -158,7 +163,7 @@ def processar_agendamento(request, agendamento_id):
             send_mail(
                 'Agendamento Processado',
                 f'Sua solicitação foi respondida.\n'
-                f'Número do processo: {processamento.numero_processo}\n'
+                
                 f'Dados do agendamento:\n'
                 f'Ida: {agendamento.data_ida}\n'
                 f'Retorno: {agendamento.data_retorno}\n'
@@ -190,7 +195,7 @@ def listar_agendamentos(request):
         return render(request, "usuarios/dashboard.html")
 
     # Busca todos os agendamentos
-    agendamentos = Agendamento.objects.all().order_by("-data_solicitacao")
+    agendamentos = Agendamento.objects.all().order_by("-data_solicitacao").select_related("processamento")
 
     return render(request, "agendamentos/listar.html", {"agendamentos": agendamentos})
 
@@ -227,17 +232,28 @@ def gerenciar_motoristas(request):
 
 @login_required
 def cadastrar_motorista_externo(request):
-    if request.user.tipo_usuario != 'diretor':
-        messages.error(request, "Apenas diretores podem cadastrar motoristas externos.")
-        return redirect('dashboard')
-
     if request.method == 'POST':
         form = MotoristaExternoForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, "Motorista externo cadastrado com sucesso.")
-            return redirect('gerenciar_motoristas')
+            return redirect('listar_agendamentos')
     else:
         form = MotoristaExternoForm()
 
     return render(request, 'agendamentos/motorista_externo_form.html', {'form': form})
+
+@login_required
+def adicionar_processo(request, agendamento_id):
+    processamento = ProcessamentoAgendamento.objects.filter(agendamento_id=agendamento_id).first()
+    if not processamento:
+        messages.error(request, "Este agendamento não possui processamento registrado.")
+        return redirect('listar_agendamentos')
+
+    if request.method == "POST":
+        numero = request.POST.get("numero_processo")
+        processamento.numero_processo = numero
+        processamento.save()
+        messages.success(request, "Número do processo adicionado com sucesso.")
+        return redirect('listar_agendamentos')
+    return render(request, "agendamentos/adicionar_processo.html", {"processamento": processamento})

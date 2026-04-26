@@ -31,7 +31,9 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),
     path('cadastrar-usuario/', views.cadastrar_usuario, name='cadastrar_usuario'),
     path('cadastrar-setor/', setor_views.cadastrar_setor, name='cadastrar_setor'),
+    path('cadastrar-chefe/', setor_views.cadastrar_chefe, name='cadastrar_chefe'),
     path('setores/excluir/<int:setor_id>/', setor_views.excluir_setor, name='excluir_setor'),
+    path("definir-recurso/", atividades_views.definir_recurso, name="definir_recurso"),
     path('setores/', setor_views.listar_setores, name='listar_setores'),
     path('sucesso/', views.sucesso, name='sucesso'),
     path('dashboard/', views.dashboard, name='dashboard'),
@@ -63,4 +65,7 @@ urlpatterns = [
     path("gerenciar-autorizacoes/", agendamento_views.gerenciar_autorizacoes, name="gerenciar_autorizacoes"),
     path("gerenciar_motoristas/", agendamento_views.gerenciar_motoristas, name="gerenciar_motoristas"),
     path("cadastro_motorista_externo/", agendamento_views.cadastrar_motorista_externo, name="cadastrar_motorista_externo"),
+    # Novo endpoint para adicionar processo
+    path('adicionar_processo/<int:agendamento_id>/', agendamento_views.adicionar_processo, name='adicionar_processo'),
+    path("atividade/adicionar_processo/<int:atividade_id>/", atividades_views.adicionar_processo_atividade, name="adicionar_processo_atividade"),
 ]

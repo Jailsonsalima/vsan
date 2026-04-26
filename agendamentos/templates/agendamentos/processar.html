@@ -2,6 +2,9 @@
 
 {% block content %}
 <div class="container">
+    <div class="container-btn-dashboard"  >
+        <a href="{% url 'cadastrar_motorista_externo' %}" class="btn-card">🧑‍✈️ Cadastrar Motorista Externo</a>
+    </div>
     <h2>Processar Agendamento</h2>
 
     <!-- Informações da solicitação -->
@@ -19,10 +22,7 @@
     <form method="post" class="form">
         {% csrf_token %}
         <div class="form-row">
-            <div class="form-group">
-                <label for="id_numero_processo"><strong>Número do Processo</strong></label>
-                {{ form.numero_processo }}
-            </div>
+            
 
             <div class="form-group">
                 <label for="id_tipo"><strong>Tipo de Motorista</strong></label>
@@ -31,13 +31,13 @@
         </div>
         <!-- Select dinâmico: motoristas internos -->
         <div class="form-group" id="motorista-servidor">
-            <label for="id_motorista_servidor"><strong>Motorista (Servidor)</strong></label>
+            <label for="id_motorista_servidor"><strong>Motorista (da Vigilância)</strong></label>
             {{ form.motorista_servidor }}
         </div>
 
         <!-- Select dinâmico: motoristas externos -->
         <div class="form-group" id="motorista-externo">
-            <label for="id_motorista_externo"><strong></strong>Motorista (Outro Departamento)</strong></label>
+            <label for="id_motorista_externo"><strong>Motorista (Outro Departamento)</strong></label>
             {{ form.motorista_externo }}
         </div>
 
@@ -84,7 +84,7 @@
             </table>
         </div>
 
-        <button type="submit" class="btn btn-primary">Confirmar Processamento</button>
+        <button type="submit" class="btn btn-primary" id="btn-confirmar">Confirmar Processamento</button>
     </form>
 </div>
 
@@ -96,7 +96,7 @@
         const motoristaExterno = document.getElementById("motorista-externo");
 
         function atualizarCampos() {
-            if (tipoSelect.value === "servidor") {
+            if (tipoSelect.value === "Da Vigilância") {
                 motoristaServidor.style.display = "block";
                 motoristaExterno.style.display = "none";
             } else if (tipoSelect.value === "outros") {
@@ -110,6 +110,17 @@
 
         tipoSelect.addEventListener("change", atualizarCampos);
         atualizarCampos(); // inicializa corretamente
+
+
+        
+        const btnConfirmar = document.getElementById("btn-confirmar");
+
+        btnConfirmar.addEventListener("click", function() {
+            btnConfirmar.disabled = true;
+            btnConfirmar.innerText = "Processando..."; // feedback visual
+            btnConfirmar.form.submit(); // força o envio do formulário
+        });
+
     });
 </script>
 {% endblock %}

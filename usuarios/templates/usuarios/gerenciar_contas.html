@@ -6,10 +6,10 @@
 
     {% if request.user.tipo_usuario == "diretor" %}
     <section class="dashboard-section" style="margin-top: 20px;">
-        <h3>Gerenciamento de Usuários</h3>
+        
 
         {% if request.GET.mostrar == "todos" %}
-            <a href="{% url 'gerenciar_contas' %}" class="btn-secondary">Ver Inativos</a>
+            <a href="{% url 'gerenciar_contas' %}" class="btn-primary">Ver Inativos</a>
         {% else %}
             <a href="{% url 'gerenciar_contas' %}?mostrar=todos" class="btn-primary">Ver Todos</a>
         {% endif %}

@@ -99,7 +99,7 @@ def login_view(request):
             else:
                 return redirect('cadastro_servidor')
         else:
-            messages.error(request, 'Credenciais inválidas.')
+            messages.error(request, 'Credenciais inválidas ou conta inativa.')
     return render(request, 'usuarios/login.html')
 
 
@@ -129,7 +129,7 @@ def definir_tipo_usuario(request, usuario_id):
 
         usuario.save()  # ativa automaticamente se tiver tipo definido
         messages.success(request, f"Usuário {usuario.username} atualizado com sucesso.")
-    return redirect('dashboard')
+    return redirect('gerenciar_contas')
 
 from django.core.paginator import Paginator
 

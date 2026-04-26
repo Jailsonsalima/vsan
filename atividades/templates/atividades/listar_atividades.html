@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 <div class="container">
     <div class="container-btn-dashboard"  >
@@ -12,7 +12,153 @@
         <div class="form-row">
             <div class="form-group">
                 <label for="municipio">Município:</label>
-                <input type="text" name="municipio" id="municipio" value="{{ municipio }}">
+                <input list="municipios" name="municipio" id="municipio" required>
+            <datalist id="municipios">
+                <option value="Abaetetuba">
+                <option value="Abel Figueiredo">
+                <option value="Acará">
+                <option value="Afuá">
+                <option value="Água Azul do Norte">
+                <option value="Alenquer">
+                <option value="Almeirim">
+                <option value="Altamira">
+                <option value="Anajás">
+                <option value="Ananindeua">
+                <option value="Anapu">
+                <option value="Augusto Corrêa">
+                <option value="Aurora do Pará">
+                <option value="Aveiro">
+                <option value="Bagre">
+                <option value="Baião">
+                <option value="Bannach">
+                <option value="Barcarena">
+                <option value="Belém">
+                <option value="Belterra">
+                <option value="Benevides">
+                <option value="Bom Jesus do Tocantins">
+                <option value="Bonito">
+                <option value="Bragança">
+                <option value="Brasil Novo">
+                <option value="Brejo Grande do Araguaia">
+                <option value="Breu Branco">
+                <option value="Breves">
+                <option value="Bujaru">
+                <option value="Cachoeira do Arari">
+                <option value="Cachoeira do Piriá">
+                <option value="Cametá">
+                <option value="Canaã dos Carajás">
+                <option value="Capanema">
+                <option value="Capitão Poço">
+                <option value="Castanhal">
+                <option value="Chaves">
+                <option value="Colares">
+                <option value="Conceição do Araguaia"> <!-- Colônia do Gurupi -->
+                <option value="Concórdia do Pará">
+                <option value="Cumaru do Norte">
+                <option value="Curionópolis">
+                <option value="Curralinho">
+                <option value="Curuá">
+                <option value="Curuçá">
+                <option value="Dom Eliseu">
+                <option value="Eldorado dos Carajás">
+                <option value="Faro">
+                <option value="Floresta do Araguaia">
+                <option value="Garrafão do Norte">
+                <option value="Goianésia do Pará">
+                <option value="Gurupá">
+                <option value="Igarapé-Açu">
+                <option value="Igarapé-Miri">
+                <option value="Inhangapi">
+                <option value="Ipixuna do Pará">
+                <option value="Irituia">
+                <option value="Itaituba">
+                <option value="Itupiranga">
+                <option value="Jacareacanga">
+                <option value="Jacundá">
+                <option value="Juruti">
+                <option value="Limoeiro do Ajuru">
+                <option value="Mãe do Rio">
+                <option value="Magalhães Barata">
+                <option value="Marabá">
+                <option value="Maracanã">
+                <option value="Marapanim">
+                <option value="Marituba">
+                <option value="Medicilândia">
+                <option value="Melgaço">
+                <option value="Mocajuba">
+                <option value="Moju">
+                <option value="Mojuí dos Campos">
+                <option value="Monte Alegre">
+                <option value="Muaná">
+                <option value="Nova Esperança do Piriá">
+                <option value="Nova Ipixuna">
+                <option value="Nova Timboteua">
+                <option value="Novo Progresso">
+                <option value="Novo Repartimento">
+                <option value="Óbidos">
+                <option value="Oeiras do Pará">
+                <option value="Oriximiná">
+                <option value="Ourém">
+                <option value="Ourilândia do Norte">
+                <option value="Pacajá">
+                <option value="Palestina do Pará">
+                <option value="Paragominas">
+                <option value="Parauapebas">
+                <option value="Pau d'Arco">
+                <option value="Peixe-Boi">
+                <option value="Piçarra">
+                <option value="Placas">
+                <option value="Ponta de Pedras">
+                <option value="Portel">
+                <option value="Porto de Moz">
+                <option value="Prainha">
+                <option value="Primavera">
+                <option value="Quatipuru">
+                <option value="Redenção">
+                <option value="Rio Maria">
+                <option value="Rondon do Pará">
+                <option value="Rurópolis">
+                <option value="Salinópolis">
+                <option value="Salvaterra">
+                <option value="Santa Bárbara do Pará">
+                <option value="Santa Cruz do Arari">
+                <option value="Santa Isabel do Pará">
+                <option value="Santa Luzia do Pará">
+                <option value="Santa Maria das Barreiras">
+                <option value="Santa Maria do Pará">
+                <option value="Santana do Araguaia">
+                <option value="Santarém">
+                <option value="Santarém Novo">
+                <option value="Santo Antônio do Tauá">
+                <option value="São Caetano de Odivelas">
+                <option value="São Domingos do Araguaia">
+                <option value="São Domingos do Capim">
+                <option value="São Félix do Xingu">
+                <option value="São Francisco do Pará">
+                <option value="São Geraldo do Araguaia">
+                <option value="São João da Ponta">
+                <option value="São João de Pirabas">
+                <option value="São João do Araguaia">
+                <option value="São Miguel do Guamá">
+                <option value="São Sebastião da Boa Vista">
+                <option value="Sapucaia"> <!--São Sebastião do Uatumã-->
+                <option value="Senador José Porfírio"> <!--Serra do Navio-->
+                <option value="Soure">
+                <option value="Tailândia">
+                <option value="Terra Alta">
+                <option value="Terra Santa">
+                <option value="Tomé-Açu">
+                <option value="Tracuateua">
+                <option value="Trairão">
+                <option value="Tucumã">
+                <option value="Tucuruí">
+                <option value="Ulianópolis">
+                <option value="Uruará">
+                <option value="Vigia">
+                <option value="Viseu">
+                <option value="Vitória do Xingu">
+                <option value="Xinguara">
+            </datalist>
             </div>
             <div class="form-group">
                 <label for="data_inicio">Data Início:</label>
@@ -23,26 +169,44 @@
                 <input type="date" name="data_fim" id="data_fim" value="{{ data_fim }}">
             </div>
         </div>
-        <button type="submit" class="btn-primary">Filtrar</button>
-        <a href="{% url 'listar_atividades' %}" class="btn-secondary">Limpar</a>
+        <button type="submit" class="btn-secondary">Filtrar</button>
+        <button><a href="{% url 'listar_atividades' %}" class="btn-secondary">Limpar</a></button>
     </form>
 
     <!-- Tabela de atividades -->
     <table class="dashboard-table">
         <thead>
             <tr>
+                <th>Nº Processo</th>
                 <th>Data Ida</th>
                 <th>Data Retorno</th>
                 <th>Município</th>
                 <th>Equipe</th>
                 <th>Objetivo</th>
-                <th>Data Criação</th>
+                <!--<th>Data Criação</th>-->
                 <th>Ação</th>
             </tr>
         </thead>
         <tbody>
             {% for atividade in page_obj %}
             <tr>
+                <td>
+        {% if atividade.numero_processo %}
+            {{ atividade.numero_processo }}
+        {% else %}
+            <form method="post" action="{% url 'adicionar_processo_atividade' atividade.id %}" class="form">
+                {% csrf_token %}
+                <button type="button" class="btn-secondary btn-adicionar-processo" data-id="{{ atividade.id }}">
+                    Adicionar Processo
+                </button>
+                <input type="text" name="numero_processo" id="processo-{{ atividade.id }}" 
+                       placeholder="Digite nº do processo" style="display:none; margin-left:10px;">
+                <button type="submit" class="btn btn-primary" id="btn-salvar-{{ atividade.id }}" style="display:none;">
+                    Salvar
+                </button>
+            </form>
+        {% endif %}
+    </td>
                 <td>{{ atividade.data_ida }}</td>
                 <td>{{ atividade.data_retorno }}</td>
                 <td>{{ atividade.municipio }}</td>
@@ -54,10 +218,10 @@
                     {% endfor %}
                 </td>
                 <td>{{ atividade.objetivo }}</td>
-                <td>{{ atividade.data_criacao|date:"d/m/Y H:i" }}</td>
-                <td>
-                    <a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-secondary">PDFs</a>
-                    <a href="{% url 'editar_atividade' atividade.id %}" class="btn-primary">Editar</a>
+                <!--<td>{{ atividade.data_criacao|date:"d/m/Y H:i" }}</td>-->
+                <td style="display:flex; flex-direction: column; gap:10px;">
+                    <a href="{% url 'editar_atividade' atividade.id %}" class="btn-secondary">Editar</a>
+                    <a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-primary">PDFs</a>
                 </td>
             </tr>
             {% empty %}
@@ -81,4 +245,6 @@
         {% endif %}
     </div>
 </div>
+
+<script src="{% static 'js/script.js' %}"></script>
 {% endblock %}
