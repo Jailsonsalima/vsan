@@ -14,7 +14,7 @@ from django.db import IntegrityError
 
 # Create your views here.
 
-@login_required
+@login_required(login_url='/login/')
 def cadastrar_atividade(request):
     servidores = Servidor.objects.all()
     # Filtra setores cujo cargo_chefe NÃO começa com "Diretor"
@@ -58,10 +58,11 @@ def cadastrar_atividade(request):
             return redirect("listar_atividades")
         except IntegrityError:
             messages.error(request, "Já existe uma atividade cadastrada com este número de memorando.")
-
+    recurso_ativo = RecursoAtivo.objects.first()
     return render(request, "atividades/cadastro_atividades.html", {
         "servidores": servidores,
-        "setores": setores
+        "setores": setores,
+        "recurso_ativo": recurso_ativo,
     })
 
 def formatar_periodo(data_ida, data_retorno):
@@ -74,7 +75,7 @@ def formatar_periodo(data_ida, data_retorno):
     else:
         return f"{DateFormat(data_ida).format('d/m/Y')} a {DateFormat(data_retorno).format('d/m/Y')}"
 
-@login_required
+@login_required(login_url='/login/')
 def gerar_zip_pdfs(request, atividade_id):
     # Filtra setores cujo cargo_chefe começa com "Diretor"
     setores = Setor.objects.filter(cargo_chefe__startswith="Diretor")
@@ -123,7 +124,7 @@ def gerar_zip_pdfs(request, atividade_id):
     response['Content-Disposition'] = f'attachment; filename="{atividade.municipio}_{atividade.id}_pdfs.zip"'
     return response
 
-@login_required
+@login_required(login_url='/login/')
 def editar_atividade(request, atividade_id):
     atividade = get_object_or_404(Atividade, id=atividade_id)
     servidores = Servidor.objects.all()
@@ -166,7 +167,7 @@ def editar_atividade(request, atividade_id):
 
 from django.core.paginator import Paginator
 
-@login_required
+@login_required(login_url='/login/')
 def listar_atividades(request):
     atividades = Atividade.objects.all().order_by("-data_criacao")
     recurso_ativo = RecursoAtivo.objects.first()
@@ -195,7 +196,7 @@ def listar_atividades(request):
         "recurso_ativo": recurso_ativo,  # passa para template
     })
 
-@login_required
+@login_required(login_url='/login/')
 def adicionar_processo_atividade(request, atividade_id):
     atividade = get_object_or_404(Atividade, id=atividade_id)
     if request.method == "POST":
@@ -205,7 +206,7 @@ def adicionar_processo_atividade(request, atividade_id):
         messages.success(request, "Número do processo adicionado à atividade com sucesso.")
         return redirect("listar_atividades")
 
-@login_required
+@login_required(login_url='/login/')
 def definir_recurso(request):
     recurso_ativo, _ = RecursoAtivo.objects.get_or_create(id=1, defaults={"codigo": "01"})
 

@@ -183,29 +183,7 @@
 <script src="{% static 'js/script.js' %}"></script>
 <!-- Script para alternar selects dinamicamente -->
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const tipoSelect = document.getElementById("id_tipo");
-        const motoristaServidor = document.getElementById("motorista-servidor");
-        const motoristaExterno = document.getElementById("motorista-externo");
-
-        function atualizarCampos() {
-            if (tipoSelect.value === "Da Vigilância") {
-                motoristaServidor.style.display = "block";
-                motoristaExterno.style.display = "none";
-            } else if (tipoSelect.value === "outros") {
-                motoristaServidor.style.display = "none";
-                motoristaExterno.style.display = "block";
-            } else {
-                motoristaServidor.style.display = "none";
-                motoristaExterno.style.display = "none";
-            }
-        }
-
-        tipoSelect.addEventListener("change", atualizarCampos);
-        atualizarCampos(); // inicializa corretamente
-
-
-        
+    document.addEventListener("DOMContentLoaded", function() {     
         const btnConfirmar = document.getElementById("btn-confirmar");
 
         btnConfirmar.addEventListener("click", function() {

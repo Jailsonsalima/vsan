@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import date, datetime
 from django.contrib import messages
 
-@login_required
+@login_required(login_url='/login/')
 def cadastro_servidor(request):
     setores = Setor.objects.all()
     if request.method == "POST":

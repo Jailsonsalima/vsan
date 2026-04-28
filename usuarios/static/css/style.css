@@ -212,13 +212,16 @@ main {
     border-collapse: collapse;
     margin-top: 15px;
     border-radius: 6px;
-    overflow: hidden;
+    overflow-x: auto; /* permite rolagem horizontal */
+    display: block;   /* força o container a se comportar como bloco rolável */
 }
 
-.dashboard-table th, .dashboard-table td {
+.dashboard-table th, 
+.dashboard-table td {
     border: 1px solid #ddd;
     padding: 12px;
     text-align: center;
+    font-size: 0.95em; /* reduz fonte em telas menores */
 }
 
 .dashboard-table th {
@@ -259,6 +262,11 @@ footer {
 
 /* Responsividade */
 @media (max-width: 768px) {
+    .dashboard-table th, 
+    .dashboard-table td {
+        padding: 8px;
+        font-size: 0.85em;
+    }
     .btn-primary {
         width: 200px;   /* largura fixa */
         text-align: center; /* centraliza o texto */

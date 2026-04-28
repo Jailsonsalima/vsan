@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="text-align:center; margin-top:50px;">
+  <h1 style="color:#ff5722; font-weight:bold;">Erro 400</h1>
+  <p style="font-size:1.2em; margin-bottom:20px;">
+    Sua requisição não pôde ser processada. Verifique os dados enviados e tente novamente.
+  </p>
+  <a href="{% url 'home' %}" class="btn-primary">Voltar ao Início</a>
+</div>
+{% endblock %}

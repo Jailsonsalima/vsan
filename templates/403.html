@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="text-align:center; margin-top:50px;">
+  <h1 style="color:#ff9800; font-weight:bold;">Erro 403</h1>
+  <p style="font-size:1.2em; margin-bottom:20px;">
+    Você não tem permissão para acessar esta página ou recurso.
+  </p>
+  <a href="{% url 'home' %}" class="btn-primary">Voltar ao Início</a>
+</div>
+{% endblock %}

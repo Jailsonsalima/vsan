@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from atividades.models import Atividade
 from servidores.models import Servidor
-from agendamentos.models import Agendamento
+from agendamentos.models import Agendamento, AutorizacaoAgendamento
 
 # Create your views here.
 def home(request):
@@ -47,7 +47,7 @@ def sucesso(request):
 
 from atividades.models import Atividade
 
-@login_required
+@login_required(login_url='/login/')
 def dashboard(request):
     # Superuser sempre acessa
     if request.user.is_superuser:
@@ -66,7 +66,12 @@ def dashboard(request):
 
     # Adiciona atividades ao contexto
     atividades = Atividade.objects.all().order_by("-data_criacao")
-    pendentes = Agendamento.objects.filter(processado=False) #agendamentos pendentes para exibir no dashboard
+    # Só mostra pendentes se o usuário pode processar
+    autorizacao = AutorizacaoAgendamento.objects.filter(usuario=request.user, pode_processar=True).first()
+    if autorizacao or request.user.tipo_usuario == "diretor":
+        pendentes = Agendamento.objects.filter(processado=False)
+    else:
+        pendentes = None
 
     return render(
         request,
@@ -108,7 +113,7 @@ def logout_view(request):
     return render(request, 'usuarios/home.html')
 
 
-@login_required
+@login_required(login_url='/login/')
 def definir_tipo_usuario(request, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
     # Impede que o usuário altere a própria conta
@@ -133,7 +138,7 @@ def definir_tipo_usuario(request, usuario_id):
 
 from django.core.paginator import Paginator
 
-@login_required
+@login_required(login_url='/login/')
 def gerenciar_contas(request):
     if request.user.tipo_usuario != "diretor":
         messages.error(request, "Apenas diretores podem acessar o gerenciamento de contas.")

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="text-align:center; margin-top:50px;">
+  <h1 style="color:#d32f2f;">Erro 404</h1>
+  <p>A página que você tentou acessar não existe.</p>
+  <a href="{% url 'home' %}" class="btn btn-primary">Voltar ao início</a>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="text-align:center; margin-top:50px;">
+  <h1 style="color:#d32f2f; font-weight:bold;">Erro 500</h1>
+  <p style="font-size:1.2em; margin-bottom:20px;">
+    Ocorreu um erro interno no servidor. Nossa equipe já foi notificada.
+  </p>
+  <a href="{% url 'home' %}" class="btn-primary">Voltar ao Início</a>
+</div>
+{% endblock %}

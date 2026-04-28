@@ -10,7 +10,6 @@
     <table class="dashboard-table">
         <thead>
             <tr>
-                <th>Nº Processo</th>
                 <th>Solicitante</th>
                 <th>Município</th>
                 <th>Data Ida</th>
@@ -23,12 +22,6 @@
         <tbody>
             {% for agendamento in agendamentos %}
             <tr>
-                <td>{% if agendamento.processamento %}
-                        {{ agendamento.processamento.numero_processo }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
                 <td>{{ agendamento.servidor.nome }}</td>
                 <td>{{ agendamento.municipio }}</td>
                 <td>{{ agendamento.data_ida }}</td>

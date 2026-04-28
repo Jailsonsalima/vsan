@@ -11,20 +11,28 @@ from usuarios.models import Usuario
 from servidores.models import Servidor
 
 
-@login_required
+@login_required(login_url='/login/')
 def solicitar_agendamento(request):
     if request.method == 'POST':
         form = AgendamentoForm(request.POST)
         if form.is_valid():
             agendamento = form.save(commit=False)
             agendamento.solicitante = request.user
+            if not request.user.servidor:
+                messages.error(request, "Seu usuário não está vinculado a um servidor. Contate o administrador.")
+                return redirect('home')
             agendamento.servidor = request.user.servidor
             agendamento.save()
 
             # Envia e-mail ao solicitante
             send_mail(
                 'Solicitação de Agendamento Recebida',
-                f'Sua solicitação foi registrada. Aguarde confirmação.\nDados: {agendamento}',
+                f'Sua solicitação foi registrada. Aguarde confirmação.\n\n'
+                f'Dados do agendamento:\n'
+                f'Ida: {agendamento.data_ida.strftime("%d/%m/%Y")}\n'
+                f'Retorno: {agendamento.data_retorno.strftime("%d/%m/%Y")}\n'
+                f'Município: {agendamento.municipio}\n'
+                f'Motivo: {agendamento.motivo}',
                 'sistema@vsan.com',
                 [request.user.email],
             )
@@ -44,7 +52,7 @@ def solicitar_agendamento(request):
     return render(request, 'agendamentos/solicitar.html', {'form': form})
 
 
-@login_required
+@login_required(login_url='/login/')
 def gerenciar_autorizacoes(request):
     if request.user.tipo_usuario != 'diretor':
         messages.error(request, "Apenas diretores podem gerenciar autorizações.")
@@ -78,7 +86,7 @@ def gerenciar_autorizacoes(request):
     })
 
 
-@login_required
+@login_required(login_url='/login/')
 def processar_agendamento(request, agendamento_id):
     agendamento = Agendamento.objects.get(id=agendamento_id)
 
@@ -158,17 +166,27 @@ def processar_agendamento(request, agendamento_id):
             processamento.save()
             agendamento.processado = True
             agendamento.save()
+            motorista_nome = None
+            motorista_telefone = None
 
+            if processamento.motorista_servidor:
+                motorista_nome = processamento.motorista_servidor.nome
+                motorista_telefone = getattr(processamento.motorista_servidor, "telefone", None)
+            elif processamento.motorista_externo:
+                motorista_nome = processamento.motorista_externo.nome_completo
+                motorista_telefone = processamento.motorista_externo.telefone
             # envia e-mail ao solicitante
             send_mail(
                 'Agendamento Processado',
                 f'Sua solicitação foi respondida.\n'
                 
                 f'Dados do agendamento:\n'
-                f'Ida: {agendamento.data_ida}\n'
-                f'Retorno: {agendamento.data_retorno}\n'
+                f'Ida: {agendamento.data_ida.strftime("%d/%m/%Y")}\n'
+                f'Retorno: {agendamento.data_retorno.strftime("%d/%m/%Y")}\n'
                 f'Município: {agendamento.municipio}\n'
-                f'Motivo: {agendamento.motivo}',
+                f'Motivo: {agendamento.motivo}\n\n'
+                f'Motorista designado: {motorista_nome or "Não informado"}\n'
+                f'Telefone: {motorista_telefone or "Não informado"}',
                 'sistema@vsan.com',
                 [agendamento.solicitante.email],
             )
@@ -186,7 +204,7 @@ def processar_agendamento(request, agendamento_id):
         'motoristas': motoristas,
     })
 
-@login_required
+@login_required(login_url='/login/')
 def listar_agendamentos(request):
     # Apenas usuários autorizados podem visualizar
     autorizacao = AutorizacaoAgendamento.objects.filter(usuario=request.user, pode_visualizar=True).first()
@@ -199,7 +217,7 @@ def listar_agendamentos(request):
 
     return render(request, "agendamentos/listar.html", {"agendamentos": agendamentos})
 
-@login_required
+@login_required(login_url='/login/')
 def gerenciar_motoristas(request):
     if request.user.tipo_usuario != 'diretor':
         messages.error(request, "Apenas diretores podem gerenciar motoristas.")
@@ -230,7 +248,7 @@ def gerenciar_motoristas(request):
         'motoristas_externos': motoristas_externos,
     })
 
-@login_required
+@login_required(login_url='/login/')
 def cadastrar_motorista_externo(request):
     if request.method == 'POST':
         form = MotoristaExternoForm(request.POST)
@@ -243,7 +261,7 @@ def cadastrar_motorista_externo(request):
 
     return render(request, 'agendamentos/motorista_externo_form.html', {'form': form})
 
-@login_required
+@login_required(login_url='/login/')
 def adicionar_processo(request, agendamento_id):
     processamento = ProcessamentoAgendamento.objects.filter(agendamento_id=agendamento_id).first()
     if not processamento:

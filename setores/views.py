@@ -6,7 +6,7 @@ from django.db.models import ProtectedError
 from atividades.models import RecursoAtivo
 
 # Create your views here.
-@login_required
+@login_required(login_url='/login/')
 def cadastrar_setor(request):
     if request.user.tipo_usuario != "diretor":
         messages.error(request, "Apenas diretores podem acessar o gerenciamento de contas.")
@@ -22,7 +22,7 @@ def cadastrar_setor(request):
     recurso_ativo, _ = RecursoAtivo.objects.get_or_create(id=1, defaults={"codigo": "01"})  # pega recurso atual
     return render(request, "setores/cadastrar_setor.html", {"setores": setores, "recurso_ativo": recurso_ativo,})
 
-@login_required
+@login_required(login_url='/login/')
 def cadastrar_chefe(request):
     if request.method == "POST":
         setor_id = request.POST.get("setor")
@@ -37,12 +37,12 @@ def cadastrar_chefe(request):
     setores = Setor.objects.all()
     return render(request, "setores/cadastrar_setor.html", {"setores": setores,})
 
-@login_required
+@login_required(login_url='/login/')
 def listar_setores(request):
     setores = Setor.objects.all()
     return render(request, 'setores/listar_setores.html', {'setores': setores})
 
-@login_required
+@login_required(login_url='/login/')
 def excluir_setor(request, setor_id):
     setor = get_object_or_404(Setor, id=setor_id)
     try:
@@ -52,7 +52,7 @@ def excluir_setor(request, setor_id):
         messages.error(request, f"Não foi possível excluir o setor '{setor.nome}' porque existem servidores vinculados a ele.")
     return redirect('cadastrar_setor')
 
-@login_required
+@login_required(login_url='/login/')
 def editar_setor(request, setor_id):
     setor = get_object_or_404(Setor, id=setor_id)
 
