@@ -16,6 +16,7 @@
                 <th>Data Retorno</th>
                 <th>Motivo</th>
                 <th>Status</th>
+                <th>Motorista</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -34,6 +35,19 @@
                         <span class="status inativo">Pendente</span>
                     {% endif %}
                 </td>
+                <td>
+                {% if agendamento.processado %}
+                    {% if agendamento.processamento.motorista_servidor %}
+                        <div class="info">Motorista: {{ agendamento.processamento.motorista_servidor.nome }}</div>
+                    {% elif agendamento.processamento.motorista_externo %}
+                        <div class="info">Motorista: {{ agendamento.processamento.motorista_externo.nome_completo }} - {{ agendamento.processamento.motorista_externo.telefone }}</div>
+                    {% else %}
+                        <div class="info">Motorista não informado</div>
+                    {% endif %}
+                {% else %}
+                    <div class="info"> -- </div>
+                {% endif %}
+                </td>   
                 <td>
                     {% if agendamento.processado %}
                         <span class="info">Já processado</span>

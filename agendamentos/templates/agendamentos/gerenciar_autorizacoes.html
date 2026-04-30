@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container">
-    <h2>Gerenciar Autorizações de Agendamento</h2>
+    <h2>Gerenciar Autorizados para Agendar Viagens</h2>
     {% if request.user.tipo_usuario == "diretor" %}
     <form method="post" class="form">
         {% csrf_token %}
@@ -25,6 +25,7 @@
     {% endif %}
 </div>
 <div class="container">
+    <h2>Gerenciar Motoristas para Viagens</h2>
     <!-- Form de motoristas disponíveis -->
     <form method="post" action="{% url 'gerenciar_motoristas' %}" class="form" style="margin-top:40px;">
         {% csrf_token %}

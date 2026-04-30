@@ -5,11 +5,23 @@
     <div class="container-btn-dashboard"  >
         <a href="{% url 'cadastrar_motorista_externo' %}" class="btn-card">🧑‍✈️ Cadastrar Motorista Externo</a>
     </div>
+
+
     <h2>Processar Agendamento</h2>
 
+    <!-- Mensagens de erro/sucesso -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <!-- Informações da solicitação -->
-    <div class="dashboard-container" >
-        <!-- Exibe detalhes do agendamento para o diretor -->
+    <div class="dashboard-container">
         <p><strong>Solicitante:</strong> {{ agendamento.solicitante.username }}</p>
         <p><strong>Servidor:</strong> {{ agendamento.servidor.nome }}</p>
         <p><strong>Município:</strong> {{ agendamento.municipio }}</p>
@@ -18,77 +30,44 @@
         <p><strong>Motivo:</strong> {{ agendamento.motivo }}</p>
     </div>
 
-    <!-- Formulário de processamento -->
+    <!-- Aviso se não houver motorista interno -->
+    {% if aviso_motorista %}
+    <div class="alert alert-warning" style="margin-top:15px;">
+        {{ aviso_motorista }}
+    </div>
+    {% endif %}
+
+    <!-- Exibe motorista sorteado automaticamente -->
+    {% if motorista_sorteado %}
+    <div class="alert alert-info" style="margin-top:15px;">
+        <strong>Motorista interno sorteado:</strong> {{ motorista_sorteado.nome }}
+        {% if motorista_sorteado.telefone %}
+            - Telefone: {{ motorista_sorteado.telefone }}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Formulário -->
     <form method="post" class="form">
         {% csrf_token %}
-        <div class="form-row">
-            
-
-            <div class="form-group">
-                <label for="id_tipo"><strong>Tipo de Motorista</strong></label>
-                {{ form.tipo }}
-            </div>
+        <div class="form-group">
+            <label for="id_tipo"><strong>Tipo de Motorista</strong></label>
+            {{ form.tipo }}
         </div>
-        <!-- Select dinâmico: motoristas internos -->
-        <div class="form-group" id="motorista-servidor">
-            <label for="id_motorista_servidor"><strong>Motorista (da Vigilância)</strong></label>
+
+        <div class="form-group" id="motorista-servidor" style="display:none;">
             {{ form.motorista_servidor }}
         </div>
 
-        <!-- Select dinâmico: motoristas externos -->
         <div class="form-group" id="motorista-externo">
-            <label for="id_motorista_externo"><strong>Motorista (Outro Departamento)</strong></label>
+            <label for="id_motorista_externo"><strong>Motorista Externo</strong></label>
             {{ form.motorista_externo }}
-        </div>
-
-        <!-- Calendário de disponibilidade -->
-        <div class="calendar-section">
-            <h3>Disponibilidade dos Motoristas</h3>
-            <table class="dashboard-table">
-                <thead>
-                    <tr>
-                        <th>Tipo</th>
-                        <th>Motorista</th>
-                        <th>Status</th>
-                        <th>Período</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for motorista in motoristas %}
-                    <tr>
-                        <td>{{ motorista.tipo }}</td>
-                        <td>{{ motorista.nome }}</td>
-                        <td>
-                            {% if motorista.status == "em_viagem" %}
-                                <span class="status inativo">Em viagem</span>
-                            {% elif motorista.status == "indisponivel" %}
-                                <span class="status indisponivel">Indisponível</span>
-                            {% else %}
-                                <span class="status ativo">Disponível</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if motorista.periodo %}
-                                {{ motorista.periodo }}
-                            {% else %}
-                                Livre
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="3">Nenhum motorista cadastrado.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
 
         <button type="submit" class="btn btn-primary" id="btn-confirmar">Confirmar Processamento</button>
     </form>
 </div>
 
-<!-- Script para alternar selects dinamicamente -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const tipoSelect = document.getElementById("id_tipo");
@@ -97,7 +76,8 @@
 
         function atualizarCampos() {
             if (tipoSelect.value === "Da Vigilância") {
-                motoristaServidor.style.display = "block";
+                // Motorista interno é sorteado automaticamente, não aparece
+                motoristaServidor.style.display = "none";
                 motoristaExterno.style.display = "none";
             } else if (tipoSelect.value === "outros") {
                 motoristaServidor.style.display = "none";
@@ -111,16 +91,12 @@
         tipoSelect.addEventListener("change", atualizarCampos);
         atualizarCampos(); // inicializa corretamente
 
-
-        
         const btnConfirmar = document.getElementById("btn-confirmar");
-
         btnConfirmar.addEventListener("click", function() {
             btnConfirmar.disabled = true;
-            btnConfirmar.innerText = "Processando..."; // feedback visual
-            btnConfirmar.form.submit(); // força o envio do formulário
+            btnConfirmar.innerText = "Processando...";
+            btnConfirmar.form.submit();
         });
-
     });
 </script>
 {% endblock %}

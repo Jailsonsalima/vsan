@@ -26,6 +26,7 @@ class Servidor(models.Model):
 
     # Novo campo para disponibilidade
     disponivel = models.BooleanField(default=True)
+    ultima_vez_sorteado = models.DateTimeField(null=True, blank=True)
 
     def primeiro_nome(self):
         return self.nome.split()[0]

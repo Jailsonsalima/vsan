@@ -9,6 +9,7 @@ from django.contrib import messages
 from .models import Agendamento, AutorizacaoAgendamento, MotoristaExterno, ProcessamentoAgendamento
 from usuarios.models import Usuario
 from servidores.models import Servidor
+from django.utils import timezone
 
 
 @login_required(login_url='/login/')
@@ -90,58 +91,21 @@ def gerenciar_autorizacoes(request):
 def processar_agendamento(request, agendamento_id):
     agendamento = Agendamento.objects.get(id=agendamento_id)
 
-     # Verifica se o usuário tem permissão para processar
+    # Verifica permissão
     autorizacao = AutorizacaoAgendamento.objects.filter(usuario=request.user, pode_processar=True).first()
     if not autorizacao and request.user.tipo_usuario != 'diretor':
         messages.error(request, "Você não tem permissão para processar agendamentos.")
         return redirect('listar_agendamentos')
-    
+
     # Impede reprocessamento
     if agendamento.processado or ProcessamentoAgendamento.objects.filter(agendamento=agendamento).exists():
         messages.error(request, "Este agendamento já foi processado e não pode ser alterado novamente.")
         return redirect('listar_agendamentos')
-    
+
+    # Motoristas disponíveis
     motoristas_servidores = Servidor.objects.filter(cargo__icontains="Motorista")
     motoristas_externos = MotoristaExterno.objects.all()
 
-    motoristas = []
-
-    def verificar_disponibilidade(motorista, tipo="servidor"):
-        filtro = {}
-        if tipo == "Da Vigilância":
-            filtro["motorista_servidor"] = motorista
-        else:
-            filtro["motorista_externo"] = motorista
-
-        processamento_ativo = ProcessamentoAgendamento.objects.filter(
-            **filtro,
-            agendamento__data_ida__lte=agendamento.data_retorno,
-            agendamento__data_retorno__gte=agendamento.data_ida
-        ).first()
-
-        status = "disponivel"
-        periodo = None
-
-        if processamento_ativo:
-            status = "em_viagem"
-            periodo = f"{processamento_ativo.agendamento.data_ida} - {processamento_ativo.agendamento.data_retorno}"
-        elif not motorista.disponivel:
-            status = "indisponivel"
-
-        return {
-            "nome": getattr(motorista, "nome", getattr(motorista, "nome_completo", "")),
-            "status": status,
-            "periodo": periodo,
-            "tipo": tipo,
-        }
-
-    # monta lista de motoristas para exibição
-    for m in motoristas_servidores:
-        motoristas.append(verificar_disponibilidade(m, "Da Vigilância"))
-    for m in motoristas_externos:
-        motoristas.append(verificar_disponibilidade(m, "externo"))
-
-    # filtra motoristas disponíveis para os selects
     motoristas_servidores_disponiveis = motoristas_servidores.filter(disponivel=True).exclude(
         id__in=ProcessamentoAgendamento.objects.filter(
             motorista_servidor__in=motoristas_servidores,
@@ -158,28 +122,60 @@ def processar_agendamento(request, agendamento_id):
         ).values_list("motorista_externo_id", flat=True)
     )
 
+    motorista_sorteado = None
+    aviso_motorista = None
+
     if request.method == 'POST':
         form = ProcessamentoAgendamentoForm(request.POST)
         if form.is_valid():
             processamento = form.save(commit=False)
             processamento.agendamento = agendamento
+
+            # Recupera motorista sorteado da sessão
+            if processamento.tipo == "Da Vigilância":
+                # Seleciona o motorista com a data mais antiga (ou nula)
+                motorista_sorteado = motoristas_servidores_disponiveis.order_by('ultima_vez_sorteado').first()
+                if motorista_sorteado:
+                    processamento.motorista_servidor = motorista_sorteado
+                    motorista_sorteado.ultima_vez_sorteado = timezone.now()
+                    motorista_sorteado.save()
+                else:
+                    # Nenhum motorista interno disponível
+                    messages.error(request, "Não há motorista disponível da Vigilância. Selecione um motorista externo.")
+                    return render(request, 'agendamentos/processar.html', {
+                        'form': form,
+                        'agendamento': agendamento,
+                        'motorista_sorteado': None,
+                        'aviso_motorista': "Não há motorista disponível da Vigilância. Selecione um motorista externo."
+                    })
+
+            elif processamento.tipo == "outros":
+                if not processamento.motorista_externo:
+                    messages.error(request, "Você deve selecionar um motorista externo para continuar.")
+                    return render(request, 'agendamentos/processar.html', {
+                        'form': form,
+                        'agendamento': agendamento,
+                        'motorista_sorteado': None,
+                        'aviso_motorista': "Selecione um motorista externo para processar o agendamento."
+                    })
+
             processamento.save()
             agendamento.processado = True
             agendamento.save()
+
+            # E-mail ao solicitante
             motorista_nome = None
             motorista_telefone = None
-
             if processamento.motorista_servidor:
                 motorista_nome = processamento.motorista_servidor.nome
                 motorista_telefone = getattr(processamento.motorista_servidor, "telefone", None)
             elif processamento.motorista_externo:
                 motorista_nome = processamento.motorista_externo.nome_completo
                 motorista_telefone = processamento.motorista_externo.telefone
-            # envia e-mail ao solicitante
+
             send_mail(
                 'Agendamento Processado',
-                f'Sua solicitação foi respondida.\n'
-                
+                f'Sua solicitação foi respondida.\n\n'
                 f'Dados do agendamento:\n'
                 f'Ida: {agendamento.data_ida.strftime("%d/%m/%Y")}\n'
                 f'Retorno: {agendamento.data_retorno.strftime("%d/%m/%Y")}\n'
@@ -196,12 +192,20 @@ def processar_agendamento(request, agendamento_id):
     else:
         form = ProcessamentoAgendamentoForm()
         form.fields["motorista_servidor"].queryset = motoristas_servidores_disponiveis
+        form.fields["motorista_servidor"].widget.attrs["disabled"] = True
         form.fields["motorista_externo"].queryset = motoristas_externos_disponiveis
+
+        # Sorteia no GET e guarda na sessão
+        if motoristas_servidores_disponiveis.exists():
+            motorista_sorteado = motoristas_servidores_disponiveis.order_by('ultima_vez_sorteado').first()
+        else:
+            aviso_motorista = "Não há motorista disponível da Vigilância. Selecione um motorista externo."
 
     return render(request, 'agendamentos/processar.html', {
         'form': form,
         'agendamento': agendamento,
-        'motoristas': motoristas,
+        'motorista_sorteado': motorista_sorteado,
+        'aviso_motorista': aviso_motorista,
     })
 
 @login_required(login_url='/login/')
