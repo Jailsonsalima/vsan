@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container" style="display:flex; gap:40px;">
+    <div style="flex:1;">
+        <form method="get" class="form">
+            <label for="motorista">Escolha o motorista:</label>
+            <select name="motorista" id="motorista" onchange="this.form.submit()">
+                <option value="">-- Selecione --</option>
+                {% for m in motoristas %}
+                    <option value="{{ m.id }}" {% if motorista_selecionado and m.id == motorista_selecionado.id %}selected{% endif %}>
+                        {{ m.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+            <input type="hidden" name="mes" value="{{ mes }}">
+            <input type="hidden" name="ano" value="{{ ano }}">
+        </form>
+        <h2>Calendário de Motoristas</h2>        
+        {% if motorista_selecionado %}
+            <h3 >{{ motorista_selecionado.nome }} - {{ nome_mes }}/{{ ano }}</h3>
+
+            
+
+            <table class="dashboard-table calendario">
+                <tr>
+                    <th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sab</th>
+                </tr>
+                {% for semana in dias_mes %}
+                <tr>
+                    {% for dia in semana %}
+                        {% if dia == 0 %}
+                            <td class="vazio"></td>
+                        {% elif dia in dias_agendados %}
+                            <td class="agendado">{{ dia }}</td>
+                        {% else %}
+                            <td>{{ dia }}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+            <div style="margin-top:20px; left: 0;">
+                <a href="?motorista={{ motorista_selecionado.id }}&mes={{ mes_anterior }}&ano={{ ano_anterior }}" class="btn-secondary">◀ Mês ant.</a>
+                <a href="?motorista={{ motorista_selecionado.id }}&mes={{ mes_proximo }}&ano={{ ano_proximo }}" class="btn-secondary">Próx. mês ▶</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div style="flex:1;">
+        <h2>Nº de Agendamentos de Viagens</h2>
+        <canvas id="graficoMotoristas"></canvas>
+
+        <h2 style="margin-top:40px;">Nº de Dias em Viagem</h2>
+        <canvas id="graficoDiasMotoristas"></canvas>
+    </div>
+</div>
+
+<style>
+.calendario td {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+}
+.calendario td.agendado {
+    background-color: #00bcd4;
+    font-weight: bold;
+}
+.calendario td.vazio {
+    background-color: #eee;
+}
+</style>
+
+{% load static %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Primeiro gráfico
+    const dados = {{ dados_motoristas|safe }};
+    const nomes = dados.map(d => d.motorista_servidor__nome);
+    const totais = dados.map(d => d.total);
+    const ids = dados.map(d => d.motorista_servidor__id);
+
+    const ctx1 = document.getElementById('graficoMotoristas').getContext('2d');
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: nomes,
+            datasets: [{
+                label: 'Agendamentos',
+                data: totais,
+                backgroundColor: ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0','#00bcd4']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: {
+                    stepSize: 1,
+                    precision: 0
+                } } },
+            onClick: (evt, elements) => {
+                if (elements.length > 0) {
+                    const index = elements[0].index;
+                    const motoristaId = ids[index];
+                    if (motoristaId) {
+                        const url = `?motorista=${motoristaId}&mes={{ mes }}&ano={{ ano }}`;
+                        window.location.href = url;
+                    }
+                }
+            }
+        }
+    });
+
+    // Segundo gráfico
+    const dadosDias = {{ dados_dias_motoristas|safe }};
+    const nomesDias = dadosDias.map(d => d.motorista_servidor__nome);
+    const totaisDias = dadosDias.map(d => d.total_dias);
+    const idsDias = dadosDias.map(d => d.motorista_servidor__id);
+
+    const ctx2 = document.getElementById('graficoDiasMotoristas').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: nomesDias,
+            datasets: [{
+                label: 'Dias em Viagem',
+                data: totaisDias,
+                backgroundColor: ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0','#00bcd4']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } },
+            onClick: (evt, elements) => {
+                if (elements.length > 0) {
+                    const index = elements[0].index;
+                    const motoristaId = idsDias[index];
+                    if (motoristaId) {
+                        const url = `?motorista=${motoristaId}&mes={{ mes }}&ano={{ ano }}`;
+                        window.location.href = url;
+                    }
+                }
+            }
+        }
+    });
+
+});
+</script>
+{% endblock %}

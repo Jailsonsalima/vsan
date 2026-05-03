@@ -13,6 +13,8 @@ def cadastro_servidor(request):
         setor = Setor.objects.get(id=setor_id) if setor_id else None
         nascimento_str = request.POST.get("nascimento")
         nascimento = None
+        chefe_id = request.POST.get("chefe_imediato")
+        chefe = Setor.objects.get(id=chefe_id) if chefe_id else None
         if nascimento_str:
             try:
                 nascimento = datetime.strptime(nascimento_str, "%Y-%m-%d").date()
@@ -40,7 +42,7 @@ def cadastro_servidor(request):
             agencia=request.POST.get("agencia"),
             conta=request.POST.get("conta"),
             setor=setor,  # vínculo com setor
-           
+            chefe_imediato=chefe,  # vínculo com chefe imediato
         )
         # Vincula o servidor ao usuário logado
         request.user.servidor = servidor
@@ -75,7 +77,8 @@ def cadastro_servidor_publico(request):
             except ValueError:
                 messages.error(request, "Data de nascimento inválida.")
                 return render(request, "servidores/cadastro_servidor.html", {"setores": setores})
-            
+        chefe_id = request.POST.get("chefe_imediato")
+        chefe = Setor.objects.get(id=chefe_id) if chefe_id else None
         Servidor.objects.create(
             nome=request.POST.get("nome"),
             endereco=request.POST.get("endereco"),
@@ -90,6 +93,7 @@ def cadastro_servidor_publico(request):
             agencia=request.POST.get("agencia"),
             conta=request.POST.get("conta"),
             setor=setor,  # vínculo com setor
+            chefe_imediato=chefe,  # vínculo com chefe imediato
         )
         messages.success(request, "Servidor público cadastrado com sucesso! ")
         return redirect("sucesso")

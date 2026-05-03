@@ -10,7 +10,13 @@ from .models import Agendamento, AutorizacaoAgendamento, MotoristaExterno, Proce
 from usuarios.models import Usuario
 from servidores.models import Servidor
 from django.utils import timezone
+from django.db.models import Q, Count
 
+from django.core.paginator import Paginator
+import calendar
+import json
+import locale
+import calendar
 
 @login_required(login_url='/login/')
 def solicitar_agendamento(request):
@@ -61,16 +67,29 @@ def gerenciar_autorizacoes(request):
 
     usuarios = Usuario.objects.filter(is_superuser=False).exclude(id=request.user.id)
 
+    # Filtro por nome (username OU nome do servidor vinculado)
+    filtro_nome = request.GET.get("nome") or ""
+    if filtro_nome:
+        usuarios = usuarios.filter(
+            Q(username__icontains=filtro_nome) |
+            Q(servidor__nome__icontains=filtro_nome)
+        )
+
+    # Paginação
+    paginator = Paginator(usuarios, 10)  # 10 usuários por página
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     # garante que cada usuário tenha um objeto de autorização
-    for usuario in usuarios:
+    for usuario in page_obj:
         autorizacao, _ = AutorizacaoAgendamento.objects.get_or_create(usuario=usuario)
         usuario.autorizacao = autorizacao
-        
+
     motoristas_servidores = Servidor.objects.filter(cargo__icontains="Motorista")
     motoristas_externos = MotoristaExterno.objects.all()
 
     if request.method == 'POST':
-        for usuario in usuarios:
+        for usuario in page_obj:
             visualizar = request.POST.get(f"visualizar_{usuario.id}") == "on"
             processar = request.POST.get(f"processar_{usuario.id}") == "on"
             autorizacao, _ = AutorizacaoAgendamento.objects.get_or_create(usuario=usuario)
@@ -81,9 +100,10 @@ def gerenciar_autorizacoes(request):
         return redirect('gerenciar_autorizacoes')
 
     return render(request, 'agendamentos/gerenciar_autorizacoes.html', {
-        'usuarios': usuarios,
+        'page_obj': page_obj,
         'motoristas_servidores': motoristas_servidores,
-        'motoristas_externos': motoristas_externos  # para exibir também na mesma página
+        'motoristas_externos': motoristas_externos,
+        'filtro_nome': filtro_nome,
     })
 
 
@@ -216,10 +236,20 @@ def listar_agendamentos(request):
         messages.error(request, "Você não tem permissão para visualizar os agendamentos.")
         return render(request, "usuarios/dashboard.html")
 
+    # Filtro por município
+    filtro_municipio = request.GET.get("municipio") or ""
+
     # Busca todos os agendamentos
     agendamentos = Agendamento.objects.all().order_by("-data_solicitacao").select_related("processamento")
 
-    return render(request, "agendamentos/listar.html", {"agendamentos": agendamentos})
+    if filtro_municipio:
+        agendamentos = agendamentos.filter(municipio__icontains=filtro_municipio)
+
+    # Paginação
+    paginator = Paginator(agendamentos, 10)  # 10 registros por página
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, "agendamentos/listar.html", {"agendamentos": agendamentos, "page_obj": page_obj, "filtro_municipio": filtro_municipio,})
 
 @login_required(login_url='/login/')
 def gerenciar_motoristas(request):
@@ -279,3 +309,87 @@ def adicionar_processo(request, agendamento_id):
         messages.success(request, "Número do processo adicionado com sucesso.")
         return redirect('listar_agendamentos')
     return render(request, "agendamentos/adicionar_processo.html", {"processamento": processamento})
+
+
+# Define locale para português do Brasil
+locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+
+@login_required(login_url='/login/')
+def calendario_motorista(request):
+    motoristas = Servidor.objects.filter(cargo__icontains="Motorista")
+
+    motorista_id = request.GET.get("motorista")
+    motorista = None
+    dias_agendados = []
+
+    ano = int(request.GET.get("ano", timezone.now().year))
+    mes = int(request.GET.get("mes", timezone.now().month))
+
+    if motorista_id:
+        motorista = Servidor.objects.get(id=motorista_id)
+        agendamentos = ProcessamentoAgendamento.objects.filter(motorista_servidor=motorista)
+        for ag in agendamentos:
+            if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
+                dias_agendados.extend(range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day+1))
+
+    # número de agendamentos por motorista no mês/ano atual
+    dados_motoristas = (
+        ProcessamentoAgendamento.objects
+        .filter(agendamento__data_ida__month=mes, agendamento__data_ida__year=ano)
+        .values("motorista_servidor__id", "motorista_servidor__nome")
+        .annotate(total=Count("id"))
+        .order_by("motorista_servidor__nome")
+    )
+
+    # número de dias em viagem por motorista no mês/ano atual
+    dados_dias_motoristas = []
+    motoristas_ids = (
+        ProcessamentoAgendamento.objects
+        .filter(agendamento__data_ida__month=mes, agendamento__data_ida__year=ano)
+        .values_list("motorista_servidor__id", flat=True)
+        .distinct()
+    )
+
+    for motorista_id in motoristas_ids:
+        motorista_obj = Servidor.objects.get(id=motorista_id)
+        agendamentos = ProcessamentoAgendamento.objects.filter(
+            motorista_servidor_id=motorista_id,
+            agendamento__data_ida__month=mes,
+            agendamento__data_ida__year=ano
+        )
+
+        total_dias = sum(
+            (ag.agendamento.data_retorno - ag.agendamento.data_ida).days + 1
+            for ag in agendamentos
+        )
+
+        dados_dias_motoristas.append({
+            "motorista_servidor__id": motorista_id,
+            "motorista_servidor__nome": motorista_obj.nome,
+            "total_dias": total_dias
+        })
+
+    cal = calendar.Calendar(firstweekday=6)
+    dias_mes = cal.monthdayscalendar(ano, mes)
+
+    mes_anterior = mes - 1 if mes > 1 else 12
+    ano_anterior = ano if mes > 1 else ano - 1
+    mes_proximo = mes + 1 if mes < 12 else 1
+    ano_proximo = ano if mes < 12 else ano + 1
+    nome_mes = calendar.month_name[mes].capitalize()
+
+    return render(request, "agendamentos/calendario_motorista.html", {
+        "motoristas": motoristas,
+        "motorista_selecionado": motorista,
+        "dias_agendados": dias_agendados,
+        "dias_mes": dias_mes,
+        "mes": mes,
+        "ano": ano,
+        "nome_mes": nome_mes,
+        "mes_anterior": mes_anterior,
+        "ano_anterior": ano_anterior,
+        "mes_proximo": mes_proximo,
+        "ano_proximo": ano_proximo,
+        "dados_motoristas": json.dumps(list(dados_motoristas)),
+        "dados_dias_motoristas": json.dumps(list(dados_dias_motoristas)),
+    })

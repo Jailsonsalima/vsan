@@ -83,21 +83,30 @@
             </div>
             <div class="form-group">
                 <label for="funcao">Função:</label>
-                <input type="text" name="funcao" id="funcao">
+                <input type="text" name="funcao" id="funcao" required>
             </div>
+        </div>
+        <div class="form-group">
+            <label for="chefe_imediato">Chefe Imediato:</label>
+            <select id="chefe_imediato" name="chefe_imediato" required>
+                <option value="">-- Selecione --</option>
+                {% for setor in setores %}
+                    <option value="{{ setor.id }}">{{ setor.chefe_imediato }} -- ({{ setor.cargo_chefe }})</option>
+                {% endfor %}
+            </select>
         </div>
         <div class="form-row">
             <div class="form-group">
                 <label for="banco">Banco:</label>
-                <input type="text" name="banco" id="banco">
+                <input type="text" name="banco" id="banco" required>
             </div>
             <div class="form-group">
                 <label for="agencia">Agência:</label>
-                <input type="text" name="agencia" id="agencia">
+                <input type="text" name="agencia" id="agencia" required>
             </div>
             <div class="form-group">
                 <label for="conta">Conta Corrente:</label>
-                <input type="text" name="conta" id="conta">
+                <input type="text" name="conta" id="conta" required>
             </div>
         </div>
         <button type="submit" class="btn-secondary">Cadastrar Servidor</button>

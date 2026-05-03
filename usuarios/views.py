@@ -10,7 +10,13 @@ from agendamentos.models import Agendamento, AutorizacaoAgendamento
 
 # Create your views here.
 def home(request):
-    return render(request, 'usuarios/home.html')
+    #return render(request, 'usuarios/login.html')
+    if request.user.is_authenticated:
+        # Usuário logado → vai para o dashboard
+        return redirect('dashboard')
+    else:
+        # Usuário não logado → vai para login
+        return redirect('login')
 
 def about(request):
     return render(request, 'about.html')

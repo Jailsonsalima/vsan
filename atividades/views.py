@@ -11,6 +11,7 @@ from setores.models import Setor
 from django.contrib import messages
 import io, zipfile
 from django.db import IntegrityError
+from django.db.models import Q
 
 # Create your views here.
 
@@ -50,6 +51,7 @@ def cadastrar_atividade(request):
                 n_memorando = n_memorando,
                 # se quiser salvar o chefe selecionado, adicione um campo no model Atividade
                 chefe_imediato=chefe,  # aqui vai a instância de Setor
+                criador=request.user, # aqui salva o usuário que criou o documento
             )
             ids = request.POST.getlist("servidores")
             atividade.servidores.set(Servidor.objects.filter(id__in=ids))
@@ -78,7 +80,7 @@ def formatar_periodo(data_ida, data_retorno):
 @login_required(login_url='/login/')
 def gerar_zip_pdfs(request, atividade_id):
     # Filtra setores cujo cargo_chefe começa com "Diretor"
-    setores = Setor.objects.filter(cargo_chefe__startswith="Diretor")
+    setores = Setor.objects.filter(cargo_chefe__startswith="Diretor ")
 
     atividade = get_object_or_404(Atividade, id=atividade_id)
     servidores = atividade.servidores.all()
@@ -169,19 +171,32 @@ from django.core.paginator import Paginator
 
 @login_required(login_url='/login/')
 def listar_atividades(request):
-    atividades = Atividade.objects.all().order_by("-data_criacao")
+    usuario = request.user
+    if usuario.tipo_usuario == "diretor":
+        atividades = Atividade.objects.all().order_by("-data_criacao")
+    else:
+        atividades = Atividade.objects.filter(
+            Q(criador=usuario) | Q(chefe_imediato=usuario.servidor.setor)
+        ).order_by("-data_criacao")
+
     recurso_ativo = RecursoAtivo.objects.first()
     # Filtros
-    municipio = request.GET.get("municipio")
-    data_inicio = request.GET.get("data_inicio")
-    data_fim = request.GET.get("data_fim")
+    municipio = request.GET.get("municipio") or ""
+    data_inicio = request.GET.get("data_inicio") or ""
+    data_fim = request.GET.get("data_fim") or ""
 
     if municipio:
         atividades = atividades.filter(municipio__icontains=municipio)
     if data_inicio:
-        atividades = atividades.filter(data_ida__gte=data_inicio)
+        try:
+            atividades = atividades.filter(data_ida__gte=data_inicio)
+        except ValueError:
+            pass
     if data_fim:
-        atividades = atividades.filter(data_retorno__lte=data_fim)
+        try:
+            atividades = atividades.filter(data_retorno__lte=data_fim)
+        except ValueError:
+            pass
 
     # Paginação
     paginator = Paginator(atividades, 10)  # 10 registros por página

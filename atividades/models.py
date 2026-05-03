@@ -1,6 +1,7 @@
 from django.db import models
 from servidores.models import Servidor
 from setores.models import Setor
+from usuarios.models import Usuario
 
 # Create your models here.
 
@@ -35,6 +36,7 @@ class Atividade(models.Model):
     n_memorando = models.CharField(max_length=10, verbose_name='Nº do Memorando', unique=True, blank=True, null=True)
     chefe_imediato = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name="atividades_chefiadas")
     numero_processo = models.CharField(max_length=50, blank=True, null=True)
-    
+    criador = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="atividades_criadas", null=True, blank=True)
+
     def __str__(self):
         return f"{self.data_criacao} - {self.data_ida} ({self.data_retorno}) - {self.objetivo[:30]}..."

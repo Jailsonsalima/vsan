@@ -2,10 +2,19 @@
 {% load static %}
 {% block content %}
 <div class="container">
-    <div class="container-btn-dashboard"  >
-        <a href="{% url 'cadastrar_motorista_externo' %}" class="btn-card">🧑‍✈️ Cadastrar Motorista Externo</a>
+    <div class="container-btn-dashboard" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;" >
+        <a href="{% url 'cadastrar_motorista_externo' %}" class="btn-card" >🧑‍✈️ Cadastrar Motorista Externo</a>
+
+        <a href="{% url 'calendario_motorista' %}" class="btn-card">📅 Agenda de Motoristas</a>
     </div>
     <h2>Solicitações de Agendamento</h2>
+
+    <form class="form" style="margin-bottom:20px;">
+        <label for="filtro-municipio">Pesquisar Município:</label>
+        <input type="text" id="filtro-municipio" placeholder="Digite o município...">
+    </form>
+
+
     <!-- Tabela de solicitações -->
     <table class="dashboard-table">
         <thead>
@@ -20,9 +29,9 @@
                 <th>Ações</th>
             </tr>
         </thead>
-        <tbody>
-            {% for agendamento in agendamentos %}
-            <tr>
+        <tbody id="tabela-agendamentos">
+            {% for agendamento in page_obj %}
+            <tr class="agendamento-item" data-municipio="{{ agendamento.municipio }}">
                 <td>{{ agendamento.servidor.nome }}</td>
                 <td>{{ agendamento.municipio }}</td>
                 <td>{{ agendamento.data_ida }}</td>
@@ -38,16 +47,16 @@
                 <td>
                 {% if agendamento.processado %}
                     {% if agendamento.processamento.motorista_servidor %}
-                        <div class="info">Motorista: {{ agendamento.processamento.motorista_servidor.nome }}</div>
+                        {{ agendamento.processamento.motorista_servidor.nome }}
                     {% elif agendamento.processamento.motorista_externo %}
-                        <div class="info">Motorista: {{ agendamento.processamento.motorista_externo.nome_completo }} - {{ agendamento.processamento.motorista_externo.telefone }}</div>
+                        {{ agendamento.processamento.motorista_externo.nome_completo }} - {{ agendamento.processamento.motorista_externo.telefone }}
                     {% else %}
-                        <div class="info">Motorista não informado</div>
+                        Motorista não informado
                     {% endif %}
                 {% else %}
-                    <div class="info"> -- </div>
+                    --
                 {% endif %}
-                </td>   
+                </td>
                 <td>
                     {% if agendamento.processado %}
                         <span class="info">Já processado</span>
@@ -64,7 +73,7 @@
                     {% else %}
                         <a href="{% url 'processar_agendamento' agendamento.id %}" class="btn-primary">Processar</a>
                     {% endif %}
-                </td>
+                </td>   
             </tr>
             {% empty %}
             <tr>
@@ -73,6 +82,55 @@
             {% endfor %}
         </tbody>
     </table>
+    <!-- Paginação -->
+    <div class="pagination" style="margin-top:20px; text-align:center;">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&municipio={{ filtro_municipio }}" class="btn-secondary">Anterior</a>
+    {% endif %}
+
+    {% if page_obj.number > 3 %}
+        <a href="?page=1&municipio={{ filtro_municipio }}" class="btn-secondary">1</a>
+        <span>...</span>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+            {% if page_obj.number == num %}
+                <span class="btn-primary" style="margin:0 5px;">{{ num }}</span>
+            {% else %}
+                <a href="?page={{ num }}&municipio={{ filtro_municipio }}" class="btn-secondary" style="margin:0 5px;">{{ num }}</a>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.number < page_obj.paginator.num_pages|add:-2 %}
+        <span>...</span>
+        <a href="?page={{ page_obj.paginator.num_pages }}&municipio={{ filtro_municipio }}" class="btn-secondary">{{ page_obj.paginator.num_pages }}</a>
+    {% endif %}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&municipio={{ filtro_municipio }}" class="btn-secondary">Próxima</a>
+    {% endif %}
+</div>
+
 </div>
 <script src="{% static 'js/script.js' %}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const filtroInput = document.getElementById("filtro-municipio");
+    const linhas = document.querySelectorAll("#tabela-agendamentos .agendamento-item");
+
+    filtroInput.addEventListener("input", function() {
+        const termo = filtroInput.value.toLowerCase();
+        linhas.forEach(linha => {
+            const municipio = linha.dataset.municipio.toLowerCase();
+            if (municipio.includes(termo)) {
+                linha.style.display = "";
+            } else {
+                linha.style.display = "none";
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

@@ -2,8 +2,9 @@
 
 {% block content %}
 <div class="container">
-    <div class="container-btn-dashboard"  >
+    <div class="container-btn-dashboard" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;" >
         <a href="{% url 'cadastrar_motorista_externo' %}" class="btn-card">🧑‍✈️ Cadastrar Motorista Externo</a>
+        <a href="{% url 'calendario_motorista' %}" class="btn-card">📅 Agenda de Motoristas</a>
     </div>
 
 

@@ -23,7 +23,7 @@ class Servidor(models.Model):
     conta = models.CharField(max_length=30, blank=True, null=True)
     # Relacionamento com Setor
     setor = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True)
-
+    chefe_imediato = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name="servidores_chefiados")
     # Novo campo para disponibilidade
     disponivel = models.BooleanField(default=True)
     ultima_vez_sorteado = models.DateTimeField(null=True, blank=True)

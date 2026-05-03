@@ -290,6 +290,15 @@ footer {
         width: 100%;
         text-align: center;
     }
+    .container {
+        display: flex;
+        gap: 40px;
+        flex-wrap: wrap; /* permite quebrar linha */
+        flex-direction: column; /* empilha os elementos */
+    }
+    .container > div {
+        width: 100%; /* cada bloco ocupa toda a largura */
+    }
 }
 
 .alert {
