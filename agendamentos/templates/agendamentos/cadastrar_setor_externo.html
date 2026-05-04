@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Cadastrar Novo Setor</h2>
+
+    <!-- Formulário de cadastro -->
+    <form method="post" class="form">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="nome">Nome do Setor</label>
+        <input type="text" class="form-control" id="nome" name="nome" required>
+    </div>
+
+    <div class="form-group mt-3">
+        <label for="chefe_imediato">Chefe Imediato</label>
+        <input type="text" class="form-control" id="chefe_imediato" name="chefe_imediato">
+    </div>
+
+    <div class="form-group mt-3">
+        <label for="cargo_chefe">Cargo do Chefe</label>
+        <input type="text" class="form-control" id="cargo_chefe" name="cargo_chefe">
+    </div>
+
+    <div class="form-group mt-3">
+        <label for="matricula">Matrícula do Chefe</label>
+        <input type="text" class="form-control" id="matricula" name="matricula">
+    </div>
+
+    <div class="form-group mt-3">
+        <label for="portaria_chefe">Portaria do Chefe</label>
+        <input type="text" class="form-control" id="portaria_chefe" name="portaria_chefe">
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-4">Salvar</button>
+</form>
+
+
+    <!-- Lista de setores já cadastrados -->
+    <hr>
+    <h3>Setores Existentes</h3>
+    <ul class="list-group">
+        {% for setor in setores %}
+            <li class="list-group-item">
+                {{ setor.nome }} - Chefe: {{ setor.chefe_imediato|default:"Não definido" }}
+            </li>
+        {% empty %}
+            <li class="list-group-item">Nenhum setor cadastrado ainda.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% load static %}
+<script src="{% static 'js/script.js' %}"></script>
+{% endblock %}

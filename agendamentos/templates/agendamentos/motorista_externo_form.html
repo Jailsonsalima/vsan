@@ -2,14 +2,18 @@
 {% load static %}
 {% block content %}
 <div class="container">
+    <div class="container-btn-dashboard" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;" >
+        <a href="{% url 'cadastrar_setor_externo' %}" class="btn-card" >📝 Cadastrar  Novo Setor</a>
+
+    </div>
     <h2>Cadastrar Motorista Externo</h2>
 
     <form method="post" class="form">
         {% csrf_token %}
         
         <div class="form-group">
-            <label for="id_nome_completo">Nome Completo</label>
-            {{ form.nome_completo }}
+            <label for="id_nome">Nome Completo</label>
+            {{ form.nome }}
         </div>
         <div class="form-row">
             <div class="form-group">
@@ -48,8 +52,13 @@
                 {{ form.matricula }}
             </div>
             <div class="form-group">
-                <label for="id_lotacao">Lotação</label>
-                {{ form.lotacao }}
+                <label for="setor">Lotação:</label>
+                <select name="setor" id="setor" required>
+                    <option value="">-- Selecione um setor --</option>
+                    {% for setor in setores %}
+                        <option value="{{ setor.id }}">{{ setor.nome }}</option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
         <div class="form-row">
@@ -67,6 +76,15 @@
             <label for="id_telefone">Telefone</label>
             {{ form.telefone }}
         </div>
+        <div class="form-group">
+            <label for="chefe_imediato">Chefe Imediato:</label>
+            <select id="chefe_imediato" name="chefe_imediato" required>
+                <option value="">-- Selecione --</option>
+                {% for setor in setores %}
+                    <option value="{{ setor.id }}">{{ setor.chefe_imediato }} -- ({{ setor.cargo_chefe }})</option>
+                {% endfor %}
+            </select>
+        </div>
         <div class="form-row">   
             <div class="form-group">
                 <label for="id_banco">Banco</label>
@@ -79,8 +97,8 @@
             </div>
 
             <div class="form-group">
-                <label for="id_conta_corrente">Conta Corrente</label>
-                {{ form.conta_corrente }}
+                <label for="id_conta">Conta Corrente</label>
+                {{ form.conta }}
             </div>
         </div>
         <div class="fcheckbox-list form-row">

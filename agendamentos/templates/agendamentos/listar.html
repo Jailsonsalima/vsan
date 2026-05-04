@@ -49,7 +49,7 @@
                     {% if agendamento.processamento.motorista_servidor %}
                         {{ agendamento.processamento.motorista_servidor.nome }}
                     {% elif agendamento.processamento.motorista_externo %}
-                        {{ agendamento.processamento.motorista_externo.nome_completo }} - {{ agendamento.processamento.motorista_externo.telefone }}
+                        {{ agendamento.processamento.motorista_externo.nome }} - {{ agendamento.processamento.motorista_externo.telefone }}
                     {% else %}
                         Motorista não informado
                     {% endif %}

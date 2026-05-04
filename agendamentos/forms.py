@@ -39,13 +39,16 @@ class MotoristaExternoForm(forms.ModelForm):
     class Meta:
         model = MotoristaExterno
         fields = [
-            "nome_completo", "cpf", "rg", "nascimento", "endereco", "vinculo",
-            "matricula", "lotacao", "cargo", "funcao", "banco", "agencia",
-            "conta_corrente", "disponivel", "telefone"
+            "nome", "cpf", "rg", "nascimento", "endereco", "vinculo",
+            "matricula", "setor", "cargo", "funcao", "banco", "agencia",
+            "conta", "disponivel", "telefone", "chefe_imediato"
         ]
         widgets = {
             "matricula": forms.TextInput(attrs={"type": "text", "placeholder": "Digite a matrícula", "id": "matricula"}),
             "nascimento": forms.DateInput(attrs={"type": "date"}),
             "cpf": forms.TextInput(attrs={"type": "text", "placeholder": "Digite o CPF", "id": "cpf"}),
             "telefone": forms.TextInput(attrs={"type": "text", "placeholder": "Digite o telefone", "id": "telefone"}),
+            "setor": forms.Select(attrs={"id": "setor"}),
+            "chefe_imediato": forms.Select(attrs={"id": "chefe_imediato"})
+            
         }

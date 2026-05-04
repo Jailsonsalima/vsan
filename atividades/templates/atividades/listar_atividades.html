@@ -215,6 +215,12 @@
                     {% empty %}
                         Nenhum servidor vinculado
                     {% endfor %}
+                    <br>
+                    {% for motorista in atividade.motoristas_externos.all %}
+                        - {{ motorista.primeiro_nome }}{% if not forloop.last %}<br>{% endif %}
+                    {% empty %}
+                        Nenhum motorista externo vinculado
+                    {% endfor %}
                 </td>
                 <td>{{ atividade.objetivo }}</td>
                 <!--<td>{{ atividade.data_criacao|date:"d/m/Y H:i" }}</td>-->

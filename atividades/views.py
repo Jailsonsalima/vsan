@@ -12,12 +12,14 @@ from django.contrib import messages
 import io, zipfile
 from django.db import IntegrityError
 from django.db.models import Q
-
+from agendamentos.models import MotoristaExterno
 # Create your views here.
 
 @login_required(login_url='/login/')
 def cadastrar_atividade(request):
     servidores = Servidor.objects.all()
+    # carrega os motoristas externos para passar ao template, caso queira listar no formulário de cadastro
+    motoristas_externos = MotoristaExterno.objects.all()
     # Filtra setores cujo cargo_chefe NÃO começa com "Diretor"
     setores = Setor.objects.exclude(cargo_chefe__startswith="Diretor")
     if request.method == "POST":
@@ -55,6 +57,8 @@ def cadastrar_atividade(request):
             )
             ids = request.POST.getlist("servidores")
             atividade.servidores.set(Servidor.objects.filter(id__in=ids))
+            ids_motoristas = request.POST.getlist("motoristas_externos")
+            atividade.motoristas_externos.set(MotoristaExterno.objects.filter(id__in=ids_motoristas))
             atividade.save()
             messages.success(request, "Atividade salva com sucesso!")
             return redirect("listar_atividades")
@@ -65,6 +69,7 @@ def cadastrar_atividade(request):
         "servidores": servidores,
         "setores": setores,
         "recurso_ativo": recurso_ativo,
+        "motoristas_externos": motoristas_externos,
     })
 
 def formatar_periodo(data_ida, data_retorno):
@@ -84,6 +89,7 @@ def gerar_zip_pdfs(request, atividade_id):
 
     atividade = get_object_or_404(Atividade, id=atividade_id)
     servidores = atividade.servidores.all()
+    motoristas_externos = atividade.motoristas_externos.all()
 
     # cria um buffer em memória
     buffer = io.BytesIO()
@@ -115,8 +121,21 @@ def gerar_zip_pdfs(request, atividade_id):
                 }
             )
             pdf_servidor = HTML(string=html_servidor, base_url=request.build_absolute_uri('/')).write_pdf()
-
             zip_file.writestr(f"{servidor.primeiro_e_ultimo_nome()}_{servidor.id}.pdf", pdf_servidor)
+
+        for motorista in motoristas_externos:
+            html_motorista = render_to_string(
+                "pdf_servidor.html",  # reaproveitando a mesma template
+                {
+                    "atividade": atividade,
+                    "servidores": [motorista],  # aqui usamos o objeto da iteração
+                    "setor": motorista.setor if motorista.setor else None,
+                    "periodo_formatado": formatar_periodo(atividade.data_ida, atividade.data_retorno),
+                }
+            )
+            pdf_motorista = HTML(string=html_motorista, base_url=request.build_absolute_uri('/')).write_pdf()
+            zip_file.writestr(f"{motorista.primeiro_e_ultimo_nome()}_{motorista.id}.pdf", pdf_motorista)
+
             # adiciona ao ZIP em memória
             #filename = f"atividade_{atividade.id}_servidor_{servidor.id}.pdf"
             #zip_file.writestr(filename, pdf_bytes)
@@ -131,6 +150,7 @@ def editar_atividade(request, atividade_id):
     atividade = get_object_or_404(Atividade, id=atividade_id)
     servidores = Servidor.objects.all()
     setores = Setor.objects.all()
+    motoristas_externos = MotoristaExterno.objects.all()
 
     if request.method == "POST":
         try:
@@ -165,6 +185,7 @@ def editar_atividade(request, atividade_id):
         "atividade": atividade,
         "servidores": servidores,
         "setores": setores,
+        "motoristas_externos": motoristas_externos,
     })
 
 from django.core.paginator import Paginator

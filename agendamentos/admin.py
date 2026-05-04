@@ -9,9 +9,9 @@ class AgendamentoAdmin(admin.ModelAdmin):
 
 @admin.register(MotoristaExterno)
 class MotoristaExternoAdmin(admin.ModelAdmin):
-    list_display = ("nome_completo", "cpf", "matricula", "cargo", "disponivel",)
+    list_display = ("nome", "cpf", "matricula", "cargo", "disponivel", "conta", "telefone")
     list_filter = ("disponivel", "vinculo")
-    search_fields = ("nome_completo", "cpf", "matricula")
+    search_fields = ("nome", "cpf", "matricula")
 
 @admin.register(AutorizacaoAgendamento)
 class AutorizacaoAgendamentoAdmin(admin.ModelAdmin):

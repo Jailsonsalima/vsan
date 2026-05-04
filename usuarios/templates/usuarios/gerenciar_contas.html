@@ -33,7 +33,7 @@
                     <td>
                         Matrícula: {{ usuario.matricula|default:"Não informada" }}<br>
                         {% if usuario.servidor %}
-                            Lotação: {{ usuario.servidor.lotacao }}
+                            Lotação: {{ usuario.servidor.setor }}
                         {% else %}
                             Servidor não vinculado
                         {% endif %}

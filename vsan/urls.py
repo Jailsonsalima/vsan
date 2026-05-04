@@ -69,4 +69,9 @@ urlpatterns = [
     # Novo endpoint para adicionar processo
     path('adicionar_processo/<int:agendamento_id>/', agendamento_views.adicionar_processo, name='adicionar_processo'),
     path("atividade/adicionar_processo/<int:atividade_id>/", atividades_views.adicionar_processo_atividade, name="adicionar_processo_atividade"),
+
+
+    # cadastrar setor externo para motorista externo
+    path("cadastrar/", agendamento_views.cadastrar_setor_externo, name="cadastrar_setor_externo"),
+
 ]

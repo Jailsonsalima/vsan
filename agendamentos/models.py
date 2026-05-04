@@ -4,6 +4,7 @@ from django.db import models
 
 from django.contrib.auth import get_user_model
 from servidores.models import Servidor
+from setores.models import Setor
 
 Usuario = get_user_model()
 
@@ -22,26 +23,36 @@ class Agendamento(models.Model):
 
 
 class MotoristaExterno(models.Model):
-    nome_completo = models.CharField(max_length=200)
+    nome = models.CharField(max_length=200)
     cpf = models.CharField(max_length=14)
     rg = models.CharField(max_length=20)
     nascimento = models.DateField()
     endereco = models.CharField(max_length=255)
     vinculo = models.CharField(max_length=50)
     matricula = models.CharField(max_length=20)
-    lotacao = models.CharField(max_length=100)
+    setor = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True)
+    chefe_imediato = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name="motoristas_externos_chefiados")
     cargo = models.CharField(max_length=100)
     funcao = models.CharField(max_length=150, blank=True, null=True)
     banco = models.CharField(max_length=50, blank=True, null=True)
     agencia = models.CharField(max_length=20, blank=True, null=True)
-    conta_corrente = models.CharField(max_length=30, blank=True, null=True)
+    conta = models.CharField(max_length=30, blank=True, null=True)
     # Novo campo para controle de disponibilidade
     disponivel = models.BooleanField(default=True)
     telefone = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
-        return self.nome_completo
+        return self.nome
     
+    def primeiro_nome(self):
+        return self.nome.split()[0]
+    
+    def primeiro_e_ultimo_nome(self):
+        partes = self.nome.strip().split()
+        if len(partes) >= 2:
+            return f"{partes[0]}_{partes[-1]}"  # usa underline para evitar espaços em nomes de arquivos
+        return self.nome  # se só tiver um nome, retorna ele mesmo
+  
 
 
 class AutorizacaoAgendamento(models.Model):

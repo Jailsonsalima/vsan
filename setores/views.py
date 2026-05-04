@@ -15,9 +15,13 @@ def cadastrar_setor(request):
     if request.method == "POST":
         nome = request.POST.get("nome")
         if nome:
-            Setor.objects.create(nome=nome)
-            messages.success(request, f"Setor '{nome}' cadastrado com sucesso.")
-            return redirect("cadastrar_setor")
+            # Verifica se já existe setor com o mesmo nome
+            if Setor.objects.filter(nome__iexact=nome).exists():
+                messages.error(request, f"Já existe um setor cadastrado com o nome '{nome}'.")
+            else:
+                Setor.objects.create(nome=nome)
+                messages.success(request, f"Setor '{nome}' cadastrado com sucesso.")
+                return redirect("cadastrar_setor")
     setores = Setor.objects.all()
     recurso_ativo, _ = RecursoAtivo.objects.get_or_create(id=1, defaults={"codigo": "01"})  # pega recurso atual
     return render(request, "setores/cadastrar_setor.html", {"setores": setores, "recurso_ativo": recurso_ativo,})

@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (pernoiteNao) pernoiteNao.addEventListener("change", calcularDias);
 
     // --- Botão habilitado apenas se houver servidores selecionados ---
-    const checkboxes = document.querySelectorAll('input[name="servidores"]');
+    const checkboxes = document.querySelectorAll('input[name="servidores"], input[name="motoristas_externos"]');
     const btnProximo = document.getElementById('btn-proximo');
 
     function atualizarBotao() {
@@ -221,9 +221,16 @@ document.addEventListener("DOMContentLoaded", function () {
 // --- Filtro de pesquisa de servidores ---
 document.getElementById("filtro-servidores").addEventListener("keyup", function() {
     const filtro = this.value.toLowerCase();
+    // Filtra servidores
     const servidores = document.querySelectorAll("#lista-servidores .servidor-item");
 
     servidores.forEach(function(item) {
+        const texto = item.textContent.toLowerCase();
+        item.style.display = texto.includes(filtro) ? "" : "none";
+    });
+    // Filtra motoristas externos
+    const motoristas = document.querySelectorAll("#lista-motoristas-externos .motorista-item");
+    motoristas.forEach(function(item) {
         const texto = item.textContent.toLowerCase();
         item.style.display = texto.includes(filtro) ? "" : "none";
     });
@@ -231,6 +238,7 @@ document.getElementById("filtro-servidores").addEventListener("keyup", function(
 
 // --- Lista de servidores selecionados ---
 const listaSelecionados = document.getElementById('servidores-selecionados');
+const listaMotoristasSelecionados = document.getElementById('motoristas_externos-selecionados');
 
 function atualizarLista() {
     listaSelecionados.innerHTML = "";

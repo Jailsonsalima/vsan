@@ -17,6 +17,8 @@ import calendar
 import json
 import locale
 import calendar
+from setores.models import Setor
+
 
 @login_required(login_url='/login/')
 def solicitar_agendamento(request):
@@ -190,7 +192,7 @@ def processar_agendamento(request, agendamento_id):
                 motorista_nome = processamento.motorista_servidor.nome
                 motorista_telefone = getattr(processamento.motorista_servidor, "telefone", None)
             elif processamento.motorista_externo:
-                motorista_nome = processamento.motorista_externo.nome_completo
+                motorista_nome = processamento.motorista_externo.nome
                 motorista_telefone = processamento.motorista_externo.telefone
 
             send_mail(
@@ -284,7 +286,10 @@ def gerenciar_motoristas(request):
 
 @login_required(login_url='/login/')
 def cadastrar_motorista_externo(request):
+    setores = Setor.objects.all()
     if request.method == 'POST':
+        setor_id = request.POST.get("setor")
+        setor = Setor.objects.get(id=setor_id) if setor_id else None
         form = MotoristaExternoForm(request.POST)
         if form.is_valid():
             form.save()
@@ -293,7 +298,7 @@ def cadastrar_motorista_externo(request):
     else:
         form = MotoristaExternoForm()
 
-    return render(request, 'agendamentos/motorista_externo_form.html', {'form': form})
+    return render(request, 'agendamentos/motorista_externo_form.html', {'form': form, "setores": setores})
 
 @login_required(login_url='/login/')
 def adicionar_processo(request, agendamento_id):
@@ -326,16 +331,24 @@ def calendario_motorista(request):
     mes = int(request.GET.get("mes", timezone.now().month))
 
     if motorista_id:
-        motorista = Servidor.objects.get(id=motorista_id)
-        agendamentos = ProcessamentoAgendamento.objects.filter(motorista_servidor=motorista)
-        for ag in agendamentos:
-            if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
-                dias_agendados.extend(range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day+1))
-
+        try:
+            motorista = Servidor.objects.get(id=motorista_id)
+            agendamentos = ProcessamentoAgendamento.objects.filter(motorista_servidor=motorista)
+            for ag in agendamentos:
+                if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
+                    dias_agendados.extend(range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day+1))
+        except Servidor.DoesNotExist:
+            # Se não for servidor, simplesmente ignora
+            motorista = None
+            agendamentos = []
     # número de agendamentos por motorista no mês/ano atual
     dados_motoristas = (
         ProcessamentoAgendamento.objects
-        .filter(agendamento__data_ida__month=mes, agendamento__data_ida__year=ano)
+        .filter(
+            agendamento__data_ida__month=mes,
+            agendamento__data_ida__year=ano,
+            motorista_servidor__isnull=False  # garante apenas servidores
+        )
         .values("motorista_servidor__id", "motorista_servidor__nome")
         .annotate(total=Count("id"))
         .order_by("motorista_servidor__nome")
@@ -345,17 +358,27 @@ def calendario_motorista(request):
     dados_dias_motoristas = []
     motoristas_ids = (
         ProcessamentoAgendamento.objects
-        .filter(agendamento__data_ida__month=mes, agendamento__data_ida__year=ano)
+        .filter(
+            agendamento__data_ida__month=mes,
+            agendamento__data_ida__year=ano,
+            motorista_servidor__isnull=False  # ignora externos
+        )
         .values_list("motorista_servidor__id", flat=True)
         .distinct()
     )
 
+
     for motorista_id in motoristas_ids:
-        motorista_obj = Servidor.objects.get(id=motorista_id)
+        try:
+            motorista_obj = Servidor.objects.get(id=motorista_id)
+        except Servidor.DoesNotExist:
+            # ignora se não for servidor
+            continue
         agendamentos = ProcessamentoAgendamento.objects.filter(
             motorista_servidor_id=motorista_id,
             agendamento__data_ida__month=mes,
             agendamento__data_ida__year=ano
+        
         )
 
         total_dias = sum(
@@ -393,3 +416,33 @@ def calendario_motorista(request):
         "dados_motoristas": json.dumps(list(dados_motoristas)),
         "dados_dias_motoristas": json.dumps(list(dados_dias_motoristas)),
     })
+
+@login_required(login_url='/login/')
+def cadastrar_setor_externo(request):
+    if request.method == "POST":
+        nome = request.POST.get("nome")
+        chefe_imediato = request.POST.get("chefe_imediato")
+        cargo_chefe = request.POST.get("cargo_chefe")
+        matricula_chefe = request.POST.get("matricula")
+        portaria_chefe = request.POST.get("portaria_chefe")
+
+        if nome:
+            # Verifica se já existe setor com a mesma matrícula
+            if Setor.objects.filter(matricula_chefe=matricula_chefe).exists():
+                messages.error(request, f"Já existe um setor cadastrado com a matrícula {matricula_chefe}.")
+            # Verifica se já existe setor com o mesmo nome
+            elif Setor.objects.filter(nome__iexact=nome).exists():
+                messages.error(request, f"Já existe um setor cadastrado com o nome '{nome}'.")
+            else:
+                setor = Setor.objects.create(
+                    nome=nome,
+                    chefe_imediato=chefe_imediato,
+                    cargo_chefe=cargo_chefe,
+                    matricula_chefe=matricula_chefe,
+                    portaria_chefe=portaria_chefe,
+                )
+                messages.success(request, f"Setor '{setor.nome}' cadastrado com sucesso com chefe '{chefe_imediato}'.")
+                return redirect("cadastrar_motorista_externo")
+
+    setores = Setor.objects.all()
+    return render(request, "agendamentos/cadastrar_setor_externo.html", {"setores": setores})

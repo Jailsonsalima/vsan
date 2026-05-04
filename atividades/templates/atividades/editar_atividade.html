@@ -233,7 +233,7 @@
                 <label>Equipe:</label>
                 <!-- Área para mostrar os selecionados -->
                 <ul id="servidores-selecionados"></ul>
-                
+                <ul id="motoristas_externos-selecionados"></ul>
                 <div class="form-group">
                     <label for="filtro-servidores">Pesquisar Servidor:</label>
                     <input type="text" id="filtro-servidores" placeholder="Digite o nome do servidor...">
@@ -252,6 +252,21 @@
                 </div>
                 {% endfor %}
             </div>
+            <div class="form-group">
+  <small style="color:#777;">Selecione um ou mais motoristas externos.</small>
+  <label>Motoristas Externos:</label>
+  <div class="checkbox-list form-row" id="lista-motoristas-externos">
+    {% for motorista in motoristas_externos %}
+      <div class="motorista-item">
+        <label>
+            <input type="checkbox" name="motoristas_externos" value="{{ motorista.id }}" data-nome="{{ motorista.nome }}">    
+            {{ motorista.nome }}
+        </label>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
         </form>
     </div>
     {% load static %}
