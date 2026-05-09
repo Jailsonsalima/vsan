@@ -17,11 +17,11 @@
                     </div>
                     <div class="form-group">
                         <label for="data_ida">Data de Ida:</label>
-                        <input type="date" name="data_ida" id="data_ida" required>
+                        <input type="date" name="data_ida" id="data_ida" value="{{ atividade.data_ida|date:'Y-m-d' }}" required>
                     </div>
                     <div class="form-group">
                         <label for="data_retorno">Data de Retorno:</label>
-                        <input type="date" name="data_retorno" id="data_retorno" required>
+                        <input type="date" name="data_retorno" id="data_retorno" value="{{ atividade.data_retorno|date:'Y-m-d' }}" required>
                     </div>
                 </div>
             </div>
@@ -49,10 +49,9 @@
                     <div class="form-group">
                         <label for="transporte">Meio de Transporte:</label>
                         <select name="transporte" id="transporte" required>
-                            <option value="">-- Selecione --</option>
-                            <option value="Aéreo">Aéreo</option>
-                            <option value="Veículo oficial">Veículo oficial</option>
-                            <option value="Fluvial">Fluvial</option>
+                            <option value="Aéreo" {% if atividade.transporte == "Aéreo" %}selected{% endif %}>Aéreo</option>
+                            <option value="Veículo oficial" {% if atividade.transporte == "Veículo oficial" %}selected{% endif %}>Veículo oficial</option>
+                            <option value="Fluvial" {% if atividade.transporte == "Fluvial" %}selected{% endif %}>Fluvial</option>
                         </select>
                     </div>
                 </div>
@@ -61,7 +60,7 @@
             <!-- Município -->
             <div class="form-group">
                 <label for="municipio">Município:</label>
-                <input list="municipios" name="municipio" id="municipio" placeholder="{{ atividade.municipio }}" required>
+                <input list="municipios" name="municipio" id="municipio" value="{{ atividade.municipio }}" required>
                 <datalist id="municipios">
                     <option value="Abaetetuba">
                     <option value="Abel Figueiredo">

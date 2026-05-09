@@ -24,7 +24,7 @@ class Agendamento(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pendente") #status
 
     def __str__(self):
-        return f"Agendamento {self.id} - {self.servidor.nome} ({self.municipio})"
+        return f"Agendamento - {self.servidor.nome} ({self.municipio})"
 
 
 class MotoristaExterno(models.Model):
