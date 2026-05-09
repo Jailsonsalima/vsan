@@ -23,6 +23,7 @@ from atividades import views as atividades_views
 
 from django.contrib.auth import views as auth_views
 from agendamentos import views as agendamento_views
+from memorandos import views as memorandos_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -43,6 +44,7 @@ urlpatterns = [
     path("cadastro_servidor/", servidor_views.cadastro_servidor, name="cadastro_servidor"),
     path("servidores/", servidor_views.lista_servidores, name="lista_servidores"),
     path('cadastro-atividade/', atividades_views.cadastrar_atividade, name="cadastrar_atividade"),
+    path("atividades/cadastrar/<int:agendamento_id>/", atividades_views.cadastrar_atividade, name="cadastrar_atividade_agendamento"),
     path("atividade/<int:atividade_id>/pdfs/", atividades_views.gerar_zip_pdfs, name="gerar_zip_pdfs"),
     path("setores/editar/<int:setor_id>/", setor_views.editar_setor, name="editar_setor"),
     path("cadastro-servidor-publico/", servidor_views.cadastro_servidor_publico, name="cadastro_servidor_publico"),
@@ -73,5 +75,6 @@ urlpatterns = [
 
     # cadastrar setor externo para motorista externo
     path("cadastrar/", agendamento_views.cadastrar_setor_externo, name="cadastrar_setor_externo"),
-
+    path('memorandos/', memorandos_views.gerenciar_memorando, name='gerenciar_memorando'),
+    path("cancelar/<int:agendamento_id>/", agendamento_views.cancelar_agendamento, name="cancelar_agendamento"),
 ]

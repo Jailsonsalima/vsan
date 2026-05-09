@@ -58,7 +58,7 @@ label {
 
 /* Container principal */
 .container, .dashboard-container {
-    max-width: 1000px;
+    width: 90%;
     margin: 40px auto;
     background: #fff;
     padding: 30px;
@@ -245,7 +245,10 @@ main {
     background-color: #4CAF50;
     color: #fff;
 }
-
+.status.cancelado {
+    background-color: #868484;
+    color: #fff;
+}
 .status.inativo {
     background-color: #f44336;
     color: #fff;

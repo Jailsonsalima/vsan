@@ -16,7 +16,12 @@ class Agendamento(models.Model):
     solicitante = models.ForeignKey(Usuario, on_delete=models.CASCADE)  # usuário que solicitou
     data_solicitacao = models.DateTimeField(auto_now_add=True)
     motivo = models.TextField()
-    processado = models.BooleanField(default=False)
+    STATUS_CHOICES = [
+        ("pendente", "Pendente"),
+        ("processado", "Processado"),
+        ("cancelado", "Cancelado"),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pendente") #status
 
     def __str__(self):
         return f"Agendamento {self.id} - {self.servidor.nome} ({self.municipio})"
@@ -69,7 +74,7 @@ class ProcessamentoAgendamento(models.Model):
     motorista_servidor = models.ForeignKey('servidores.Servidor', on_delete=models.SET_NULL, null=True, blank=True)
     motorista_externo = models.ForeignKey(MotoristaExterno, on_delete=models.SET_NULL, null=True, blank=True)
     data_processamento = models.DateTimeField(auto_now_add=True)
-    numero_processo = models.CharField(max_length=50, blank=True, null=True)
+    # numero_processo = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return f"Processamento {self.agendamento}"

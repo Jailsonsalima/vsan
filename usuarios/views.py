@@ -75,7 +75,7 @@ def dashboard(request):
     # Só mostra pendentes se o usuário pode processar
     autorizacao = AutorizacaoAgendamento.objects.filter(usuario=request.user, pode_processar=True).first()
     if autorizacao or request.user.tipo_usuario == "diretor":
-        pendentes = Agendamento.objects.filter(processado=False)
+        pendentes = Agendamento.objects.filter(status="pendente")
     else:
         pendentes = None
 

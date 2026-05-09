@@ -2,7 +2,7 @@ from django.db import models
 from servidores.models import Servidor
 from setores.models import Setor
 from usuarios.models import Usuario
-from agendamentos.models import MotoristaExterno
+from agendamentos.models import MotoristaExterno, Agendamento
 
 # Create your models here.
 
@@ -18,10 +18,7 @@ class Atividade(models.Model):
     #servidor_matricula = models.CharField(max_length=20, blank=True, null=True)
     #servidor_cargo = models.CharField(max_length=100, blank=True, null=True)
 
-    tipo_atividade = models.CharField(
-        max_length=50,
-        choices=[("Viagem", "Viagem")], blank=True, null=True
-    )
+    tipo_atividade = models.CharField(max_length=50, choices=[("Viagem", "Viagem")], blank=True, null=True)
     #periodo_viagem = models.CharField(max_length=100, blank=True, null=True)
     dias_diarias = models.CharField(max_length=50, blank=True, null=True)
     PERNOITE_CHOICES = [("Sim", "Sim"), ("Não", "Não")]
@@ -36,6 +33,7 @@ class Atividade(models.Model):
     servidores = models.ManyToManyField(Servidor, related_name="atividades")  # vínculo
     n_memorando = models.CharField(max_length=10, verbose_name='Nº do Memorando', unique=True, blank=True, null=True)
     chefe_imediato = models.ForeignKey(Setor, on_delete=models.SET_NULL, null=True, blank=True, related_name="atividades_chefiadas")
+    agendamento = models.OneToOneField(Agendamento, on_delete=models.SET_NULL, null=True, blank=True, related_name="atividade")
     numero_processo = models.CharField(max_length=50, blank=True, null=True)
     criador = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="atividades_criadas", null=True, blank=True)
     motoristas_externos = models.ManyToManyField(MotoristaExterno, related_name="atividades", blank=True)  # vínculo com motoristas externos

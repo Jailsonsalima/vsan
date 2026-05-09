@@ -2,11 +2,12 @@
 
 {% block content %}
 <div class="container">
+    {% if autorizado %}
     <div class="container-btn-dashboard" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;" >
         <a href="{% url 'cadastrar_motorista_externo' %}" class="btn-card">🧑‍✈️ Cadastrar Motorista Externo</a>
         <a href="{% url 'calendario_motorista' %}" class="btn-card">📅 Agenda de Motoristas</a>
     </div>
-
+    {% endif %}
 
     <h2>Processar Agendamento</h2>
 
@@ -51,22 +52,24 @@
     <!-- Formulário -->
     <form method="post" class="form">
         {% csrf_token %}
-        <div class="form-group">
-            <label for="id_tipo"><strong>Tipo de Motorista</strong></label>
-            {{ form.tipo }}
-        </div>
+        
+            <div class="form-group">
+                <label for="id_tipo"><strong>Tipo de Motorista</strong></label>
+                {{ form.tipo }}
+            </div>
 
-        <div class="form-group" id="motorista-servidor" style="display:none;">
-            {{ form.motorista_servidor }}
-        </div>
-
-        <div class="form-group" id="motorista-externo">
-            <label for="id_motorista_externo"><strong>Motorista Externo</strong></label>
-            {{ form.motorista_externo }}
-        </div>
-
+            <div class="form-group" id="motorista-servidor" style="display:none;">
+                {{ form.motorista_servidor }}
+            </div>
+            {% if autorizado %}
+            <div class="form-group" id="motorista-externo">
+                <label for="id_motorista_externo"><strong>Motorista Externo</strong></label>
+                {{ form.motorista_externo }}
+            </div>
+        {% endif %}
         <button type="submit" class="btn btn-primary" id="btn-confirmar">Confirmar Processamento</button>
     </form>
+    
 </div>
 
 <script>

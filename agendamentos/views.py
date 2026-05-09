@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 # Create your views here.
 
@@ -19,7 +19,16 @@ import locale
 import calendar
 from setores.models import Setor
 
+from django.utils.dateformat import DateFormat
 
+def formatar_periodo(data_ida, data_retorno):
+    if not data_ida or not data_retorno:
+        return ""
+    if data_ida.month == data_retorno.month and data_ida.year == data_retorno.year:
+        return f"{data_ida.day} a {data_retorno.day}/{data_ida.month:02d}/{data_ida.year}"
+    else:
+        return f"{DateFormat(data_ida).format('d/m/Y')} a {DateFormat(data_retorno).format('d/m/Y')}"
+    
 @login_required(login_url='/login/')
 def solicitar_agendamento(request):
     if request.method == 'POST':
@@ -55,7 +64,8 @@ def solicitar_agendamento(request):
                     'sistema@vsan.com',
                     [autorizacao.usuario.email],
                 )
-            return redirect('dashboard')
+            messages.success(request, "Agendamento realizado com sucesso.")
+            return redirect('listar_agendamentos')
     else:
         form = AgendamentoForm()
     return render(request, 'agendamentos/solicitar.html', {'form': form})
@@ -114,13 +124,11 @@ def processar_agendamento(request, agendamento_id):
     agendamento = Agendamento.objects.get(id=agendamento_id)
 
     # Verifica permissão
-    autorizacao = AutorizacaoAgendamento.objects.filter(usuario=request.user, pode_processar=True).first()
-    if not autorizacao and request.user.tipo_usuario != 'diretor':
-        messages.error(request, "Você não tem permissão para processar agendamentos.")
-        return redirect('listar_agendamentos')
+    autorizacao = AutorizacaoAgendamento.objects.filter(usuario=request.user, pode_visualizar=True).first()
+    autorizado = bool(autorizacao or request.user.tipo_usuario == "diretor")
 
     # Impede reprocessamento
-    if agendamento.processado or ProcessamentoAgendamento.objects.filter(agendamento=agendamento).exists():
+    if agendamento.status == "processado" or ProcessamentoAgendamento.objects.filter(agendamento=agendamento).exists():
         messages.error(request, "Este agendamento já foi processado e não pode ser alterado novamente.")
         return redirect('listar_agendamentos')
 
@@ -168,7 +176,8 @@ def processar_agendamento(request, agendamento_id):
                         'form': form,
                         'agendamento': agendamento,
                         'motorista_sorteado': None,
-                        'aviso_motorista': "Não há motorista disponível da Vigilância. Selecione um motorista externo."
+                        'aviso_motorista': "Não há motorista disponível da Vigilância. Selecione um motorista externo.",
+                        "autorizado": autorizado,
                     })
 
             elif processamento.tipo == "outros":
@@ -182,7 +191,7 @@ def processar_agendamento(request, agendamento_id):
                     })
 
             processamento.save()
-            agendamento.processado = True
+            agendamento.status = "processado"
             agendamento.save()
 
             # E-mail ao solicitante
@@ -228,31 +237,58 @@ def processar_agendamento(request, agendamento_id):
         'agendamento': agendamento,
         'motorista_sorteado': motorista_sorteado,
         'aviso_motorista': aviso_motorista,
+        "autorizado": autorizado,
     })
 
 @login_required(login_url='/login/')
 def listar_agendamentos(request):
+    usuario = request.user
     # Apenas usuários autorizados podem visualizar
     autorizacao = AutorizacaoAgendamento.objects.filter(usuario=request.user, pode_visualizar=True).first()
-    if not autorizacao and request.user.tipo_usuario != 'diretor':
-        messages.error(request, "Você não tem permissão para visualizar os agendamentos.")
-        return render(request, "usuarios/dashboard.html")
+    autorizado = bool(autorizacao or request.user.tipo_usuario == "diretor")
+    # if not autorizacao and request.user.tipo_usuario != 'diretor':
+    #     messages.error(request, "Você não tem permissão para visualizar os agendamentos.")
+    #     return render(request, "usuarios/dashboard.html")
+    # Se for diretor, vê todos
+    if usuario.tipo_usuario == "diretor" or autorizacao:
+        agendamentos = Agendamento.objects.all().order_by("-data_solicitacao").select_related("processamento")
 
+    else:
+        # Solicitações feitas pelo próprio usuário
+        meus_agendamentos = Agendamento.objects.filter(solicitante=usuario)
+
+        # Solicitações dos servidores cujo chefe imediato é o mesmo setor do usuário
+        chefe_setor = usuario.servidor.setor if hasattr(usuario, "servidor") and usuario.servidor else None
+        if chefe_setor:
+            subordinados_agendamentos = Agendamento.objects.filter(servidor__setor=chefe_setor)
+        else:
+            subordinados_agendamentos = Agendamento.objects.none()
+
+        # Junta os dois conjuntos
+        agendamentos = (meus_agendamentos | subordinados_agendamentos).order_by("-data_solicitacao").select_related("processamento")
     # Filtro por município
     filtro_municipio = request.GET.get("municipio") or ""
-
-    # Busca todos os agendamentos
-    agendamentos = Agendamento.objects.all().order_by("-data_solicitacao").select_related("processamento")
-
     if filtro_municipio:
         agendamentos = agendamentos.filter(municipio__icontains=filtro_municipio)
+    # Busca todos os agendamentos
+    #agendamentos = Agendamento.objects.all().order_by("-data_solicitacao").select_related("processamento")  
 
     # Paginação
     paginator = Paginator(agendamentos, 10)  # 10 registros por página
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    return render(request, "agendamentos/listar.html", {"agendamentos": agendamentos, "page_obj": page_obj, "filtro_municipio": filtro_municipio,})
 
+    # Adiciona periodo_formatado em cada agendamento
+    for agendamento in page_obj:
+        agendamento.periodo_formatado = formatar_periodo(agendamento.data_ida, agendamento.data_retorno)
+    
+    return render(request, "agendamentos/listar.html", {
+        "agendamentos": agendamentos, 
+        "page_obj": page_obj, 
+        "filtro_municipio": filtro_municipio, 
+        "autorizado": autorizado,
+    })
+    
 @login_required(login_url='/login/')
 def gerenciar_motoristas(request):
     if request.user.tipo_usuario != 'diretor':
@@ -446,3 +482,35 @@ def cadastrar_setor_externo(request):
 
     setores = Setor.objects.all()
     return render(request, "agendamentos/cadastrar_setor_externo.html", {"setores": setores})
+
+@login_required(login_url='/login/')
+def cancelar_agendamento(request, agendamento_id):
+    agendamento = get_object_or_404(Agendamento, id=agendamento_id)
+
+    # só pode cancelar se já estiver processado
+    if agendamento.status != "processado":
+        messages.error(request, "Só é possível cancelar agendamentos já processados.")
+        return redirect("listar_agendamentos")
+
+    # muda status para cancelado
+    agendamento.status = "cancelado"
+    agendamento.save()
+
+    # se motorista for servidor interno, libera ele e passa para o próximo da fila
+    if hasattr(agendamento, "processamento") and agendamento.processamento.motorista_servidor:
+        processamento = agendamento.processamento
+
+        # Se motorista for servidor interno
+        motorista_cancelado = agendamento.processamento.motorista_servidor
+        motorista_cancelado.disponivel = True
+        motorista_cancelado.save()
+
+        # Remove vínculo do processamento
+        processamento.motorista_servidor = None
+        processamento.save()
+        
+        
+        messages.info(request, f"O motorista {motorista_cancelado.nome} foi liberado e será o próximo da fila.")
+
+    messages.success(request, "Agendamento cancelado com sucesso.")
+    return redirect("listar_agendamentos")

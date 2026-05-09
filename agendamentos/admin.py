@@ -3,8 +3,8 @@ from .models import Agendamento, MotoristaExterno, AutorizacaoAgendamento, Proce
 
 @admin.register(Agendamento)
 class AgendamentoAdmin(admin.ModelAdmin):
-    list_display = ("id", "servidor", "municipio", "data_ida", "data_retorno", "solicitante", "processado", "data_solicitacao")
-    list_filter = ("processado", "municipio", "data_ida", "data_retorno")
+    list_display = ("id", "servidor", "municipio", "data_ida", "data_retorno", "solicitante", "status", "data_solicitacao")
+    list_filter = ("status", "municipio", "data_ida", "data_retorno")
     search_fields = ("servidor__nome", "municipio", "solicitante__username")
 
 @admin.register(MotoristaExterno)

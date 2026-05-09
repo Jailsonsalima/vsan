@@ -76,7 +76,7 @@
                         {{ servidor.nome }}<br>
                     </td>
                     <td>
-                        {{ servidor.cargo }}
+                        {{ servidor.cargo }} / {{ servidor.funcao }}
                     </td>
                 </tr>
             {% endfor %}
@@ -90,23 +90,30 @@
         &emsp;&emsp;Projeto Atividade: <strong>2332</strong><br><br><br><br>
         &emsp;&emsp;Atenciosamente,<br>      
         <div>
-            {% for setor in setores %}
+            {% if atividade.chefe_imediato.chefe_imediato and not chefe_eh_servidor %}
                 <div class="assinaturas">
                     <p style="color: #00b0f0;">(Assinatura eletrônica)</p>
                     <strong>{{ atividade.chefe_imediato.chefe_imediato }}</strong><br>
                     {{ atividade.chefe_imediato.cargo_chefe }}<br>
                     Portaria nº {{ atividade.chefe_imediato.portaria_chefe }}<br>
                     Matrícula nº {{ atividade.chefe_imediato.matricula_chefe }}<br><br>
-
-                    <p style="color: #00b0f0;">(Assinatura eletrônica)</p>
-                    <strong>{{ setor.chefe_imediato }}</strong><br>
-                    {{ setor.cargo_chefe }}/{{ setor.nome }}<br>
-                    Portaria nº {{ setor.portaria_chefe }}<br>
-                    Matrícula nº {{ setor.matricula_chefe }}
                 </div>
-            {% empty %}
-                <p>Nenhum setor encontrado.</p>
-            {% endfor %}
+            {% else %}
+                <!-- Se o chefe imediato foi selecionado para viagem, a assinatura dele não aparece-->
+            {% endif %}
+
+{% for setor in setores %}
+    <div class="assinaturas">
+        <p style="color: #00b0f0;">(Assinatura eletrônica)</p>
+        <strong>{{ setor.chefe_imediato }}</strong><br>
+        {{ setor.cargo_chefe }}/{{ setor.nome }}<br>
+        Portaria nº {{ setor.portaria_chefe }}<br>
+        Matrícula nº {{ setor.matricula_chefe }}
+    </div>
+{% empty %}
+    <p>Nenhum setor encontrado.</p>
+{% endfor %}
+
         </div>
         <footer class="footer-devs">
             Departamento Estadual de Vigilância Sanitária/SESPA - Tv. Lomas Valentinas, 2190– Marco – Belém – Pará - CEP 66.093-677<br>

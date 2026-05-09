@@ -2,11 +2,13 @@
 {% load static %}
 {% block content %}
 <div class="container">
+    {% if autorizado %}
     <div class="container-btn-dashboard" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;" >
         <a href="{% url 'cadastrar_motorista_externo' %}" class="btn-card" >🧑‍✈️ Cadastrar Motorista Externo</a>
 
         <a href="{% url 'calendario_motorista' %}" class="btn-card">📅 Agenda de Motoristas</a>
     </div>
+    {% endif %}
     <h2>Solicitações de Agendamento</h2>
 
     <form class="form" style="margin-bottom:20px;">
@@ -19,10 +21,11 @@
     <table class="dashboard-table">
         <thead>
             <tr>
+                <th>Nº Processo</th>
                 <th>Solicitante</th>
                 <th>Município</th>
-                <th>Data Ida</th>
-                <th>Data Retorno</th>
+                <th>Período</th>
+
                 <th>Motivo</th>
                 <th>Status</th>
                 <th>Motorista</th>
@@ -32,20 +35,29 @@
         <tbody id="tabela-agendamentos">
             {% for agendamento in page_obj %}
             <tr class="agendamento-item" data-municipio="{{ agendamento.municipio }}">
+                <td>
+                    {% if agendamento.atividade and agendamento.atividade.numero_processo %}
+                        <span style="margin-left:10px;">Processo nº: {{ agendamento.atividade.numero_processo }}</span>
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
                 <td>{{ agendamento.servidor.nome }}</td>
                 <td>{{ agendamento.municipio }}</td>
-                <td>{{ agendamento.data_ida }}</td>
-                <td>{{ agendamento.data_retorno }}</td>
+                <td>{{ agendamento.periodo_formatado }}</td>
+
                 <td>{{ agendamento.motivo }}</td>
                 <td>
-                    {% if agendamento.processado %}
+                    {% if agendamento.status == "processado" %}
                         <span class="status ativo">Processado</span>
+                    {% elif agendamento.status == "cancelado" %}
+                        <span class="status cancelado">Cancelado</span>
                     {% else %}
                         <span class="status inativo">Pendente</span>
                     {% endif %}
                 </td>
                 <td>
-                {% if agendamento.processado %}
+                {% if agendamento.status == "processado" or agendamento.status == "cancelado" %}
                     {% if agendamento.processamento.motorista_servidor %}
                         {{ agendamento.processamento.motorista_servidor.nome }}
                     {% elif agendamento.processamento.motorista_externo %}
@@ -53,25 +65,29 @@
                     {% else %}
                         Motorista não informado
                     {% endif %}
-                {% else %}
+                {% elif agendamento.status == "pendente" %}
                     --
                 {% endif %}
                 </td>
                 <td>
-                    {% if agendamento.processado %}
-                        <span class="info">Já processado</span>
-                        {% if agendamento.processamento.numero_processo %}
-                            <span style="margin-left:10px;">Processo nº: {{ agendamento.processamento.numero_processo }}</span>
-                        {% else %}
-                            <form method="post" action="{% url 'adicionar_processo' agendamento.id %}" class="form">
-                                {% csrf_token %}
-                                <button type="button" class="btn-secondary btn-adicionar-processo" data-id="{{ agendamento.id }}">Adicionar Processo</button>
-                                <input type="text" name="numero_processo" id="processo-{{ agendamento.id }}" placeholder="Digite nº do processo" style="display:none; margin-left:10px;">
-                                <button type="submit" class="btn btn-primary" id="btn-salvar-{{ agendamento.id }}" style="display:none;">Salvar</button>
-                            </form>
+                    {% if agendamento.status == "processado" %}
+                        {% if agendamento.atividade %}
+                            <!-- Já existe atividade vinculada, não mostra o botão -->
+                                <span style="color: gray;">Atividade já criada</span>
+                            {% else %}
+                            <a href="{% url 'cadastrar_atividade_agendamento' agendamento.id %}" class="btn-card" style="display:flex;">
+                                📃 Criar Atividade
+                            </a>
                         {% endif %}
-                    {% else %}
-                        <a href="{% url 'processar_agendamento' agendamento.id %}" class="btn-primary">Processar</a>
+                        <a href="{% url 'cancelar_agendamento' agendamento.id %}" class="btn-card" style="margin-top:5px; display:block;">
+                            ❌ Cancelar Viagem
+                        </a>
+                    {% elif agendamento.status == "pendente" %}
+                        <a href="{% url 'processar_agendamento' agendamento.id %}" class="btn-primary">
+                            Processar
+                        </a>
+                    {% elif agendamento.status == "cancelado" %}
+                        <span style="color:red;">Cancelado</span>
                     {% endif %}
                 </td>   
             </tr>

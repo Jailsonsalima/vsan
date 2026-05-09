@@ -12,16 +12,19 @@ from django.contrib import messages
 import io, zipfile
 from django.db import IntegrityError
 from django.db.models import Q
-from agendamentos.models import MotoristaExterno
+from agendamentos.models import MotoristaExterno, Agendamento
 # Create your views here.
 
 @login_required(login_url='/login/')
-def cadastrar_atividade(request):
+def cadastrar_atividade(request, agendamento_id=None):
     servidores = Servidor.objects.all()
     # carrega os motoristas externos para passar ao template, caso queira listar no formulário de cadastro
     motoristas_externos = MotoristaExterno.objects.all()
     # Filtra setores cujo cargo_chefe NÃO começa com "Diretor"
     setores = Setor.objects.exclude(cargo_chefe__startswith="Diretor")
+    agendamento = None
+    if agendamento_id:
+        agendamento = get_object_or_404(Agendamento, id=agendamento_id)
     if request.method == "POST":
         try:
             setor_id = request.POST.get("setor")
@@ -51,6 +54,7 @@ def cadastrar_atividade(request):
                 data_ida=data_ida,
                 data_retorno=data_retorno,
                 n_memorando = n_memorando,
+                agendamento=agendamento,
                 # se quiser salvar o chefe selecionado, adicione um campo no model Atividade
                 chefe_imediato=chefe,  # aqui vai a instância de Setor
                 criador=request.user, # aqui salva o usuário que criou o documento
@@ -64,12 +68,22 @@ def cadastrar_atividade(request):
             return redirect("listar_atividades")
         except IntegrityError:
             messages.error(request, "Já existe uma atividade cadastrada com este número de memorando.")
-    recurso_ativo = RecursoAtivo.objects.first()
+    else:
+        # Se veio de um agendamento processado, pré-preenche os campos
+        initial_data = {}
+        if agendamento:
+            initial_data = {
+                "municipio": agendamento.municipio,
+                "objetivo": agendamento.motivo,  # motivo vira objetivo
+                "data_ida": agendamento.data_ida.strftime("%Y-%m-%d") if agendamento.data_ida else "",
+                "data_retorno": agendamento.data_retorno.strftime("%Y-%m-%d") if agendamento.data_retorno else "",
+            }
     return render(request, "atividades/cadastro_atividades.html", {
         "servidores": servidores,
         "setores": setores,
-        "recurso_ativo": recurso_ativo,
+        "recurso_ativo": RecursoAtivo.objects.first(),
         "motoristas_externos": motoristas_externos,
+        "initial_data": initial_data,
     })
 
 def formatar_periodo(data_ida, data_retorno):
@@ -84,12 +98,31 @@ def formatar_periodo(data_ida, data_retorno):
 
 @login_required(login_url='/login/')
 def gerar_zip_pdfs(request, atividade_id):
-    # Filtra setores cujo cargo_chefe começa com "Diretor"
-    setores = Setor.objects.filter(cargo_chefe__startswith="Diretor ")
+    # Filtra setores cujo nome começa com "DEVS"
+    setores = Setor.objects.filter(nome__startswith="DEVS")
 
     atividade = get_object_or_404(Atividade, id=atividade_id)
     servidores = atividade.servidores.all()
     motoristas_externos = atividade.motoristas_externos.all()
+
+    # Filtra setores: só mantém aqueles cujo chefe não está listado como servidor
+    setor_dvs = Setor.objects.filter(nome__startswith="DVS")
+
+    # Verifica se o chefe imediato está entre os servidores
+    chefe_matricula = atividade.chefe_imediato.matricula_chefe if atividade.chefe_imediato else None
+    chefe_eh_servidor = False
+    if chefe_matricula:
+        chefe_eh_servidor = servidores.filter(matricula=chefe_matricula).exists()
+
+    setores_filtrados = []
+
+    for setor in setores:
+        # Se o diretor foi selecionado como servidor, não adiciona ele
+        if not servidores.filter(matricula=setor.matricula_chefe).exists():
+            setores_filtrados.append(setor)
+        else:
+            # Se o diretor foi selecionado, adiciona a diretora
+            setores_filtrados.extend(setor_dvs)
 
     # cria um buffer em memória
     buffer = io.BytesIO()
@@ -99,9 +132,10 @@ def gerar_zip_pdfs(request, atividade_id):
             "pdf_atividade.html",
             {
                 "atividade": atividade,
-                "setores": setores,  # adiciona setores filtrados
+                "setores": setores_filtrados,  # adiciona setores filtrados
                 "servidores": [],  # não lista servidores aqui
                 "periodo_formatado": formatar_periodo(atividade.data_ida, atividade.data_retorno),
+                "chefe_eh_servidor": chefe_eh_servidor,
             }
         )
         pdf_atividade = HTML(string=html_atividade, base_url=request.build_absolute_uri('/')).write_pdf()
@@ -223,6 +257,10 @@ def listar_atividades(request):
     paginator = Paginator(atividades, 10)  # 10 registros por página
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
+
+    # Adiciona periodo_formatado em cada atividade
+    for atividade in page_obj:
+        atividade.periodo_formatado = formatar_periodo(atividade.data_ida, atividade.data_retorno)
 
     return render(request, "atividades/listar_atividades.html", {
         "page_obj": page_obj,

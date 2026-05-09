@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'servidores.apps.ServidoresConfig',
     'atividades.apps.AtividadesConfig',
     'agendamentos.apps.AgendamentosConfig',
+    'memorandos.apps.MemorandosConfig',
 ]
 
 MIDDLEWARE = [

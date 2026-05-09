@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container">
+        {% if request.user.tipo_usuario == "diretor" and not existe_inicial %}
+            <h2>Gerenciamento de Memorandos</h2>
+            <div class="container">
+                <h2>Configurar Número Inicial</h2>
+                <form method="POST" class="form" >
+                    {% csrf_token %}
+                    <label for="numero_inicial">Digite o primeiro número:</label>
+                    <input type="text" name="numero_inicial" placeholder="0001" required>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </form>
+
+                <p style="color:red; font-size:0.9em;">* Apenas o diretor pode configurar o primeiro número.</p>
+            </div>
+        {% else %}
+            <p style="color:red; font-size:0.9em;"><strong>* Aguarde o diretor configurar o primeiro número.</strong></p>
+        {% endif %}
+        {% if existe_inicial %}
+            <!-- Área 1: Gerar número -->
+             
+            <form method="POST" class="form">
+                {% csrf_token %}
+                <h3>Gerar Número</h3>
+                <button type="submit" name="gerar" class="btn btn-primary hideOnClick">
+                    Gerar Próximo
+                </button>
+
+
+            </form>
+        
+            <!-- Área 2: Devolver número -->
+            <form method="POST" class="form">
+                {% csrf_token %}
+                <h3>Devolver Número</h3>
+                <input type="text" name="numero_devolvido" placeholder="Digite o número a devolver" required>
+                <button type="submit" name="devolver" class="btn btn-secondary">Devolver Número</button>
+            </form>
+        
+            <!-- Histórico -->
+            <h3>Histórico</h3>
+            <table class="dashboard-table">
+                <tr>
+                    <th>Servidor</th>
+                    <th>Setor</th>
+                    <th>Número</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                </tr>
+                {% for m in memorandos %}
+                <tr>
+                    <td>{{ m.servidor.servidor.nome }}</td>
+                    <td>{{ m.servidor.servidor.setor }}</td>
+                    <td>{{ m.numero }}/{{ m.ano }}</td>
+                    <td>{{ m.data_uso|date:"d/m/Y H:i" }}</td>
+                    <td>{% if m.devolvido %}Devolvido{% else %}Usado{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+
+{% endblock %}

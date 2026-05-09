@@ -3,7 +3,6 @@
 {% block content %}
 <div class="container">
     <div class="container-btn-dashboard"  >
-        <a href="{% url 'cadastrar_atividade' %}" class="btn-card">📃 Cadastrar Atividade</a>
         <h2>Atividades Registradas</h2>
     </div>
 
@@ -12,7 +11,7 @@
         <div class="form-row">
             <div class="form-group">
                 <label for="municipio">Município:</label>
-                <input list="municipios" name="municipio" id="municipio" required>
+                <input list="municipios" name="municipio" id="municipio">
                 <datalist id="municipios">
                     <option value="Abaetetuba">
                     <option value="Abel Figueiredo">
@@ -178,8 +177,7 @@
         <thead>
             <tr>
                 <th>Nº Processo</th>
-                <th>Data Ida</th>
-                <th>Data Retorno</th>
+                <th>Período</th>
                 <th>Município</th>
                 <th>Equipe</th>
                 <th>Objetivo</th>
@@ -206,8 +204,7 @@
                         </form>
                     {% endif %}
                 </td>
-                <td>{{ atividade.data_ida }}</td>
-                <td>{{ atividade.data_retorno }}</td>
+                <td>{{ atividade.periodo_formatado }}</td>
                 <td>{{ atividade.municipio }}</td>
                 <td>
                     {% for servidor in atividade.servidores.all %}
@@ -225,10 +222,14 @@
                 <td>{{ atividade.objetivo }}</td>
                 <!--<td>{{ atividade.data_criacao|date:"d/m/Y H:i" }}</td>-->
                 <td>
-                    {% if not atividade.numero_processo %}
-                        <a href="{% url 'editar_atividade' atividade.id %}" class="btn-secondary" style="display: block; margin-bottom: 10px;">Editar</a>
+                    {% if atividade.agendamento and atividade.agendamento.status == "cancelado" %}
+                        <span style="color:red;">Cancelada</span>
+                    {% else %}
+                        {% if not atividade.numero_processo %}
+                            <a href="{% url 'editar_atividade' atividade.id %}" class="btn-secondary" style="display: block; margin-bottom: 10px;">Editar</a>
+                        {% endif %}
+                            <a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-primary" style="display: block;">PDFs</a>
                     {% endif %}
-                        <a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-primary" style="display: block;">PDFs</a>
                 </td>
             </tr>
             {% empty %}

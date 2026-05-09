@@ -16,8 +16,8 @@
                 <table class="dashboard-table" id="tabela-usuarios">
                     <tr>
                         <th>Usuário</th>
-                        <th>Visualizar</th>
-                        <th>Processar</th>
+                        <th>Visualizar Calendário e Motorista Externo</th>
+                        <!--<th>Processar</th>-->
                     </tr>
                     {% for usuario in page_obj %}
                     <tr class="usuario-item">
@@ -28,7 +28,7 @@
                             {% endif %}
                         </td>
                         <td><input type="checkbox" name="visualizar_{{ usuario.id }}" {% if usuario.autorizacao.pode_visualizar %}checked{% endif %}></td>
-                        <td><input type="checkbox" name="processar_{{ usuario.id }}" {% if usuario.autorizacao.pode_processar %}checked{% endif %}></td>
+                        <!--<td><input type="checkbox" name="processar_{{ usuario.id }}" {% if usuario.autorizacao.pode_processar %}checked{% endif %}></td>-->
                     </tr>
                     {% empty %}
                     <tr>
