@@ -5,7 +5,7 @@
         <form method="get" class="form">
             <label for="motorista">Escolha o motorista:</label>
             <select name="motorista" id="motorista" onchange="this.form.submit()">
-                <option value="">-- Selecione --</option>
+                <option value="">-- Todos juntos --</option>
                 {% for m in motoristas %}
                     <option value="{{ m.id }}" {% if motorista_selecionado and m.id == motorista_selecionado.id %}selected{% endif %}>
                         {{ m.nome }}
@@ -15,35 +15,58 @@
             <input type="hidden" name="mes" value="{{ mes }}">
             <input type="hidden" name="ano" value="{{ ano }}">
         </form>
+
         <h2>Calendário de Motoristas</h2>        
-        {% if motorista_selecionado %}
-            <h3 >{{ motorista_selecionado.nome }} - {{ nome_mes }}/{{ ano }}</h3>
+        <h3>{{ nome_mes }}/{{ ano }}</h3>
 
-            
-
-            <table class="dashboard-table calendario">
-                <tr>
-                    <th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sab</th>
-                </tr>
-                {% for semana in dias_mes %}
-                <tr>
-                    {% for dia in semana %}
-                        {% if dia == 0 %}
-                            <td class="vazio"></td>
-                        {% elif dia in dias_agendados %}
-                            <td class="agendado">{{ dia }}</td>
-                        {% else %}
-                            <td>{{ dia }}</td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
+        <table class="dashboard-table calendario">
+            <tr>
+                <th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sab</th>
+            </tr>
+            {% for semana in dias_mes %}
+            <tr>
+                {% for dia in semana %}
+                    {% if dia == 0 %}
+                        <td class="vazio"></td>
+                    {% else %}
+                        <td>
+                            <span class="dia-numero">{{ dia }}</span>
+                            <div class="motoristas-dia">
+                                {% for mid, dados in dias_por_motorista.items %}
+                                    {% if dia in dados.dias %}
+                                        <div class="linha-motorista" style="background-color: {{ dados.cor }};"></div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </td>
+                    {% endif %}
                 {% endfor %}
-            </table>
-            <div style="margin-top:20px; left: 0;">
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div style="margin-top:20px; left: 0;">
+            {% if motorista_selecionado %}
                 <a href="?motorista={{ motorista_selecionado.id }}&mes={{ mes_anterior }}&ano={{ ano_anterior }}" class="btn-secondary">◀ Mês ant.</a>
                 <a href="?motorista={{ motorista_selecionado.id }}&mes={{ mes_proximo }}&ano={{ ano_proximo }}" class="btn-secondary">Próx. mês ▶</a>
-            </div>
-        {% endif %}
+            {% else %}
+                <a href="?mes={{ mes_anterior }}&ano={{ ano_anterior }}" class="btn-secondary">◀ Mês ant.</a>
+                <a href="?mes={{ mes_proximo }}&ano={{ ano_proximo }}" class="btn-secondary">Próx. mês ▶</a>
+            {% endif %}
+        </div>
+
+        <!-- Legenda de cores -->
+        <div style="margin-top:20px;">
+            <h4>Legenda:</h4>
+            <ul style="list-style:none; padding:0;">
+                {% for mid, dados in dias_por_motorista.items %}
+                    <li>
+                        <span style="display:inline-block; width:20px; height:10px; background-color:{{ dados.cor }}; margin-right:5px;"></span>
+                        {{ dados.nome }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 
     <div style="flex:1;">
@@ -57,16 +80,30 @@
 
 <style>
 .calendario td {
-    width: 40px;
-    height: 40px;
-    text-align: center;
+    position: relative;
 }
-.calendario td.agendado {
-    background-color: #00bcd4;
+.dia-numero {
+    position: relative;
+    z-index: 2;   /* número sempre na frente */
     font-weight: bold;
+    font-size: 16px;
 }
 .calendario td.vazio {
     background-color: #eee;
+}
+.motoristas-dia {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;   /* faixas ficam atrás */
+}
+.linha-motorista {
+    display: block;     /* garante que seja um bloco */
+    width: 100%;        /* ocupa toda a largura da célula */
+    height: 15.5px;        /* altura da faixa */
+    margin: 0;          /* remove margens extras */
+    border-radius: 0;   /* sem arredondamento */
 }
 </style>
 

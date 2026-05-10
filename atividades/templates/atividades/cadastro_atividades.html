@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
+    <div class="container-btn-dashboard" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;" >
+        <a href="{% url 'cadastro_servidor_publico' %}" class="btn-card">👤 Cadastro Público</a>
+    </div>
     <p>Recurso atual: <strong>{{ recurso_ativo.get_codigo_display }}</p></strong>
     <h2>Cadastro de Atividade</h2>
     <form method="post" class="form">

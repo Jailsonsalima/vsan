@@ -18,7 +18,7 @@ import json
 import locale
 import calendar
 from setores.models import Setor
-
+from datetime import datetime
 from django.utils.dateformat import DateFormat
 
 def formatar_periodo(data_ida, data_retorno):
@@ -161,16 +161,15 @@ def processar_agendamento(request, agendamento_id):
             processamento = form.save(commit=False)
             processamento.agendamento = agendamento
 
-            # Recupera motorista sorteado da sessão
             if processamento.tipo == "Da Vigilância":
-                # Seleciona o motorista com a data mais antiga (ou nula)
-                motorista_sorteado = motoristas_servidores_disponiveis.order_by('ultima_vez_sorteado').first()
-                if motorista_sorteado:
+                if motoristas_servidores_disponiveis:
+                    # Sorteia o motorista com menor tempo desde última vez
+                    # Seleciona o motorista com a data mais antiga (ou nula)
+                    motorista_sorteado = motoristas_servidores_disponiveis.order_by('ultima_vez_sorteado').first()
                     processamento.motorista_servidor = motorista_sorteado
                     motorista_sorteado.ultima_vez_sorteado = timezone.now()
                     motorista_sorteado.save()
                 else:
-                    # Nenhum motorista interno disponível
                     messages.error(request, "Não há motorista disponível da Vigilância. Selecione um motorista externo.")
                     return render(request, 'agendamentos/processar.html', {
                         'form': form,
@@ -227,7 +226,7 @@ def processar_agendamento(request, agendamento_id):
         form.fields["motorista_externo"].queryset = motoristas_externos_disponiveis
 
         # Sorteia no GET e guarda na sessão
-        if motoristas_servidores_disponiveis.exists():
+        if motoristas_servidores_disponiveis:
             motorista_sorteado = motoristas_servidores_disponiveis.order_by('ultima_vez_sorteado').first()
         else:
             aviso_motorista = "Não há motorista disponível da Vigilância. Selecione um motorista externo."
@@ -361,30 +360,60 @@ def calendario_motorista(request):
 
     motorista_id = request.GET.get("motorista")
     motorista = None
-    dias_agendados = []
 
     ano = int(request.GET.get("ano", timezone.now().year))
     mes = int(request.GET.get("mes", timezone.now().month))
 
+    # Paleta de cores fixa (mesma usada nos gráficos)
+    paleta = ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0','#00bcd4']
+
+    dias_por_motorista = {}
+
     if motorista_id:
+        # modo individual
         try:
             motorista = Servidor.objects.get(id=motorista_id)
             agendamentos = ProcessamentoAgendamento.objects.filter(motorista_servidor=motorista)
+            dias_por_motorista[motorista.id] = {
+                "nome": motorista.nome,
+                "dias": [],
+                "cor": paleta[0]  # cor fixa para o selecionado
+            }
             for ag in agendamentos:
                 if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
-                    dias_agendados.extend(range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day+1))
+                    dias_por_motorista[motorista.id]["dias"].extend(
+                        range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
+                    )
         except Servidor.DoesNotExist:
-            # Se não for servidor, simplesmente ignora
             motorista = None
-            agendamentos = []
+    else:
+        # modo todos juntos
+        for i, m in enumerate(motoristas):
+            agendamentos = ProcessamentoAgendamento.objects.filter(motorista_servidor=m)
+            dias_por_motorista[m.id] = {
+                "nome": m.nome,
+                "dias": [],
+                "cor": paleta[i % len(paleta)]  # cor cíclica
+            }
+            for ag in agendamentos:
+                if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
+                    dias_por_motorista[m.id]["dias"].extend(
+                        range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
+                    )
+
     # número de agendamentos por motorista no mês/ano atual
+    dados_motoristas_query = ProcessamentoAgendamento.objects.filter(
+        agendamento__data_ida__month=mes,
+        agendamento__data_ida__year=ano,
+        motorista_servidor__isnull=False
+    )
+
+    # Se um motorista foi selecionado, filtra apenas ele
+    if motorista_id:
+        dados_motoristas_query = dados_motoristas_query.filter(motorista_servidor_id=motorista_id)
+
     dados_motoristas = (
-        ProcessamentoAgendamento.objects
-        .filter(
-            agendamento__data_ida__month=mes,
-            agendamento__data_ida__year=ano,
-            motorista_servidor__isnull=False  # garante apenas servidores
-        )
+        dados_motoristas_query
         .values("motorista_servidor__id", "motorista_servidor__nome")
         .annotate(total=Count("id"))
         .order_by("motorista_servidor__nome")
@@ -392,38 +421,24 @@ def calendario_motorista(request):
 
     # número de dias em viagem por motorista no mês/ano atual
     dados_dias_motoristas = []
-    motoristas_ids = (
-        ProcessamentoAgendamento.objects
-        .filter(
-            agendamento__data_ida__month=mes,
-            agendamento__data_ida__year=ano,
-            motorista_servidor__isnull=False  # ignora externos
-        )
-        .values_list("motorista_servidor__id", flat=True)
-        .distinct()
-    )
+    motoristas_ids = dados_motoristas_query.values_list("motorista_servidor__id", flat=True).distinct()
 
-
-    for motorista_id in motoristas_ids:
+    for mid in motoristas_ids:
         try:
-            motorista_obj = Servidor.objects.get(id=motorista_id)
+            motorista_obj = Servidor.objects.get(id=mid)
         except Servidor.DoesNotExist:
-            # ignora se não for servidor
             continue
         agendamentos = ProcessamentoAgendamento.objects.filter(
-            motorista_servidor_id=motorista_id,
+            motorista_servidor_id=mid,
             agendamento__data_ida__month=mes,
             agendamento__data_ida__year=ano
-        
         )
-
         total_dias = sum(
             (ag.agendamento.data_retorno - ag.agendamento.data_ida).days + 1
             for ag in agendamentos
         )
-
         dados_dias_motoristas.append({
-            "motorista_servidor__id": motorista_id,
+            "motorista_servidor__id": mid,
             "motorista_servidor__nome": motorista_obj.nome,
             "total_dias": total_dias
         })
@@ -440,7 +455,7 @@ def calendario_motorista(request):
     return render(request, "agendamentos/calendario_motorista.html", {
         "motoristas": motoristas,
         "motorista_selecionado": motorista,
-        "dias_agendados": dias_agendados,
+        "dias_por_motorista": dias_por_motorista,
         "dias_mes": dias_mes,
         "mes": mes,
         "ano": ano,
@@ -502,7 +517,7 @@ def cancelar_agendamento(request, agendamento_id):
 
         # Se motorista for servidor interno
         motorista_cancelado = agendamento.processamento.motorista_servidor
-        motorista_cancelado.disponivel = True
+        motorista_cancelado.ultima_vez_sorteado = datetime(1900, 1, 1)  # volta para o início da fila
         motorista_cancelado.save()
 
         # Remove vínculo do processamento

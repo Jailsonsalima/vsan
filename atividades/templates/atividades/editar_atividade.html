@@ -217,7 +217,7 @@
             
                 <div class="form-group">
                     <label for="chefe_imediato">Chefe Imediato:</label>
-                    <select id="chefe_imediato" name="chefe_imediato" required>
+                    <select id="chefe_imediato" name="chefe_imediato">
                         <option value="">-- Selecione --</option>
                         {% for setor in setores %}
                             <option value="{{ setor.id }}" {% if atividade.chefe_imediato and atividade.chefe_imediato.id == setor.id %}selected{% endif %}>

@@ -210,7 +210,7 @@ def editar_atividade(request, atividade_id):
 
             atividade.save()
             messages.success(request, "Atividade atualizada com sucesso!")
-            return redirect("dashboard")
+            return redirect("listar_atividades")
         except IntegrityError:
             messages.error(request, "Já existe uma atividade cadastrada com este número de memorando.")
             return redirect("editar_atividade", atividade_id=atividade.id)
