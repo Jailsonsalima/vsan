@@ -134,7 +134,12 @@
                 </tr>
                 <tr>
                     <td colspan="5">
-                        <strong>Objetivo:</strong> {{ atividade.objetivo }}
+                        <strong>Objetivo:</strong>
+                        {% if servidor.cargo == "Motorista" %}
+                            Conduzir o veículo para {{ atividade.objetivo|lower }}
+                        {% else %}
+                            {{ atividade.objetivo|capfirst }}
+                        {% endif %}
                     </td>
                 </tr>
                 <tr>
