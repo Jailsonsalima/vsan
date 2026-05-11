@@ -80,6 +80,13 @@
                     </td>
                 </tr>
             {% endfor %}
+            {% for motorista in atividade.motoristas_externos.all %}
+                <tr>
+                    <td>{{ motorista.nome }}</td>
+                    <td>{{ motorista.cargo }} / {{ motorista.funcao }}</td>
+                </tr>
+            {% endfor %}
+
         </table>
         &emsp;&emsp;Informamos que abaixo seguem as informações complementares exigidas pela Gestão Administrativa e
         Financeira:<br><br>
