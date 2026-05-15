@@ -171,12 +171,23 @@
                     <!-- ... demais municípios ... -->
                 </datalist>
             </div>
+            <div class="form-group">
+                <label for="transporte">Meio de Transporte:</label>
+                {{ form.transporte }}
+            </div>
+            <div class="form-group" id="campo-motorista" style="display:none;">
+                <label for="necessita_motorista" style="color: red; font-weight: bold;">Necessita de motorista?</label>
+                <select name="necessita_motorista" id="necessita_motorista">
+                    <option value="sim">Sim</option>
+                    <option value="nao" selected>Não</option>
+                </select>
+            </div>
         </div>
         <div class="form-group">
             <label for="motivo">Objetivo do Agendamento</label>
             {{ form.motivo }}
         </div>
-        <button type="submit" class="btn btn-primary" id="btn-confirmar">Enviar Solicitação</button>
+        <button type="submit" class="btn btn-primary" id="btn-confirmar">Próximo</button>
     </form>
 </div>
 <!-- Importa o script.js para validações -->
@@ -190,6 +201,16 @@
             btnConfirmar.disabled = true;
             btnConfirmar.innerText = "Processando..."; // feedback visual
             btnConfirmar.form.submit(); // força o envio do formulário
+        });
+        const transporteSelect = document.getElementById("transporte");
+        const campoMotorista = document.getElementById("campo-motorista");
+
+        transporteSelect.addEventListener("change", function() {
+            if (["Fluvial", "Aéreo"].includes(transporteSelect.value)) {
+                campoMotorista.style.display = "block";
+            } else {
+                campoMotorista.style.display = "none";
+            }
         });
 
     });

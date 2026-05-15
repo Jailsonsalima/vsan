@@ -12,6 +12,13 @@ class Agendamento(models.Model):
     data_ida = models.DateField()
     data_retorno = models.DateField()
     municipio = models.CharField(max_length=100)
+    TRANSPORTE_CHOICES = [
+        ("Aéreo", "Aéreo"),
+        ("Veículo Oficial", "Veículo Oficial"),
+        ("Fluvial", "Fluvial"),
+        ("Outro", "Outro"),
+    ]
+    transporte = models.CharField(max_length=50, choices=TRANSPORTE_CHOICES, default="Veículo Oficial")
     servidor = models.ForeignKey(Servidor, on_delete=models.CASCADE)  # servidor vinculado ao usuário solicitante
     solicitante = models.ForeignKey(Usuario, on_delete=models.CASCADE)  # usuário que solicitou
     data_solicitacao = models.DateTimeField(auto_now_add=True)

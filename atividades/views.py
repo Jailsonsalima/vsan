@@ -23,8 +23,15 @@ def cadastrar_atividade(request, agendamento_id=None):
     # Filtra setores cujo cargo_chefe NÃO começa com "Diretor"
     setores = Setor.objects.exclude(cargo_chefe__startswith="Diretor")
     agendamento = None
+    motorista_sorteado = None
     if agendamento_id:
         agendamento = get_object_or_404(Agendamento, id=agendamento_id)
+        # pega o processamento já criado
+        processamento = getattr(agendamento, "processamento", None)
+        if processamento and processamento.motorista_servidor:
+            motorista_sorteado = processamento.motorista_servidor
+        elif processamento and processamento.motorista_externo:
+            motorista_sorteado = processamento.motorista_externo
     if request.method == "POST":
         try:
             setor_id = request.POST.get("setor")
@@ -33,17 +40,38 @@ def cadastrar_atividade(request, agendamento_id=None):
             chefe = Setor.objects.get(id=chefe_id) if chefe_id else None
 
             data_ida_str = request.POST.get("data_ida")
-            data_retorno_str = request.POST.get("data_retorno")
+            data_retorno_str = request.POST.get ("data_retorno")
 
             data_ida = datetime.strptime(data_ida_str, "%Y-%m-%d").date() if data_ida_str else None
             data_retorno = datetime.strptime(data_retorno_str, "%Y-%m-%d").date() if data_retorno_str else None
             n_memorando = request.POST.get("n_memorando")
-            chefe_id = request.POST.get("chefe_imediato")
-            chefe = Setor.objects.get(id=chefe_id) if chefe_id else None
 
             # Busca ou cria recurso ativo padrão
             recurso_ativo, _ = RecursoAtivo.objects.get_or_create(id=1, defaults={"codigo": "01"})
 
+            ids = request.POST.getlist("servidores")
+
+            servidores_selecionados = Servidor.objects.filter(id__in=ids)
+            # Verificação de conflito em lote
+            conflitos = Atividade.objects.filter(
+                servidores__in=servidores_selecionados,
+                data_ida__lte=data_retorno,
+                data_retorno__gte=data_ida
+            ).exclude(agendamento=agendamento).exclude(agendamento__status="cancelado")  # 👈 exclui da verificação o próprio agendamento e os que estiverem em agendamentos cancelados
+
+            if conflitos.exists():
+                # pega todos os servidores envolvidos nos conflitos
+                servidores_conflito = set()
+                for atividade in conflitos:
+                    for servidor in atividade.servidores.all():
+                        if servidor in servidores_selecionados:
+                            servidores_conflito.add(servidor.nome)
+
+                nomes_conflito = ", ".join(servidores_conflito)
+                messages.error(request, f"Os seguintes servidores já possuem agendamento neste mesmo período:\n {nomes_conflito}")
+                return redirect("cadastrar_atividade_agendamento", agendamento_id=agendamento.id)
+
+            # Se não houver conflito, cria a atividade normalmente
             atividade = Atividade.objects.create(
                 dias_diarias=request.POST.get("dias_diarias"),
                 pernoite=request.POST.get("pernoite"),
@@ -59,7 +87,7 @@ def cadastrar_atividade(request, agendamento_id=None):
                 chefe_imediato=chefe,  # aqui vai a instância de Setor
                 criador=request.user, # aqui salva o usuário que criou o documento
             )
-            ids = request.POST.getlist("servidores")
+            # vincula servidores e motoristas
             atividade.servidores.set(Servidor.objects.filter(id__in=ids))
             ids_motoristas = request.POST.getlist("motoristas_externos")
             atividade.motoristas_externos.set(MotoristaExterno.objects.filter(id__in=ids_motoristas))
@@ -68,22 +96,14 @@ def cadastrar_atividade(request, agendamento_id=None):
             return redirect("listar_atividades")
         except IntegrityError:
             messages.error(request, "Já existe uma atividade cadastrada com este número de memorando.")
-    else:
-        # Se veio de um agendamento processado, pré-preenche os campos
-        initial_data = {}
-        if agendamento:
-            initial_data = {
-                "municipio": agendamento.municipio,
-                "objetivo": agendamento.motivo,  # motivo vira objetivo
-                "data_ida": agendamento.data_ida.strftime("%Y-%m-%d") if agendamento.data_ida else "",
-                "data_retorno": agendamento.data_retorno.strftime("%Y-%m-%d") if agendamento.data_retorno else "",
-            }
+    
     return render(request, "atividades/cadastro_atividades.html", {
         "servidores": servidores,
         "setores": setores,
         "recurso_ativo": RecursoAtivo.objects.first(),
         "motoristas_externos": motoristas_externos,
-        "initial_data": initial_data,
+        "motorista_sorteado": motorista_sorteado,
+        "agendamento": agendamento,
     })
 
 def formatar_periodo(data_ida, data_retorno):
@@ -239,6 +259,7 @@ def listar_atividades(request):
     municipio = request.GET.get("municipio") or ""
     data_inicio = request.GET.get("data_inicio") or ""
     data_fim = request.GET.get("data_fim") or ""
+    servidor_nome = request.GET.get("servidor_nome") or ""
 
     if municipio:
         atividades = atividades.filter(municipio__icontains=municipio)
@@ -252,6 +273,8 @@ def listar_atividades(request):
             atividades = atividades.filter(data_retorno__lte=data_fim)
         except ValueError:
             pass
+    if servidor_nome:
+        atividades = atividades.filter(servidores__nome__icontains=servidor_nome).distinct()
 
     # Paginação
     paginator = Paginator(atividades, 10)  # 10 registros por página
@@ -263,11 +286,13 @@ def listar_atividades(request):
         atividade.periodo_formatado = formatar_periodo(atividade.data_ida, atividade.data_retorno)
 
     return render(request, "atividades/listar_atividades.html", {
+        # passa para template
         "page_obj": page_obj,
         "municipio": municipio,
         "data_inicio": data_inicio,
         "data_fim": data_fim,
-        "recurso_ativo": recurso_ativo,  # passa para template
+        "servidor_nome": servidor_nome,
+        "recurso_ativo": recurso_ativo,
     })
 
 @login_required(login_url='/login/')

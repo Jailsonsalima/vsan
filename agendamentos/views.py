@@ -40,32 +40,92 @@ def solicitar_agendamento(request):
                 messages.error(request, "Seu usuário não está vinculado a um servidor. Contate o administrador.")
                 return redirect('home')
             agendamento.servidor = request.user.servidor
+            # Verificação de duplicidade
+            existe = Agendamento.objects.filter(
+                solicitante=request.user,
+                data_ida=agendamento.data_ida,
+                data_retorno=agendamento.data_retorno,
+                municipio=agendamento.municipio,
+                motivo=agendamento.motivo,
+                transporte=agendamento.transporte,
+                status__in=["pendente", "processado"]  # só bloqueia se ainda ativo
+            ).exists()
+
+            if existe:
+                messages.error(request, "Já existe uma solicitação idêntica registrada. Evite duplicidade.")
+                return redirect('listar_agendamentos')
+
+            # Se não existir duplicado, prossegue normalmente
             agendamento.save()
+            necessita_motorista = request.POST.get("necessita_motorista")
+            if agendamento.transporte == "Veículo Oficial" or (agendamento.transporte in ["Fluvial", "Aéreo"] and necessita_motorista == "sim"):
+                # Sorteio de motorista
+                # Verifica motoristas internos disponíveis
+                motoristas_servidores = Servidor.objects.filter(cargo__icontains="Motorista", disponivel=True)
+                motoristas_ocupados = ProcessamentoAgendamento.objects.filter(
+                    agendamento__data_ida__lte=agendamento.data_retorno,
+                    agendamento__data_retorno__gte=agendamento.data_ida
+                ).values_list("motorista_servidor_id", flat=True)
 
-            # Envia e-mail ao solicitante
-            send_mail(
-                'Solicitação de Agendamento Recebida',
-                f'Sua solicitação foi registrada. Aguarde confirmação.\n\n'
-                f'Dados do agendamento:\n'
-                f'Ida: {agendamento.data_ida.strftime("%d/%m/%Y")}\n'
-                f'Retorno: {agendamento.data_retorno.strftime("%d/%m/%Y")}\n'
-                f'Município: {agendamento.municipio}\n'
-                f'Motivo: {agendamento.motivo}',
-                'sistema@vsan.com',
-                [request.user.email],
-            )
+                motoristas_disponiveis = motoristas_servidores.exclude(id__in=motoristas_ocupados)
 
-            # Envia e-mail aos usuários autorizados (diretor define quem recebe)
-            autorizados = AutorizacaoAgendamento.objects.filter(pode_visualizar=True)
-            for autorizacao in autorizados:
-                send_mail(
-                    'Novo Pedido de Agendamento',
-                    f'Um novo agendamento foi solicitado.\nDados: {agendamento}',
-                    'sistema@vsan.com',
-                    [autorizacao.usuario.email],
-                )
-            messages.success(request, "Agendamento realizado com sucesso.")
-            return redirect('listar_agendamentos')
+                if motoristas_disponiveis.exists():
+                    # Sorteia motorista com menor tempo desde última vez
+                    motorista_sorteado = motoristas_disponiveis.order_by('ultima_vez_sorteado').first()
+
+                    processamento = ProcessamentoAgendamento.objects.create(
+                        agendamento=agendamento,
+                        tipo="Da Vigilância",
+                        motorista_servidor=motorista_sorteado
+                    )
+
+                    motorista_sorteado.ultima_vez_sorteado = timezone.now()
+                    motorista_sorteado.save()
+
+                    agendamento.status = "processado"
+                    agendamento.save()
+                    messages.success(request, "O primeiro passo foi concluído!")
+                    messages.info(request, f"Agora, complete os campos do formulário a baixo.")
+                    return redirect('cadastrar_atividade_agendamento', agendamento_id=agendamento.id)
+                
+                else:
+                    # Não há motorista interno disponível
+                    messages.info(request, "Não há motorista da Vigilância disponível.\n Aguarde designação de motorista externo.")
+
+                    # Envia e-mail ao solicitante
+                    send_mail(
+                        'Agendamento aguardando motorista externo',
+                        f'Sua solicitação foi registrada. Aguarde confirmação.\n\n'
+                        f'Dados do agendamento:\n'
+                        f'Ida: {agendamento.data_ida.strftime("%d/%m/%Y")}\n'
+                        f'Retorno: {agendamento.data_retorno.strftime("%d/%m/%Y")}\n'
+                        f'Município: {agendamento.municipio}\n'
+                        f'Motivo: {agendamento.motivo}',
+                        'sistema@vsan.com',
+                        [request.user.email]
+                    )
+
+                    # Envia e-mail aos autorizados
+                    autorizados = AutorizacaoAgendamento.objects.filter(pode_visualizar=True)
+                    for autorizacao in autorizados:
+                        send_mail(
+                            'Agendamento aguardando motorista externo',
+                            f'Um novo agendamento foi solicitado e está aguardando motorista externo.\nDados: {agendamento}',
+                            'sistema@vsan.com',
+                            [autorizacao.usuario.email]
+                        )
+
+                    return redirect('listar_agendamentos')
+            else:
+                if agendamento.transporte != "Veículo Oficial" and necessita_motorista == "nao":
+                    agendamento.status = "processado"
+                    agendamento.save()
+                # Não sorteia motorista
+                messages.success(request, f"Agendamento registrado com transporte: {agendamento.transporte}")
+                messages.info(request, f"Agora, complete os outros campos do formulário.")
+                return redirect('cadastrar_atividade_agendamento', agendamento_id=agendamento.id)
+        else:
+            form = AgendamentoForm()
     else:
         form = AgendamentoForm()
     return render(request, 'agendamentos/solicitar.html', {'form': form})
@@ -239,30 +299,28 @@ def processar_agendamento(request, agendamento_id):
         "autorizado": autorizado,
     })
 
+# Define locale para português do Brasil
+locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+
 @login_required(login_url='/login/')
 def listar_agendamentos(request):
     usuario = request.user
     # Apenas usuários autorizados podem visualizar
     autorizacao = AutorizacaoAgendamento.objects.filter(usuario=request.user, pode_visualizar=True).first()
-    autorizado = bool(autorizacao or request.user.tipo_usuario == "diretor")
+    autorizado = bool(autorizacao or usuario.tipo_usuario == "diretor")
     # if not autorizacao and request.user.tipo_usuario != 'diretor':
     #     messages.error(request, "Você não tem permissão para visualizar os agendamentos.")
     #     return render(request, "usuarios/dashboard.html")
     # Se for diretor, vê todos
     if usuario.tipo_usuario == "diretor" or autorizacao:
         agendamentos = Agendamento.objects.all().order_by("-data_solicitacao").select_related("processamento")
-
     else:
         # Solicitações feitas pelo próprio usuário
         meus_agendamentos = Agendamento.objects.filter(solicitante=usuario)
 
         # Solicitações dos servidores cujo chefe imediato é o mesmo setor do usuário
         chefe_setor = usuario.servidor.setor if hasattr(usuario, "servidor") and usuario.servidor else None
-        if chefe_setor:
-            subordinados_agendamentos = Agendamento.objects.filter(servidor__setor=chefe_setor)
-        else:
-            subordinados_agendamentos = Agendamento.objects.none()
-
+        subordinados_agendamentos = Agendamento.objects.filter(servidor__setor=chefe_setor) if chefe_setor else Agendamento.objects.none()
         # Junta os dois conjuntos
         agendamentos = (meus_agendamentos | subordinados_agendamentos).order_by("-data_solicitacao").select_related("processamento")
     # Filtro por município
@@ -273,18 +331,110 @@ def listar_agendamentos(request):
     #agendamentos = Agendamento.objects.all().order_by("-data_solicitacao").select_related("processamento")  
 
     # Paginação
-    paginator = Paginator(agendamentos, 10)  # 10 registros por página
+    paginator = Paginator(agendamentos, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-
     # Adiciona periodo_formatado em cada agendamento
     for agendamento in page_obj:
         agendamento.periodo_formatado = formatar_periodo(agendamento.data_ida, agendamento.data_retorno)
-    
+
+    motoristas = Servidor.objects.filter(cargo__icontains="Motorista")
+    motorista_id = request.GET.get("motorista")
+    motorista = None
+
+    ano = int(request.GET.get("ano", timezone.now().year))
+    mes = int(request.GET.get("mes", timezone.now().month))
+
+    # Paleta de cores fixa (mesma usada nos gráficos)
+    paleta = ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0','#00bcd4']
+    dias_por_motorista = {}
+
+    if motorista_id:
+        # modo individual
+
+        try:
+            motorista = Servidor.objects.get(id=motorista_id)
+            agendamentos_motorista = ProcessamentoAgendamento.objects.filter(motorista_servidor=motorista)
+            dias_por_motorista[motorista.id] = {"nome": motorista.nome, "dias": [], "cor": paleta[0]}
+            for ag in agendamentos_motorista:
+                if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
+                    dias_por_motorista[motorista.id]["dias"].extend(
+                        range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
+                    )
+        except Servidor.DoesNotExist:
+            motorista = None
+    else:
+        # modo todos juntos
+        for i, m in enumerate(motoristas):
+            agendamentos_motorista = ProcessamentoAgendamento.objects.filter(motorista_servidor=m)
+            dias_por_motorista[m.id] = {"nome": m.nome, "dias": [], "cor": paleta[i % len(paleta)]}
+            for ag in agendamentos_motorista:
+                if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
+                    dias_por_motorista[m.id]["dias"].extend(
+                        range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
+                    )
+    # número de agendamentos por motorista no mês/ano atual
+    dados_motoristas_query = ProcessamentoAgendamento.objects.filter(
+        agendamento__data_ida__month=mes,
+        agendamento__data_ida__year=ano,
+        motorista_servidor__isnull=False
+    )
+    # Se um motorista foi selecionado, filtra apenas ele
+    if motorista_id:
+        dados_motoristas_query = dados_motoristas_query.filter(motorista_servidor_id=motorista_id)
+
+    dados_motoristas = (
+        dados_motoristas_query
+        .values("motorista_servidor__id", "motorista_servidor__nome")
+        .annotate(total=Count("id"))
+        .order_by("motorista_servidor__nome")
+    )
+    # número de dias em viagem por motorista no mês/ano atual
+    dados_dias_motoristas = []
+    motoristas_ids = dados_motoristas_query.values_list("motorista_servidor__id", flat=True).distinct()
+    for mid in motoristas_ids:
+        try:
+            motorista_obj = Servidor.objects.get(id=mid)
+        except Servidor.DoesNotExist:
+            continue
+        ags = ProcessamentoAgendamento.objects.filter(
+            motorista_servidor_id=mid,
+            agendamento__data_ida__month=mes,
+            agendamento__data_ida__year=ano
+        )
+        total_dias = sum((ag.agendamento.data_retorno - ag.agendamento.data_ida).days + 1 for ag in ags)
+        dados_dias_motoristas.append({
+            "motorista_servidor__id": mid,
+            "motorista_servidor__nome": motorista_obj.nome,
+            "total_dias": total_dias
+        })
+
+    cal = calendar.Calendar(firstweekday=6)
+    dias_mes = cal.monthdayscalendar(ano, mes)
+
+    mes_anterior = mes - 1 if mes > 1 else 12
+    ano_anterior = ano if mes > 1 else ano - 1
+    mes_proximo = mes + 1 if mes < 12 else 1
+    ano_proximo = ano if mes < 12 else ano + 1
+    nome_mes = calendar.month_name[mes].capitalize()
+
     return render(request, "agendamentos/listar.html", {
-        "agendamentos": agendamentos, 
-        "page_obj": page_obj, 
-        "filtro_municipio": filtro_municipio, 
+        "motoristas": motoristas,
+        "motorista_selecionado": motorista,
+        "dias_por_motorista": dias_por_motorista,
+        "dias_mes": dias_mes,
+        "mes": mes,
+        "ano": ano,
+        "nome_mes": nome_mes,
+        "mes_anterior": mes_anterior,
+        "ano_anterior": ano_anterior,
+        "mes_proximo": mes_proximo,
+        "ano_proximo": ano_proximo,
+        "dados_motoristas": json.dumps(list(dados_motoristas)),
+        "dados_dias_motoristas": json.dumps(list(dados_dias_motoristas)),
+        "agendamentos": agendamentos,
+        "page_obj": page_obj,
+        "filtro_municipio": filtro_municipio,
         "autorizado": autorizado,
     })
     
@@ -350,9 +500,6 @@ def adicionar_processo(request, agendamento_id):
         return redirect('listar_agendamentos')
     return render(request, "agendamentos/adicionar_processo.html", {"processamento": processamento})
 
-
-# Define locale para português do Brasil
-locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 @login_required(login_url='/login/')
 def calendario_motorista(request):

@@ -167,6 +167,10 @@
                 <label for="data_fim">Data Fim:</label>
                 <input type="date" name="data_fim" id="data_fim" value="{{ data_fim }}">
             </div>
+            <div class="form-group">
+                <label for="servidor_nome">Servidor:</label>
+                <input type="text" name="servidor_nome" id="servidor_nome" value="{{ servidor_nome }}" placeholder="Digite o nome do servidor">
+            </div>
         </div>
         <button type="submit" class="btn-secondary">Filtrar</button>
         <button><a href="{% url 'listar_atividades' %}" class="btn-secondary">Limpar</a></button>

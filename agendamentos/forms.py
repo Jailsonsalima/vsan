@@ -4,14 +4,20 @@ from servidores.models import Servidor
 
 # Formulário de solicitação de agendamento
 class AgendamentoForm(forms.ModelForm):
+    necessita_motorista = forms.ChoiceField(
+        choices=[("sim", "Sim"), ("nao", "Não")],
+        required=False,
+        label="Necessita motorista?"
+    )
     class Meta:
         model = Agendamento
-        fields = ['data_ida', 'data_retorno', 'municipio', 'motivo']
+        fields = ['data_ida', 'data_retorno', 'municipio', 'motivo', 'transporte', 'necessita_motorista']
         widgets = {
             'data_ida': forms.DateInput(attrs={'type': 'date', 'id': 'data_ida'}),
             'data_retorno': forms.DateInput(attrs={'type': 'date', 'id': 'data_retorno'}),
             'municipio': forms.TextInput(attrs={'id': 'municipio'}),
             'motivo': forms.Textarea(attrs={'rows': 3, 'id': 'motivo'}),
+            'transporte': forms.Select(attrs={'id': 'transporte'}),
         }
 
 

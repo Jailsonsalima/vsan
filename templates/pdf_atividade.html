@@ -73,17 +73,17 @@
             {% for servidor in atividade.servidores.all %}
                 <tr>
                     <td>
-                        {{ servidor.nome }}<br>
+                        {{ servidor.nome|title }}<br>
                     </td>
                     <td>
-                        {{ servidor.cargo }} / {{ servidor.funcao }}
+                        {{ servidor.cargo }} / {{ servidor.funcao|title }}
                     </td>
                 </tr>
             {% endfor %}
             {% for motorista in atividade.motoristas_externos.all %}
                 <tr>
-                    <td>{{ motorista.nome }}</td>
-                    <td>{{ motorista.cargo }} / {{ motorista.funcao }}</td>
+                    <td>{{ motorista.nome|title }}</td>
+                    <td>{{ motorista.cargo }} / {{ motorista.funcao|title }}</td>
                 </tr>
             {% endfor %}
 

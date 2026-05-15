@@ -25,13 +25,13 @@
                 </div>
                 <div class="form-group">
                     <label for="data_ida">Data de Ida:</label>
-                    <input type="date" name="data_ida" id="data_ida" value="{{ initial_data.data_ida }}" readonly 
+                    <input type="date" name="data_ida" id="data_ida" value="{{ agendamento.data_ida|date:'Y-m-d' }}" readonly 
                     style="background-color: #f0f0f0; color: #555; font-weight: bold;">
                     <small style="color: #777;">Este campo é preenchido automaticamente.</small>
                 </div>
                 <div class="form-group">
                     <label for="data_retorno">Data de Retorno:</label>
-                    <input type="date" name="data_retorno" id="data_retorno" value="{{ initial_data.data_retorno }}" readonly 
+                    <input type="date" name="data_retorno" id="data_retorno" value="{{ agendamento.data_retorno|date:'Y-m-d' }}" readonly 
                     style="background-color: #f0f0f0; color: #555; font-weight: bold;">
                     <small style="color: #777;">Este campo é preenchido automaticamente.</small>
                 </div>
@@ -58,14 +58,12 @@
                     </div>
                 </div>
                 <!-- Meio de Transporte -->
-                <div class="form-group">
+                 <div class="form-group">
                     <label for="transporte">Meio de Transporte:</label>
-                    <select name="transporte" id="transporte" required>
-                        <option value="">-- Selecione --</option>
-                        <option value="Aéreo">Aéreo</option>
-                        <option value="Veículo oficial">Veículo oficial</option>
-                        <option value="Fluvial">Fluvial</option>
-                    </select>
+                    <input type="text" id="transporte" name="transporte" 
+                        value="{{ agendamento.transporte }}" readonly
+                        style="background-color: #f0f0f0; color: #555; font-weight: bold;">
+                    <small style="color: #777;">Este campo é preenchido automaticamente a partir do agendamento.</small>
                 </div>
             </div>
           
@@ -73,7 +71,7 @@
          
         <div class="form-group">
             <label for="municipio">Município:</label>
-            <input type="text" id="municipio" name="municipio" value="{{ initial_data.municipio }}" readonly 
+            <input type="text" id="municipio" name="municipio" value="{{ agendamento.municipio }}" readonly 
             style="background-color: #f0f0f0; color: #555; font-weight: bold;">
             <small style="color: #777;">Este campo é preenchido automaticamente.</small>
         </div>
@@ -83,10 +81,10 @@
         <!-- Objetivo -->
         <div class="form-group">
             <label for="objetivo">Objetivo:</label>
-            <textarea name="objetivo" id="objetivo" rows="3" required>{{ initial_data.objetivo }}</textarea>
+            <textarea name="objetivo" id="objetivo" rows="3" required>{{ agendamento.motivo }}</textarea>
         </div>
         <div class="form-group">
-            <label for="chefe_imediato">Chefe Imediato:</label>
+            <label for="chefe_imediato">Chefe da divisão demandante:</label>
             <select id="chefe_imediato" name="chefe_imediato">
                 <option value=""> -- Selecione -- </option>
                 {% for setor in setores %}
@@ -109,6 +107,15 @@
              <!-- Botão -->
             <button id="btn-proximo" type="submit" class="btn btn-disabled btn-secondary" disabled>Salvar</button>
         </div>
+        <!-- Exibe motorista sorteado automaticamente -->
+    {% if motorista_sorteado %}
+    <div class="alert alert-info" style="margin-top:15px;">
+        <strong>🚗 Motorista designado:</strong> {{ motorista_sorteado.nome }}
+        {% if motorista_sorteado.telefone %}
+            - Telefone: {{ motorista_sorteado.telefone }}
+        {% endif %}
+    </div>
+    {% endif %}
         <!-- Equipe -->
         <div class="checkbox-list form-row"  id="lista-servidores">
             {% for servidor in servidores %}
