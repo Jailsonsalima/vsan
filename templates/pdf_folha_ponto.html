@@ -157,17 +157,7 @@
                     <td >
                         {{ semana }}
                     </td>
-                    {% if especial %}
-                        {% if especial.tipo == "FERIADO" %}
-                        <td colspan="12" >
-                            Feriado: {{ especial.nome }}
-                        </td>
-                        {% elif especial.tipo == "FACULTADO" %}
-                        <td colspan="12" >
-                            Facultado
-                        </td>
-                        {% endif %}
-                    {% else %}
+                    
                     
                     <td colspan="2" >
                         
@@ -185,7 +175,7 @@
                     <td colspan="4" >
                         
                     </td>
-                    {% endif %}
+                  
                     
                     
                 </tr>
