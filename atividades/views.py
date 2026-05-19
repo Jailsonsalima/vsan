@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Atividade, RecursoAtivo
+from .models import Atividade, RecursoAtivo, DiaEspecial
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -325,10 +325,14 @@ def definir_recurso(request):
 def gerar_dias_mes(ano, mes):
     dias_semana = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "DOM"]
     dias_mes = []
+    dias_especiais = DiaEspecial.objects.filter(data__year=ano, data__month=mes)
+
+    especiais_dict = {d.data: d for d in dias_especiais}
     for dia in range(1, calendar.monthrange(ano, mes)[1] + 1):
         data = date(ano, mes, dia)
         semana = dias_semana[data.weekday()]
-        dias_mes.append((dia, semana))
+        especial = especiais_dict.get(data)
+        dias_mes.append((dia, semana, especial))
     return dias_mes
 
 @login_required(login_url='/login/')
@@ -369,3 +373,22 @@ def gerar_folha_ponto(request):
         "mes_atual": nome_mes,
         "ano_atual": ano_atual,
     })
+
+
+@login_required(login_url='/login/')
+def cadastrar_dia_especial(request):
+    if request.method == "POST":
+        data = request.POST.get("data")
+        tipo = request.POST.get("tipo")
+        nome = request.POST.get("nome")
+
+        if data and tipo:
+            DiaEspecial.objects.get_or_create(
+                data=data,
+                defaults={"tipo": tipo, "nome": nome}
+            )
+            messages.success(request, "Dia especial cadastrado com sucesso!")
+            return redirect("cadastrar_dia_especial")
+
+    dias_especiais = DiaEspecial.objects.all()
+    return render(request, "atividades/cadastrar_dia_especial.html", {"dias_especiais": dias_especiais})

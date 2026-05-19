@@ -39,3 +39,23 @@ class Atividade(models.Model):
     motoristas_externos = models.ManyToManyField(MotoristaExterno, related_name="atividades", blank=True)  # vínculo com motoristas externos
     def __str__(self):
         return f"{self.data_criacao} - {self.data_ida} ({self.data_retorno}) - {self.objetivo[:30]}..."
+
+
+class DiaEspecial(models.Model):
+    TIPO_CHOICES = [
+        ("FERIADO", "Feriado"),
+        ("FACULTADO", "Facultado"),
+    ]
+
+    data = models.DateField(unique=True)
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    nome = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        ordering = ["data"]
+
+    def __str__(self):
+        if self.tipo == "FERIADO":
+            return f"{self.data} - Feriado: {self.nome}"
+        else:
+            return f"{self.data} - Facultado"

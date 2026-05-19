@@ -45,6 +45,7 @@ urlpatterns = [
     path("servidores/", servidor_views.lista_servidores, name="lista_servidores"),
     path('cadastro-atividade/', atividades_views.cadastrar_atividade, name="cadastrar_atividade"),
 
+    path("dias-especiais/", atividades_views.cadastrar_dia_especial, name="cadastrar_dia_especial"),
     path('atividades/gerar-folha-ponto/', atividades_views.gerar_folha_ponto, name="gerar_folha_ponto"),
     
     path("atividades/cadastrar/<int:agendamento_id>/", atividades_views.cadastrar_atividade, name="cadastrar_atividade_agendamento"),

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h2>Cadastrar Feriado / Dia Facultado</h2>
+  <form method="post" class="form">
+    {% csrf_token %}
+    <div class="form-row">
+    <div class="form-group">
+      <label for="data">Data:</label>
+      <input type="date" id="data" name="data" required>
+    </div>
+
+    <div class="form-group">
+      <label for="tipo">Tipo:</label>
+      <select id="tipo" name="tipo" required>
+        <option value="">-- Selecione --</option>
+        <option value="FERIADO">Feriado</option>
+        <option value="FACULTADO">Facultado</option>
+      </select>
+    </div>
+</div>
+    <div class="form-group">
+      <label for="nome">Nome do Feriado (se aplicável):</label>
+      <input type="text" id="nome" name="nome" placeholder="Ex: Natal, Tiradentes...">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+  </form>
+
+  <hr>
+
+  <h3>Lista de Dias Especiais</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Tipo</th>
+        <th>Nome</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for dia in dias_especiais %}
+      <tr>
+        <td>{{ dia.data|date:"d/m/Y" }}</td>
+        <td>{{ dia.get_tipo_display }}</td>
+        <td>{{ dia.nome }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="3">Nenhum dia especial cadastrado.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Atividade, RecursoAtivo
+from .models import Atividade, RecursoAtivo, DiaEspecial
 
 @admin.register(Atividade)
 class AtividadeAdmin(admin.ModelAdmin):
@@ -14,3 +14,8 @@ class RecursoAtivoAdmin(admin.ModelAdmin):
     list_filter = ("codigo",)
     search_fields = ("codigo",)
     
+@admin.register(DiaEspecial)
+class DiaEspecialAdmin(admin.ModelAdmin):
+    list_display = ("data", "tipo", "nome")
+    list_filter = ("tipo",)
+    search_fields = ("nome",)
