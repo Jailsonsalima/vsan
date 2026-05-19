@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from weasyprint import HTML
 from servidores.models import Servidor
 from django.utils.dateformat import DateFormat
-from datetime import datetime
+from datetime import datetime, date
 from setores.models import Setor
 from django.contrib import messages
 import io, zipfile
@@ -14,6 +14,10 @@ from django.db import IntegrityError
 from django.db.models import Q
 from agendamentos.models import MotoristaExterno, Agendamento
 # Create your views here.
+import calendar
+import locale
+
+locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 @login_required(login_url='/login/')
 def cadastrar_atividade(request, agendamento_id=None):
@@ -317,3 +321,51 @@ def definir_recurso(request):
         return redirect("definir_recurso")
 
     return render(request, "setores/cadastrar_setor.html", {"recurso_ativo": recurso_ativo})
+
+def gerar_dias_mes(ano, mes):
+    dias_semana = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "DOM"]
+    dias_mes = []
+    for dia in range(1, calendar.monthrange(ano, mes)[1] + 1):
+        data = date(ano, mes, dia)
+        semana = dias_semana[data.weekday()]
+        dias_mes.append((dia, semana))
+    return dias_mes
+
+@login_required(login_url='/login/')
+def gerar_folha_ponto(request):
+    servidores = Servidor.objects.all()
+    ano_atual = datetime.now().year
+    mes_atual = datetime.now().month
+    dias_mes = gerar_dias_mes(ano_atual, mes_atual)
+    # Nome do mês em português
+    nome_mes = datetime.now().strftime("%B").capitalize()
+
+    if request.method == "POST":
+        ids = request.POST.getlist("servidores")
+        servidores_selecionados = Servidor.objects.filter(id__in=ids)
+        horario = request.POST.get("horario")
+
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            for servidor in servidores_selecionados:
+                html = render_to_string("pdf_folha_ponto.html", {
+                    "servidor": servidor,
+                    "dias_mes": dias_mes,
+                    "mes_atual": nome_mes,
+                    "ano_atual": ano_atual,
+                    "horario": horario,
+                })
+                pdf_bytes = HTML(string=html).write_pdf()
+                zip_file.writestr(f"folha_ponto_{servidor.primeiro_e_ultimo_nome()}_{nome_mes}_{ano_atual}.pdf", pdf_bytes)
+
+        buffer.seek(0)
+        response = HttpResponse(buffer.getvalue(), content_type="application/zip")
+        response['Content-Disposition'] = f'attachment; filename="folhas_ponto_{nome_mes}_{ano_atual}.zip"'
+        return response
+
+    return render(request, "atividades/cadastro_folha_ponto.html", {
+        "servidores": servidores,
+        "dias_mes": dias_mes,
+        "mes_atual": nome_mes,
+        "ano_atual": ano_atual,
+    })

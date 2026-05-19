@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>pdf_servidor_diaria</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family:'Arial', Times, serif; margin: 0px; font-size: 16px;}
+            .brasao { position: fixed; top: 0; margin-bottom: 10px; margin-top: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: auto; }
+            .sus { position: fixed; top: 0; margin-left: 40px; margin-top: 20px;  left: 0; width: 90px; height: auto; }
+            .vsan { position: fixed; top: 0; margin-right: 40px; margin-top: 20px;  right: 0; width: 90px; height: auto; }
+            .top-text { font-family: 'Arial Narrow'; font-size: 10px; text-align: center; margin-top: 40px;}
+            /* Linha superior centralizada */
+            .linha-topo { position: fixed; top: 140px; left: 0; width: 100%; height: auto; }
+            h3 { text-align: center;  margin-bottom: 20px; margin-top: 25px; }
+            table { table-layout: fixed; width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+            tr, td, th { border: 2px solid #000000; text-align: center; padding: 1px;}
+            /* Remove margens padrão do PDF */
+            @page { margin: 0; padding: 0; }
+            body { margin: 10px; padding: 20px; font-family: 'Arial', Times, serif; font-size: 14px; }
+            /* Estrela canto inferior esquerdo */
+            .estrela { position: fixed; bottom: 0; left: 0; width: 120px; /* ajuste conforme necessário */ height: auto; z-index: 2; }
+            /* Linha inferior centralizada */
+            .linha-boton { position: fixed; bottom: 45px; right: 0; width: 95%; height: auto; z-index: 1; }
+            .footer-devs { font-family: 'Arial Narrow'; text-align: center; font-size: 10px; color: #000; line-height: 1.2; bottom: 25px; position: fixed; width: 100%; }
+            .assinaturas {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 50px;
+    }
+    .assinatura {
+      text-align: center;
+      width: 40%;
+    }
+    .linha {
+      border-top: 1px solid #000;
+      margin-bottom: 5px;
+
+    }
+    .texto {
+      font-size: 14px;
+    }
+        </style>
+    </head>
+    <body>
+       
+            
+            <table>
+                <tr>
+                    <td colspan="14" style="text-align: center; line-height: 1.4;" >
+                        <strong>DIRETORIA DE VIGILÂNCIA À SAÚDE</strong><br>
+  
+                        <strong>DEPARTAMENTO DE VIGILÂNCIA SANITÁRIA-DEVS</strong><br>
+
+                        <strong>ASSESSORIA DO DEPARTAMENTO DE VIGILÂNCIA SANITÁRIA-ASSDEVS</strong><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="text-align: left;">
+                        <strong>SERVIDOR(A):</strong> {{ servidor.nome|title }}
+                    </td>
+                    <td colspan="2" >
+                        <strong>Cargo/Função</strong> 
+                    </td>
+                    <td colspan="6" >
+                        {{ servidor.cargo }} / {{ servidor.funcao|title }}
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td colspan="2" style="text-align: left;">
+                        <strong>Matrícula</strong>
+                    </td>
+                    <td colspan="4" >
+                        {{ servidor.matricula }}
+                    </td>
+                    <td colspan="2" >
+                        <strong>Lotação</strong>
+                    </td>
+                    <td colspan="6" >
+                        {{ servidor.setor.nome }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="text-align: left;">
+                        <strong>HORÁRIODETRABALHO:</strong>{{ horario }}
+                    </td>
+                    <td colspan="4" >
+                        <strong>Mês:</strong> {{ mes_atual|title }}
+                    </td>
+                    <td colspan="4" >
+                        <strong>Ano:</strong> {{ ano_atual|title }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="14" style="text-align: center;">
+                        <strong>ATIVIDADES DESENVOLVIDAS</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="14" style="text-align: left;">
+                        <strong>(1) - EVENTO EM MASSA: </strong>Atividade coletiva de natureza cultural, esportiva, comercial, religiosa, social ou política, por tempo pré-determinado, com concentração ou fluxo excepcional de pessoas, de origem nacional ou internacional, e que, segundo a avaliação das ameaças, das vulnerabilidades e dos riscos à saúde pública exijam a atuação coordenada de órgãos.
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="14" style="text-align: left;">
+                        <strong>(2) - REALIZAÇÃO DE ATIVIDADES ADMINISTRATIVAS.</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="14" style="text-align: left;">
+                        <strong>(3) - DESENVOLVIMENTO DAS ATIVIDADES  DE INTERESSE DA VISA.</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="14" style="text-align: left;">
+                        <strong>(4) - GTGQ - GRUPO DE TRABALHO DE GESTÃO DA QUALIDADE. </strong>
+                    </td>
+                </tr>
+                <tr>
+                    <th rowspan="2" style="width: 1.5%;">
+                        <strong>DIAS</strong>
+                    </th>
+                    <th rowspan="2" style="width: 4%;">
+                        <strong>SEM</strong>
+                    </th>
+                    <th colspan="4" style="width: 30%;">
+                        <strong>JORNADAPLANTÃOEXTRA</strong>
+                    </th>
+                    <th colspan="2" style="width: 15%;">
+                        <strong>TIPODE PLANTÃO</strong>
+                    </th>
+                    <th colspan="2" rowspan="2" style="width: 10%;">
+                        <strong>Atividade Desenvolvida (1)/(2)</strong>
+                    </th>
+                    <th colspan="4" rowspan="2" style="width: 42%;">
+                        <strong>ASSINATURA</strong>
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="2" style="width: 15%;">
+                        Entrada
+                    </th>
+                    <th colspan="2" style="width: 15%;">
+                        Saída
+                    </th>
+                    <th colspan="2" style="width: 15%;">
+                        PD12,PN12
+                    </th>
+                </tr>
+                {% for dia, semana in dias_mes %}
+                <tr {% if semana == "SÁB" or semana == "DOM" %} style="background-color: rgb(221, 218, 218);" {% endif %}>
+                    <td >
+                        {{ dia }}
+                    </td>
+                    <td >
+                        {{ semana }}
+                    </td>
+                    <td colspan="2" >
+                        
+                    </td>
+                    <td colspan="2" >
+                        
+                    </td>
+                    <td colspan="2" >
+                        
+                    </td>
+                    <td colspan="2" >
+                        
+                    </td>
+                    </td>
+                    <td colspan="4" >
+                        
+                    </td>
+                    
+                    
+                    
+                </tr>
+                {% endfor %}
+                
+                                </table>
+
+                <div class="assinaturas">
+    <div class="assinatura">
+      <div class="linha"></div>
+      <div class="texto">Assinatura do Servidor(a)</div>
+    </div>
+    <div class="assinatura">
+      <div class="linha"></div>
+      <div class="texto">Assinatura do Responsável</div>
+    </div>
+  </div>
+            <!--<footer class="footer-devs">
+                Departamento Estadual de Vigilância Sanitária/SESPA - Tv. Lomas Valentinas, 2190– Marco – Belém – Pará - CEP 66.093-677<br>
+                Fone: (91) 4006-5591 / (91) 97400-6543 - E-mail: <a href="mailto:devs@sespa.pa.gov.br">devs@sespa.pa.gov.br</a> / <a href="mailto:diretoria.devspa@gmail.com">diretoria.devspa@gmail.com</a>
+            </footer>-->
+        
+
+    </body>
+</html>

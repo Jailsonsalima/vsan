@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h2>Gerar Folha de Plantão</h2>
+  <form method="post" class="form">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="horario">Escolha o HORÁRIO DE TRABALHO:</label>
+      <select name="horario" id="horario" required style="width: 200px;">
+          <option value="">-- Selecione --</option>
+          <option value="08h - 14h">08h - 14h</option>
+          <option value="12h - 18h">12h - 18h</option>
+          <option value="14h - 18h">14h - 18h</option>
+          <option value="08h - 12h / 14h - 18h">08h - 12h / 14h - 18h</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <small style="color:#777;">Selecione um ou mais servidores.</small>
+      <div class="form-group">
+  <label for="filtro-servidores">Pesquisar Servidor:</label>
+  <input type="text" id="filtro-servidores" placeholder="Digite o nome do servidor...">
+</div>
+      <div class="checkbox-list form-row" id="lista-servidores">
+        {% for servidor in servidores %}
+          <div class="servidor-item">
+            <label>
+              <input type="checkbox" name="servidores" value="{{ servidor.id }}">
+              {{ servidor.primeiro_e_ultimo_nome }}
+            </label>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Gerar PDFs</button>
+  </form>
+</div>
+<script>
+  // Captura o campo de pesquisa
+  const filtroInput = document.getElementById("filtro-servidores");
+  const listaServidores = document.getElementById("lista-servidores").getElementsByClassName("servidor-item");
+
+  filtroInput.addEventListener("keyup", function() {
+    const filtro = filtroInput.value.toLowerCase();
+    for (let i = 0; i < listaServidores.length; i++) {
+      const item = listaServidores[i];
+      const texto = item.textContent.toLowerCase();
+      // Mostra ou esconde conforme o filtro
+      if (texto.includes(filtro)) {
+        item.style.display = "";
+      } else {
+        item.style.display = "none";
+      }
+    }
+  });
+</script>
+{% endblock %}
