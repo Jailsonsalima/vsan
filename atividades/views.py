@@ -339,10 +339,10 @@ def gerar_dias_mes(ano, mes):
 def gerar_folha_ponto(request):
     servidores = Servidor.objects.all()
     ano_atual = datetime.now().year
-    mes_atual = 6#datetime.now().month
+    mes_atual = datetime.now().month
     dias_mes = gerar_dias_mes(ano_atual, mes_atual)
     # Nome do mês em português
-    nome_mes = 'Junho'#datetime.now().strftime("%B").capitalize()
+    nome_mes = datetime.now().strftime("%B").capitalize()
 
     if request.method == "POST":
         ids = request.POST.getlist("servidores")
@@ -378,7 +378,9 @@ def gerar_folha_ponto(request):
 @login_required(login_url='/login/')
 def cadastrar_dia_especial(request):
     if request.method == "POST":
-        data = request.POST.get("data")
+        data_str = request.POST.get("data")
+        if data_str:
+            data = datetime.strptime(data_str, "%Y-%m-%d").date()
         tipo = request.POST.get("tipo")
         nome = request.POST.get("nome")
 
