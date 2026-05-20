@@ -51,6 +51,7 @@
                         <select name="transporte" id="transporte" required>
                             <option value="Aéreo" {% if atividade.transporte == "Aéreo" %}selected{% endif %}>Aéreo</option>
                             <option value="Veículo oficial" {% if atividade.transporte == "Veículo oficial" %}selected{% endif %}>Veículo oficial</option>
+                            <option value="Veículo Oficial (VAN)" {% if atividade.transporte == "Veículo Oficial (VAN)" %}selected{% endif %}>Veículo Oficial (VAN)</option>
                             <option value="Fluvial" {% if atividade.transporte == "Fluvial" %}selected{% endif %}>Fluvial</option>
                         </select>
                     </div>

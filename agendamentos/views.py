@@ -58,7 +58,7 @@ def solicitar_agendamento(request):
             # Se não existir duplicado, prossegue normalmente
             agendamento.save()
             necessita_motorista = request.POST.get("necessita_motorista")
-            if agendamento.transporte == "Veículo Oficial" or (agendamento.transporte in ["Fluvial", "Aéreo"] and necessita_motorista == "sim"):
+            if agendamento.transporte == "Veículo Oficial (VAN)" or agendamento.transporte == "Veículo Oficial" or (agendamento.transporte in ["Fluvial", "Aéreo"] and necessita_motorista == "sim"):
                 # Sorteio de motorista
                 # Verifica motoristas internos disponíveis
                 motoristas_servidores = Servidor.objects.filter(cargo__icontains="Motorista", disponivel=True)
@@ -86,6 +86,18 @@ def solicitar_agendamento(request):
                     agendamento.save()
                     messages.success(request, "O primeiro passo foi concluído!")
                     messages.info(request, f"Agora, complete os campos do formulário a baixo.")
+
+                    if agendamento.transporte == "Veículo Oficial (VAN)":
+                        # Envia e-mail aos autorizados
+                        autorizados = AutorizacaoAgendamento.objects.filter(pode_visualizar=True)
+                        for autorizacao in autorizados:
+                            send_mail(
+                                'Agendamento de VAN',
+                                f'Um novo agendamento de uma VAN foi solicitado e está aguardando.\nDados: {agendamento}',
+                                'sistema@vsan.com',
+                                [autorizacao.usuario.email]
+                            )
+
                     return redirect('cadastrar_atividade_agendamento', agendamento_id=agendamento.id)
                 
                 else:
@@ -117,7 +129,7 @@ def solicitar_agendamento(request):
 
                     return redirect('listar_agendamentos')
             else:
-                if agendamento.transporte != "Veículo Oficial" and necessita_motorista == "nao":
+                if agendamento.transporte != "Veículo Oficial (VAN)" and agendamento.transporte != "Veículo Oficial" and necessita_motorista == "nao":
                     agendamento.status = "processado"
                     agendamento.save()
                 # Não sorteia motorista

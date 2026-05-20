@@ -15,6 +15,7 @@ class Agendamento(models.Model):
     TRANSPORTE_CHOICES = [
         ("Aéreo", "Aéreo"),
         ("Veículo Oficial", "Veículo Oficial"),
+        ("Veículo Oficial (VAN)", "Veículo Oficial (VAN)"),
         ("Fluvial", "Fluvial"),
         ("Outro", "Outro"),
     ]
