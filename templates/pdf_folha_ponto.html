@@ -7,7 +7,7 @@
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { font-family:'Arial', Times, serif; margin: 0px; font-size: 16px;}
-            .brasao { position: fixed; top: 0; margin-bottom: 10px; margin-top: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: auto; }
+            .brasao { max-width: 100px; height: auto; display: block; margin: 0 auto; }
             .sus { position: fixed; top: 0; margin-left: 40px; margin-top: 20px;  left: 0; width: 90px; height: auto; }
             .vsan { position: fixed; top: 0; margin-right: 40px; margin-top: 20px;  right: 0; width: 90px; height: auto; }
             .top-text { font-family: 'Arial Narrow'; font-size: 10px; text-align: center; margin-top: 40px;}
@@ -31,7 +31,7 @@
         </style>
     </head>
     <body>
-       <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Brasao" class="brasao">
+       
             
             <table>
                 <tr>
@@ -39,7 +39,7 @@
                         <strong>SECRETARIA DE ESTADO DE SAÚDE PÚBLICA</strong><br>
                     </td>
                     <td colspan="6" rowspan="2" style="text-align: left;">
-                        <strong>Logo.png</strong>
+                        <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Brasao" class="brasao">
                     </td>
                 </tr>
                 <tr>
@@ -86,22 +86,20 @@
 
                 <table>
                 <tr>
-                    <th rowspan="2" style="width: 1.5%;">
+                    <th rowspan="3" style="width: 6%;">
                         <strong>DIAS</strong>
                     </th>
-                    <th rowspan="2" style="width: 4%;">
+                    <th rowspan="3" style="width: 8%;">
                         <strong>SEM</strong>
                     </th>
-                    <th colspan="4" style="width: 30%;">
-                        <strong>JORNADAPLANTÃOEXTRA</strong>
+                    <th colspan="6" style="width: 30%;">
+                        <strong>JORNADA EXTENDIDA</strong>
                     </th>
-                    <th colspan="2" style="width: 15%;">
-                        <strong>TIPODE PLANTÃO</strong>
+                    <th colspan="4" style="width: 15%;">
+                        <strong>JORNADA DE 6H</strong>
                     </th>
-                    <th colspan="2" rowspan="2" style="width: 10%;">
-                        <strong>Atividade Desenvolvida (1)/(2)</strong>
-                    </th>
-                    <th colspan="4" rowspan="2" style="width: 42%;">
+                    
+                    <th colspan="4" rowspan="3" style="width: 42%;">
                         <strong>ASSINATURA</strong>
                     </th>
                 </tr>
@@ -110,10 +108,30 @@
                         Entrada
                     </th>
                     <th colspan="2" style="width: 15%;">
-                        Saída
+                        Almoço
                     </th>
                     <th colspan="2" style="width: 15%;">
-                        PD12,PN12
+                        Saída
+                    </th>
+                    <th rowspan="2" colspan="2" style="width: 15%;">
+                        Entrada
+                    </th>
+                    <th rowspan="2" colspan="2" style="width: 15%;">
+                        Saída
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="2" style="width: 15%;">
+                        MANHÃ
+                    </th>
+                    <th style="width: 15%;">
+                        Saída
+                    </th>
+                    <th style="width: 15%;">
+                        Retorno
+                    </th>
+                    <th colspan="2" style="width: 15%;">
+                        Tarde
                     </th>
                 </tr>
                 {% for dia, semana, especial in dias_mes %}
@@ -126,11 +144,11 @@
                     </td>
                     {% if especial %}
                         {% if especial.tipo == "FERIADO" %}
-                        <td colspan="12" >
+                        <td colspan="14" >
                             Feriado: {{ especial.nome }}
                         </td>
                         {% elif especial.tipo == "FACULTADO" %}
-                        <td colspan="12" >
+                        <td colspan="14" >
                             Facultado
                         </td>
                         {% endif %}
@@ -139,17 +157,22 @@
                     <td colspan="2" >
 
                     </td>
+                    <td >
+
+                    </td>
+                    <td >
+
+                    </td>
+                    <td colspan="2" >
+
+                    </td>
+                    </td>
                     <td colspan="2" >
 
                     </td>
                     <td colspan="2" >
 
                     </td>
-                    <td colspan="2" >
-
-                    </td>
-                    </td>
-                    
                     <td colspan="4" >
 
                     </td>
