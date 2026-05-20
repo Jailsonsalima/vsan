@@ -394,3 +394,42 @@ def cadastrar_dia_especial(request):
 
     dias_especiais = DiaEspecial.objects.all()
     return render(request, "atividades/cadastrar_dia_especial.html", {"dias_especiais": dias_especiais})
+
+@login_required(login_url='/login/')
+def gerar_folha_plantao(request):
+    servidores = Servidor.objects.all()
+    ano_atual = datetime.now().year
+    mes_atual = datetime.now().month
+    dias_mes = gerar_dias_mes(ano_atual, mes_atual)
+    # Nome do mês em português
+    nome_mes = datetime.now().strftime("%B").capitalize()
+
+    if request.method == "POST":
+        ids = request.POST.getlist("servidores")
+        servidores_selecionados = Servidor.objects.filter(id__in=ids)
+        horario = request.POST.get("horario")
+
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            for servidor in servidores_selecionados:
+                html = render_to_string("pdf_folha_plantao.html", {
+                    "servidor": servidor,
+                    "dias_mes": dias_mes,
+                    "mes_atual": nome_mes,
+                    "ano_atual": ano_atual,
+                    "horario": horario,
+                })
+                pdf_bytes = HTML(string=html).write_pdf()
+                zip_file.writestr(f"folha_plantao_{servidor.primeiro_e_ultimo_nome()}_{nome_mes}_{ano_atual}.pdf", pdf_bytes)
+
+        buffer.seek(0)
+        response = HttpResponse(buffer.getvalue(), content_type="application/zip")
+        response['Content-Disposition'] = f'attachment; filename="folhas_plantoes_{nome_mes}_{ano_atual}.zip"'
+        return response
+
+    return render(request, "atividades/cadastro_folha_plantao.html", {
+        "servidores": servidores,
+        "dias_mes": dias_mes,
+        "mes_atual": nome_mes,
+        "ano_atual": ano_atual,
+    })

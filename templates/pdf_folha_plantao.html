@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Folha de Ponto para Plantão</title>
+        <title>Folha de Ponto Mensal</title>
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { font-family:'Arial', Times, serif; margin: 0px; font-size: 16px;}
@@ -24,67 +24,100 @@
             /* Linha inferior centralizada */
             .linha-boton { position: fixed; bottom: 45px; right: 0; width: 95%; height: auto; z-index: 1; }
             .footer-devs { font-family: 'Arial Narrow'; text-align: center; font-size: 10px; color: #000; line-height: 1.2; bottom: 25px; position: fixed; width: 100%; }
-            .assinaturas { display: flex; justify-content: space-around; margin-top: 50px; }
-            .assinatura { text-align: center; width: 40%; }
-            .linha { border-top: 1px solid #000; margin-bottom: 5px; }
-            .texto { font-size: 14px; }
+            .assinaturas {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 50px;
+    }
+    .assinatura {
+      text-align: center;
+      width: 40%;
+    }
+    .linha {
+      border-top: 1px solid #000;
+      margin-bottom: 5px;
+
+    }
+    .texto {
+      font-size: 14px;
+    }
         </style>
     </head>
     <body>
-       <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Brasao" class="brasao">
+       
             
             <table>
                 <tr>
-                    <td colspan="10" style="text-align: center; line-height: 1.4; width: 60%;" >
-                        <strong>SECRETARIA DE ESTADO DE SAÚDE PÚBLICA</strong><br>
-                    </td>
-                    <td colspan="6" rowspan="2" style="text-align: left;">
-                        <strong>Logo.png</strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="10" style="text-align: left;">
-                        <strong>LOTAÇÃO: DEPARTAMENTO DE VIGILÂNCIA SANITÁRIA</strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="8" style="text-align: left;">
-                        <strong>SERVIDOR: «Nome»</strong>
-                    </td>
-                    <td colspan="8" style="text-align: left;">
-                        <strong>MATRÍCULA: «Matricula»</strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="8" style="text-align: left;">
-                        <strong>CARGO/FUNÇÃO: «Cargo»</strong>
-                    </td>
-                    <td colspan="8" style="text-align: left;">
-                        <strong>INÍCIO DO EXERCÍCIO: «INÍCIO_DE_EXERCÍCIO»</strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="8" style="text-align: left;">
-                        <strong>CEDIDO OU À DISPOSIÇÃO (ORGÃO DE ORIGEM): SESPA</strong>
-                    </td>
-                    <td colspan="8" style="text-align: left;">
-                        <strong>HORÁRIO DE TRABALHO DE SEGUNDA A SEXTA FEIRA: «HORÁRIO»</strong>
-                    </td>
-                </tr>
-                <tr style="border: 0px;">
-                    <td colspan="8" style="text-align: left; border: 0px">
-                        <strong></strong>
-                    </td>
-                    <td colspan="4" style="text-align: left;">
-                        <strong>MÊS: JUNHO</strong>
-                    </td>
-                    <td colspan="4" style="text-align: left;">
-                        <strong>ANO: 2026</strong>
-                    </td>
-                </tr>
-                </table>
+                    <td colspan="14" style="text-align: center; line-height: 1.4;" >
+                        <strong>DIRETORIA DE VIGILÂNCIA À SAÚDE</strong><br>
+  
+                        <strong>DEPARTAMENTO DE VIGILÂNCIA SANITÁRIA-DEVS</strong><br>
 
-                <table>
+                        <strong>ASSESSORIA DO DEPARTAMENTO DE VIGILÂNCIA SANITÁRIA-ASSDEVS</strong><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="text-align: left;">
+                        <strong>SERVIDOR(A):</strong> {{ servidor.nome|title }}
+                    </td>
+                    <td colspan="2" >
+                        <strong>Cargo/Função</strong> 
+                    </td>
+                    <td colspan="6" >
+                        {{ servidor.cargo }} / {{ servidor.funcao|title }}
+                    </td>
+                </tr>
+            
+                <tr>
+                    <td colspan="2" style="text-align: left;">
+                        <strong>Matrícula</strong>
+                    </td>
+                    <td colspan="4" >
+                        {{ servidor.matricula }}
+                    </td>
+                    <td colspan="2" >
+                        <strong>Lotação</strong>
+                    </td>
+                    <td colspan="6" >
+                        {{ servidor.setor.nome }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="text-align: left;">
+                        <strong>HORÁRIODETRABALHO:</strong>{{ horario }}
+                    </td>
+                    <td colspan="4" >
+                        <strong>Mês:</strong> {{ mes_atual|title }}
+                    </td>
+                    <td colspan="4" >
+                        <strong>Ano:</strong> {{ ano_atual|title }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="14" style="text-align: center;">
+                        <strong>ATIVIDADES DESENVOLVIDAS</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="14" style="text-align: left;">
+                        <strong>(1) - EVENTO EM MASSA: </strong>Atividade coletiva de natureza cultural, esportiva, comercial, religiosa, social ou política, por tempo pré-determinado, com concentração ou fluxo excepcional de pessoas, de origem nacional ou internacional, e que, segundo a avaliação das ameaças, das vulnerabilidades e dos riscos à saúde pública exijam a atuação coordenada de órgãos.
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="14" style="text-align: left;">
+                        <strong>(2) - REALIZAÇÃO DE ATIVIDADES ADMINISTRATIVAS.</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="14" style="text-align: left;">
+                        <strong>(3) - DESENVOLVIMENTO DAS ATIVIDADES  DE INTERESSE DA VISA.</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="14" style="text-align: left;">
+                        <strong>(4) - GTGQ - GRUPO DE TRABALHO DE GESTÃO DA QUALIDADE. </strong>
+                    </td>
+                </tr>
                 <tr>
                     <th rowspan="2" style="width: 1.5%;">
                         <strong>DIAS</strong>
@@ -124,37 +157,25 @@
                     <td >
                         {{ semana }}
                     </td>
-                    {% if especial %}
-                        {% if especial.tipo == "FERIADO" %}
-                        <td colspan="12" >
-                            Feriado: {{ especial.nome }}
-                        </td>
-                        {% elif especial.tipo == "FACULTADO" %}
-                        <td colspan="12" >
-                            Facultado
-                        </td>
-                        {% endif %}
-                    {% else %}
+                    
                     
                     <td colspan="2" >
-
+                        
                     </td>
                     <td colspan="2" >
-
+                        
                     </td>
                     <td colspan="2" >
-
+                        
                     </td>
                     <td colspan="2" >
-
-                    </td>
+                        
                     </td>
                     
                     <td colspan="4" >
-
+                        
                     </td>
-                    
-                    {% endif %}
+                  
                     
                     
                 </tr>
