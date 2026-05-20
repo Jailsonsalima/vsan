@@ -133,14 +133,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="5" style="text-align: justify; white-space: pre-line;">
-                        
-                        {% if servidor.cargo == "Motorista" %}
-                            <strong>Objetivo:</strong> Conduzir o veículo para {{ atividade.objetivo|lower }}
-                        {% else %}
-                            <strong>Objetivo:</strong> {{ atividade.objetivo|capfirst }}
-                        {% endif %}
-                    </td>
+                    {% if servidor.cargo == "Motorista" %}
+                        <td colspan="5" style="text-align: justify; white-space: pre-line;"><strong>Objetivo:</strong> Conduzir o veículo para {{ atividade.objetivo|lower }}</td>
+                    {% else %}
+                        <td colspan="5" style="text-align: justify; white-space: pre-line;"><strong>Objetivo:</strong> {{ atividade.objetivo|capfirst }}</td>
+                    {% endif %}
                 </tr>
                 <tr>
                     <td colspan="5">
