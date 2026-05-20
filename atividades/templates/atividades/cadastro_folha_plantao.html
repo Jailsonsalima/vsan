@@ -7,17 +7,7 @@
     <h2>Gerar Folha de Plantão</h2>
     <form method="post" class="form">
       {% csrf_token %}
-      <div class="form-group">
-        <label for="horario">Escolha o HORÁRIO DE TRABALHO:</label>
-        <select name="horario" id="horario" required style="width: 200px;">
-          <option value="">-- Selecione --</option>
-          <option value="08h - 14h">08h - 14h</option>
-          <option value="12h - 18h">12h - 18h</option>
-          <option value="14h - 18h">14h - 18h</option>
-          <option value="08h - 12h / 14h - 18h">08h - 12h / 14h - 18h</option>
-          <option value="20h - 08h">20h - 08h</option>
-        </select>
-      </div>
+      
       
       <div class="form-group">
         <small style="color:#777;">Selecione um ou mais servidores.</small><br>

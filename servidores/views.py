@@ -27,6 +27,16 @@ def cadastro_servidor(request):
             except ValueError:
                 messages.error(request, "Data de nascimento inválida.")
                 return render(request, "servidores/cadastro_servidor.html", {"setores": setores})
+        admissao_str = request.POST.get("admissao") or None
+        admissao = None
+
+        if admissao_str:
+            try:
+                # Supondo que o campo venha no formato "YYYY-MM-DD"
+                admissao = datetime.strptime(admissao_str, "%Y-%m-%d").date()
+            except ValueError:
+                # Caso o formato seja inválido, você pode tratar aqui
+                admissao = None
             
         servidor = Servidor.objects.create(
             nome=request.POST.get("nome"),
@@ -43,6 +53,10 @@ def cadastro_servidor(request):
             conta=request.POST.get("conta"),
             setor=setor,  # vínculo com setor
             chefe_imediato=chefe,  # vínculo com chefe imediato
+
+            admissao=request.POST.get("admissao") or None,
+            horario_trabalho=request.POST.get("horario_trabalho"),
+            orgao_origem=request.POST.get("orgao_origem"),
         )
         # Vincula o servidor ao usuário logado
         request.user.servidor = servidor
@@ -79,6 +93,16 @@ def cadastro_servidor_publico(request):
                 return render(request, "servidores/cadastro_servidor.html", {"setores": setores})
         chefe_id = request.POST.get("chefe_imediato")
         chefe = Setor.objects.get(id=chefe_id) if chefe_id else None
+        admissao_str = request.POST.get("admissao") or None
+        admissao = None
+
+        if admissao_str:
+            try:
+                # Supondo que o campo venha no formato "YYYY-MM-DD"
+                admissao = datetime.strptime(admissao_str, "%Y-%m-%d").date()
+            except ValueError:
+                # Caso o formato seja inválido, você pode tratar aqui
+                admissao = None
         Servidor.objects.create(
             nome=request.POST.get("nome"),
             endereco=request.POST.get("endereco"),
@@ -88,12 +112,16 @@ def cadastro_servidor_publico(request):
             funcao=request.POST.get("funcao"),
             cpf=request.POST.get("cpf"),
             rg=request.POST.get("rg"),
-            nascimento=request.POST.get("nascimento") or None,
+            nascimento=nascimento,
             banco=request.POST.get("banco"),
             agencia=request.POST.get("agencia"),
             conta=request.POST.get("conta"),
             setor=setor,  # vínculo com setor
             chefe_imediato=chefe,  # vínculo com chefe imediato
+
+            admissao=admissao,
+            horario_trabalho=request.POST.get("horario_trabalho"),
+            orgao_origem=request.POST.get("orgao_origem"),
         )
         messages.success(request, "Servidor público cadastrado com sucesso! ")
         return redirect("sucesso")

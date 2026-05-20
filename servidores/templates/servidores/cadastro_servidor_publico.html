@@ -28,6 +28,26 @@
             <input type="text" name="endereco" id="endereco" required>
         </div>
         <div class="form-row">
+        
+    <div class="form-group">
+            <label for="orgao_origem">Órgão de Origem:</label>
+            <input type="text" name="orgao_origem" id="orgao_origem" placeholder="Ex: SESPA" required>
+        </div>
+        <div class="form-group">
+            <label for="admissao">Início do Exercício:</label>
+            <input type="date" name="admissao" id="admissao" placeholder="Ex: " required>
+        </div>
+        <div class="form-group">
+        <label for="horario_trabalho">Horário de Trabalho:</label>
+        <select name="horario_trabalho" id="horario_trabalho" required >
+          <option value="">-- Selecione --</option>
+          <option value="08h - 14h">08h - 14h</option>
+          <option value="12h - 18h">12h - 18h</option>
+          <option value="08h - 12h / 14h - 18h">08h - 12h / 14h - 18h</option>
+        </select>
+    </div>
+    </div>
+        <div class="form-row">
             <div class="form-group">
                 <label for="vinculo">Vínculo:</label>
                 <select name="vinculo" id="vinculo" required>

@@ -347,7 +347,7 @@ def gerar_folha_ponto(request):
     if request.method == "POST":
         ids = request.POST.getlist("servidores")
         servidores_selecionados = Servidor.objects.filter(id__in=ids)
-        horario = request.POST.get("horario")
+        
 
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
@@ -357,7 +357,7 @@ def gerar_folha_ponto(request):
                     "dias_mes": dias_mes,
                     "mes_atual": nome_mes,
                     "ano_atual": ano_atual,
-                    "horario": horario,
+                    
                 })
                 pdf_bytes = HTML(string=html).write_pdf()
                 zip_file.writestr(f"folha_ponto_{servidor.primeiro_e_ultimo_nome()}_{nome_mes}_{ano_atual}.pdf", pdf_bytes)
@@ -407,7 +407,6 @@ def gerar_folha_plantao(request):
     if request.method == "POST":
         ids = request.POST.getlist("servidores")
         servidores_selecionados = Servidor.objects.filter(id__in=ids)
-        horario = request.POST.get("horario")
 
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
@@ -417,7 +416,6 @@ def gerar_folha_plantao(request):
                     "dias_mes": dias_mes,
                     "mes_atual": nome_mes,
                     "ano_atual": ano_atual,
-                    "horario": horario,
                 })
                 pdf_bytes = HTML(string=html).write_pdf()
                 zip_file.writestr(f"folha_plantao_{servidor.primeiro_e_ultimo_nome()}_{nome_mes}_{ano_atual}.pdf", pdf_bytes)

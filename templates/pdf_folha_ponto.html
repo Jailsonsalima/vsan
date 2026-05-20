@@ -60,15 +60,15 @@
                         <strong>CARGO/FUNÇÃO: {{ servidor.cargo }} / {{ servidor.funcao|title }}</strong>
                     </td>
                     <td colspan="7" style="text-align: left;">
-                        <strong>INÍCIO DO EXERCÍCIO: «INÍCIO_DE_EXERCÍCIO»</strong>
+                        <strong>INÍCIO DO EXERCÍCIO: {{ servidor.admissao }}</strong>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="9" style="text-align: left;">
-                        <strong>CEDIDO OU À DISPOSIÇÃO (ORGÃO DE ORIGEM): SESPA</strong>
+                        <strong>CEDIDO OU À DISPOSIÇÃO (ORGÃO DE ORIGEM): {{ servidor.orgao_origem }}</strong>
                     </td>
                     <td colspan="7" style="text-align: left;">
-                        <strong>HORÁRIO DE TRABALHO DE SEGUNDA A SEXTA FEIRA: {{ horario }}</strong>
+                        <strong>HORÁRIO DE TRABALHO DE SEGUNDA A SEXTA FEIRA: {{ servidor.horario_trabalho }}</strong>
                     </td>
                 </tr>
                 <tr style="border: 0px;">

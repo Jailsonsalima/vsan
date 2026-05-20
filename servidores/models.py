@@ -28,6 +28,10 @@ class Servidor(models.Model):
     disponivel = models.BooleanField(default=True)
     ultima_vez_sorteado = models.DateTimeField(null=True, blank=True)
 
+    admissao = models.DateField(blank=True, null=True)
+    horario_trabalho = models.CharField(max_length=100, blank=True, null=True)
+    orgao_origem = models.CharField(max_length=20, blank=True, null=True)
+
     def primeiro_nome(self):
         return self.nome.split()[0]
     
