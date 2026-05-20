@@ -230,7 +230,7 @@
                         <span style="color:red;">Cancelada</span>
                     {% else %}
                         {% if not atividade.numero_processo %}
-                            <a href="{% url 'editar_atividade' atividade.id %}" class="btn-secondary" style="display: block; margin-bottom: 10px;">Editar</a>
+                            <!--<a href="{% url 'editar_atividade' atividade.id %}" class="btn-secondary" style="display: block; margin-bottom: 10px;">Editar</a>-->
                         {% endif %}
                             <a href="{% url 'editar_atividade' atividade.id %}" class="btn-secondary" style="display: block; margin-bottom: 10px;">Editar</a>
                             <a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-primary" style="display: block;">PDFs</a>
