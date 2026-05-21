@@ -91,7 +91,10 @@
                         <strong>Cargo:</strong><br>{{ servidor.cargo }}
                     </td>
                     <td colspan="2" style="width:50%;">
-                        <strong>Função:</strong><br>{{ servidor.funcao|title }}
+                        <strong>Função:</strong><br>
+                        {% if servidor.funcao != None %}
+                            {{ servidor.funcao|title }}
+                        {% endif %}
                     </td>
                 </tr>
                 <tr>

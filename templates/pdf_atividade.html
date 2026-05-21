@@ -76,7 +76,9 @@
                         {{ servidor.nome|upper }}<br>
                     </td>
                     <td>
-                        {{ servidor.cargo }} / {{ servidor.funcao|title }}
+                        {{ servidor.cargo }} {% if servidor.funcao != None %}
+                            / {{ servidor.funcao|title }}
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
