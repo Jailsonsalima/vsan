@@ -16,6 +16,7 @@ from agendamentos.models import MotoristaExterno, Agendamento
 # Create your views here.
 import calendar
 import locale
+from django.utils import timezone
 
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
@@ -231,7 +232,7 @@ def editar_atividade(request, atividade_id):
 
             ids = request.POST.getlist("servidores")
             atividade.servidores.set(Servidor.objects.filter(id__in=ids))
-
+            atividade.data_criacao = timezone.now()
             atividade.save()
             messages.success(request, "Atividade atualizada com sucesso!")
             return redirect("listar_atividades")
