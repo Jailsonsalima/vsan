@@ -43,3 +43,5 @@ class Servidor(models.Model):
 
     def __str__(self):
         return f"{self.nome}"
+    class Meta:
+        ordering = ["nome"]
