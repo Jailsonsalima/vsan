@@ -2,32 +2,29 @@
 {% block content %}
   <div class="container">
     {% if request.user.tipo_usuario != "funcionario" %}
-    <div class="container-btn-dashboard" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;" >
-      <a href="{% url 'cadastrar_dia_especial' %}" class="btn-card">📅 Cadastrar Feriados/Facultados</a>
-    </div>
+      <div class="container-btn-dashboard" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;" >
+        <a href="{% url 'cadastrar_dia_especial' %}" class="btn-card">📅 Cadastrar Feriados/Facultados</a>
+      </div>
     {% endif %}
     <h2>Gerar Folha de Ponto</h2>
     <form method="post" class="form">
       {% csrf_token %}
-      
-      
       <div class="form-group">
         <small style="color:#777;">Selecione um ou mais servidores.</small><br>
         <button type="submit" class="btn-primary">Gerar PDFs</button>
         <label for="filtro-servidores">Pesquisar Servidor:</label>
         <input type="text" id="filtro-servidores" placeholder="Digite o nome do servidor...">
       </div>
-        <div class="checkbox-list form-row" id="lista-servidores">
-          {% for servidor in servidores %}
-            <div class="servidor-item">
-              <label>
-                <input type="checkbox" name="servidores" value="{{ servidor.id }}">
-                {{ servidor.primeiro_e_ultimo_nome }}
-              </label>
-            </div>
-          {% endfor %}
-        </div>
-  
+      <div class="checkbox-list form-row" id="lista-servidores">
+        {% for servidor in servidores %}
+          <div class="servidor-item">
+            <label>
+              <input type="checkbox" name="servidores" value="{{ servidor.id }}">
+              {{ servidor.primeiro_e_ultimo_nome }}
+            </label>
+          </div>
+        {% endfor %}
+      </div>
     </form>
   </div>
   <script>

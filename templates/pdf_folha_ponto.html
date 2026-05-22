@@ -134,55 +134,105 @@
                         Tarde
                     </th>
                 </tr>
-                {% for dia, semana, especial in dias_mes %}
-                <tr {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
-                    <td >
-                        {{ dia }}
-                    </td>
-                    <td >
-                        {{ semana }}
-                    </td>
-                    {% if especial %}
-                        {% if especial.tipo == "FERIADO" %}
-                        <td colspan="14" >
-                            Feriado: {{ especial.nome }}
+                {% if servidor.horario_trabalho != "07h - 12h / 13h - 16h" and servidor.horario_trabalho != "08h - 12h / 14h - 18h" %}
+                    {% for dia, semana, especial in dias_mes %}
+                    <tr >
+                        <td >
+                            {{ dia }}
                         </td>
-                        {% elif especial.tipo == "FACULTADO" %}
-                        <td colspan="14" >
-                            Facultado
+                        <td {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
+                            {{ semana }}
                         </td>
+                        {% if especial %}
+                            {% if especial.tipo == "FERIADO" %}
+                            <td colspan="14" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
+                                Feriado: {{ especial.nome }}
+                            </td>
+                            {% elif especial.tipo == "FACULTADO" %}
+                            <td colspan="14" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
+                                Facultado
+                            </td>
+                            {% endif %}
+                        {% else %}
+                        
+                        <td colspan="2" style="background-color: #c0c0c0;" >
+
+                        </td>
+                        <td style="background-color: #c0c0c0;">
+
+                        </td>
+                        <td style="background-color: #c0c0c0;">
+
+                        </td>
+                        <td colspan="2" style="background-color: #c0c0c0;">
+
+                        </td>
+                        </td>
+                        <td colspan="2" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
+
+                        </td>
+                        <td colspan="2" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
+
+                        </td>
+                        <td colspan="4" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
+
+                        </td>
+                        
                         {% endif %}
-                    {% else %}
-                    
-                    <td colspan="2" >
+                        
+                        
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    {% for dia, semana, especial in dias_mes %}
+                    <tr >
+                        <td >
+                            {{ dia }}
+                        </td>
+                        <td {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
+                            {{ semana }}
+                        </td>
+                        {% if especial %}
+                            {% if especial.tipo == "FERIADO" %}
+                            <td colspan="14" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
+                                Feriado: {{ especial.nome }}
+                            </td>
+                            {% elif especial.tipo == "FACULTADO" %}
+                            <td colspan="14" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
+                                Facultado
+                            </td>
+                            {% endif %}
+                        {% else %}
+                        
+                        <td colspan="2" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
 
-                    </td>
-                    <td >
+                        </td>
+                        <td {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
 
-                    </td>
-                    <td >
+                        </td>
+                        <td {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
 
-                    </td>
-                    <td colspan="2" >
+                        </td>
+                        <td colspan="2" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
 
-                    </td>
-                    </td>
-                    <td colspan="2" >
+                        </td>
+                        </td>
+                        <td colspan="2" style="background-color: #c0c0c0;">
 
-                    </td>
-                    <td colspan="2" >
+                        </td>
+                        <td colspan="2" style="background-color: #c0c0c0;">
 
-                    </td>
-                    <td colspan="4" >
+                        </td>
+                        <td colspan="4" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
 
-                    </td>
-                    
-                    {% endif %}
-                    
-                    
-                </tr>
-                {% endfor %}
-                
+                        </td>
+                        
+                        {% endif %}
+                        
+                        
+                    </tr>
+                    {% endfor %}
+                {% endif %}
                                 </table>
 
                 <div class="assinaturas">
