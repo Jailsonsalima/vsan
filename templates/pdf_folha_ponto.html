@@ -146,11 +146,11 @@
                         {% if especial %}
                             {% if especial.tipo == "FERIADO" %}
                             <td colspan="14" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
-                                <strong>{{ especial.nome|upper }} - {{ especial.tipo|upper }}</strong>
+                                <em><strong>{{ especial.nome|upper }} - {{ especial.tipo|upper }}</strong></em>
                             </td>
                             {% elif especial.tipo == "FACULTADO" %}
                             <td colspan="14" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
-                                <strong>PONTO FACULTATIVO</strong>
+                                <em><strong>PONTO FACULTATIVO</strong></em>
                             </td>
                             {% endif %}
                         {% else %}
@@ -195,11 +195,11 @@
                         {% if especial %}
                             {% if especial.tipo == "FERIADO" %}
                             <td colspan="14" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
-                                <strong>{{ especial.nome|upper }} - {{ especial.tipo|upper }}</strong>
+                                <em><strong>{{ especial.nome|upper }} - {{ especial.tipo|upper }}</strong></em>
                             </td>
                             {% elif especial.tipo == "FACULTADO" %}
                             <td colspan="14" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
-                                <strong>PONTO FACULTATIVO</strong>
+                                <em><strong>PONTO FACULTATIVO</strong></em>
                             </td>
                             {% endif %}
                         {% else %}
