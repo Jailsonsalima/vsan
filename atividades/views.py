@@ -127,7 +127,7 @@ def gerar_zip_pdfs(request, atividade_id):
     setores = Setor.objects.filter(nome__startswith="DEVS")
 
     atividade = get_object_or_404(Atividade, id=atividade_id)
-    servidores = atividade.servidores.all()
+    servidores = atividade.servidores.all().order_by("nome")
     motoristas_externos = atividade.motoristas_externos.all()
 
     # Filtra setores: só mantém aqueles cujo chefe não está listado como servidor
