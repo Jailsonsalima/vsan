@@ -146,11 +146,11 @@
                         {% if especial %}
                             {% if especial.tipo == "FERIADO" %}
                             <td colspan="14" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
-                                Feriado: {{ especial.nome }}
+                                <strong>{{ especial.nome|upper }} - {{ especial.tipo|upper }}</strong>
                             </td>
                             {% elif especial.tipo == "FACULTADO" %}
                             <td colspan="14" {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
-                                Facultado
+                                <strong>PONTO FACULTATIVO</strong>
                             </td>
                             {% endif %}
                         {% else %}
