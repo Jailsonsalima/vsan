@@ -117,16 +117,24 @@
     </div>
     {% endif %}
         <!-- Equipe -->
-        <div class="checkbox-list form-row"  id="lista-servidores">
-            {% for servidor in servidores %}
-                <div class="servidor-item">
-                    <label>
-                        <input type="checkbox" name="servidores" value="{{ servidor.id }}" data-nome="{{ servidor.nome }}">
-                        {{ servidor.primeiro_e_ultimo_nome }}
-                    </label>
-                </div>
-            {% endfor %}
+        
+<div class="checkbox-list form-row" id="lista-servidores">
+    {% for item in servidores_status %}
+        <div class="servidor-item {% if item.em_conflito %}conflito{% else %}disponivel{% endif %}">
+            <label>
+                <input type="checkbox" name="servidores" value="{{ item.servidor.id }}" 
+                       data-nome="{{ item.servidor.nome }}" 
+                       {% if motorista_sorteado.id == item.servidor.id and item.servidor.cargo == "Motorista" %}checked class="fixo"{% endif %}
+                       {% if item.em_conflito %}disabled{% endif %}>
+                {{ item.servidor.primeiro_e_ultimo_nome }}
+            </label>
+            {% if item.em_conflito %}
+                <!-- Campo oculto para garantir envio -->
+                <input type="hidden" name="servidores_conflito" value="{{ item.servidor.id }}">
+            {% endif %}
         </div>
+    {% endfor %}
+</div>
         <div class="form-group">
   <small style="color:#777;">Selecione um ou mais motoristas externos.</small>
   <label>Motoristas Externos:</label>
@@ -134,7 +142,7 @@
     {% for motorista in motoristas_externos %}
       <div class="motorista-item">
         <label>
-            <input type="checkbox" name="motoristas_externos" value="{{ motorista.id }}" data-nome="{{ motorista.nome }}">    
+            <input type="checkbox" name="motoristas_externos" value="{{ motorista.id }}" data-nome="{{ motorista.nome }}" {% if motorista_sorteado.id == motorista.id %}checked class="fixo"{% endif %}>    
             {{ motorista.nome }}
         </label>
       </div>
@@ -148,6 +156,23 @@
 {% load static %}
 <script src="{% static 'js/script.js' %}"></script>
 
+<script>
+    document.querySelectorAll('input.fixo').forEach(cb => {
+        cb.addEventListener('change', e => {
+            cb.checked = true; // força a permanecer marcado
+        });
+    });
+</script>
+<style>
+    .servidor-item.conflito label {
+    color: red;
+    font-weight: bold;
+}
 
+.servidor-item.disponivel label {
+    color: green;
+    font-weight: bold;
+}
 
+</style>
 {% endblock %}

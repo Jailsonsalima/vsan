@@ -101,9 +101,25 @@ def cadastrar_atividade(request, agendamento_id=None):
             return redirect("listar_atividades")
         except IntegrityError:
             messages.error(request, "Já existe uma atividade cadastrada com este número de memorando.")
-    
+    # Monta lista de servidores com status de conflito
+    servidores_conflito_ids = set()
+    if agendamento and agendamento.data_ida and agendamento.data_retorno:
+        conflitos = Atividade.objects.filter(
+            servidores__in=servidores,
+            data_ida__lte=agendamento.data_retorno,
+            data_retorno__gte=agendamento.data_ida
+        ).exclude(agendamento=agendamento).exclude(agendamento__status="cancelado")
+        for atividade in conflitos:
+            for servidor in atividade.servidores.all():
+                servidores_conflito_ids.add(servidor.id)
+
+    servidores_status = []
+    for servidor in servidores:
+        em_conflito = servidor.id in servidores_conflito_ids
+        servidores_status.append({"servidor": servidor, "em_conflito": em_conflito})
+        
     return render(request, "atividades/cadastro_atividades.html", {
-        "servidores": servidores,
+        "servidores_status": servidores_status,
         "setores": setores,
         "recurso_ativo": RecursoAtivo.objects.first(),
         "motoristas_externos": motoristas_externos,
@@ -239,10 +255,31 @@ def editar_atividade(request, atividade_id):
         except IntegrityError:
             messages.error(request, "Já existe uma atividade cadastrada com este número de memorando.")
             return redirect("editar_atividade", atividade_id=atividade.id)
+    # Verificação de conflitos
+    servidores_conflito_ids = set()
+    if atividade.data_ida and atividade.data_retorno:
+        conflitos = Atividade.objects.filter(
+            servidores__in=servidores,
+            data_ida__lte=atividade.data_retorno,
+            data_retorno__gte=atividade.data_ida
+        ).exclude(id=atividade.id).exclude(agendamento__status="cancelado")
+        for a in conflitos:
+            for servidor in a.servidores.all():
+                servidores_conflito_ids.add(servidor.id)
 
+    # Monta lista de servidores com flag de motorista
+    servidores_status = []
+    for servidor in servidores:
+        em_conflito = servidor.id in servidores_conflito_ids
+        eh_motorista = getattr(servidor, "eh_motorista", False)  # campo booleano no modelo Servidor
+        servidores_status.append({
+            "servidor": servidor,
+            "em_conflito": em_conflito,
+            "eh_motorista": eh_motorista
+        })
     return render(request, "atividades/editar_atividade.html", {
         "atividade": atividade,
-        "servidores": servidores,
+        "servidores_status": servidores_status,
         "setores": setores,
         "motoristas_externos": motoristas_externos,
     })
