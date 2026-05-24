@@ -339,7 +339,11 @@ document.addEventListener("DOMContentLoaded", function() {
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll(".cancelar-btn").forEach(function(btn) {
         btn.addEventListener("click", function(event) {
-            const confirmacao = confirm("Tem certeza que deseja cancelar esta viagem?");
+            const confirmacao = confirm(
+                "Tem certeza que deseja cancelar esta viagem?\n\n" +
+                "- Clique em OK para confirmar o cancelamento;\n" +
+                "- Clique em Cancelar para manter a viagem."
+            );
             if (!confirmacao) {
                 event.preventDefault(); // impede o redirecionamento
             }

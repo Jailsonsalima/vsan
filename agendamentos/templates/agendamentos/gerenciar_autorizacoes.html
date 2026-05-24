@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
-    <div class="container">
+<div style="display:flex; justify-content: center; flex-wrap:wrap; ">
+    <div class="container" style="flex:1; min-width:400px; max-width: 550px; margin: 20px;">
         <h2>Gerenciar Autorizados para Agendar Viagens</h2>
         {% if request.user.tipo_usuario == "diretor" %}
             <!-- Campo de busca -->
@@ -70,7 +71,7 @@
             </form>
         {% endif %}
     </div>
-    <div class="container">
+    <div class="container" style="flex:1; min-width:400px; max-width: 550px; margin: 20px;">
         <h2>Gerenciar Motoristas para Viagens</h2>
         <!-- Form de motoristas disponíveis -->
         <form method="post" action="{% url 'gerenciar_motoristas' %}" class="form" style="margin-top:40px;">
@@ -102,7 +103,7 @@
                 </tr>
                 {% for motorista in motoristas_externos %}
                 <tr>
-                    <td>{{ motorista.nome_completo }}</td>
+                    <td>{{ motorista.nome }}</td>
                     <td><input type="checkbox" name="motorista_externo_{{ motorista.id }}" {% if motorista.disponivel %}checked{% endif %}></td>
                 </tr>
                 {% empty %}
@@ -114,7 +115,7 @@
             <button type="submit" class="btn-primary" style="margin-top: 20px; margin-left: calc(50% - 100px); width: 200px;">Salvar Motoristas</button>
         </form>
     </div>
-    {% load static %}
+    </div>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         const filtroInput = document.getElementById("filtro-usuarios");
