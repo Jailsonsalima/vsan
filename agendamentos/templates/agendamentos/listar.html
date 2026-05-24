@@ -265,7 +265,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 📃 Criar Atividade
                             </a>
                         {% endif %}
-                        <a href="{% url 'cancelar_agendamento' agendamento.id %}" class="btn-card" style="margin-top:5px; display:block;">
+                        <a href="{% url 'cancelar_agendamento' agendamento.id %}" class="btn-card cancelar-btn" style="margin-top:5px; display:block;">
                             ❌ Cancelar Viagem
                         </a>
                     {% elif agendamento.status == "pendente" %}
@@ -335,4 +335,17 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".cancelar-btn").forEach(function(btn) {
+        btn.addEventListener("click", function(event) {
+            const confirmacao = confirm("Tem certeza que deseja cancelar esta viagem?");
+            if (!confirmacao) {
+                event.preventDefault(); // impede o redirecionamento
+            }
+        });
+    });
+});
+</script>
+
 {% endblock %}
