@@ -64,7 +64,9 @@
                         <strong>Cargo/Função</strong> 
                     </td>
                     <td colspan="6" >
-                        {{ servidor.cargo }} / {{ servidor.funcao|title }}
+                        {{ servidor.cargo }} {% if servidor.funcao != None %}
+                            / {{ servidor.funcao|title }}
+                        {% endif %}
                     </td>
                 </tr>
             
@@ -84,7 +86,7 @@
                 </tr>
                 <tr>
                     <td colspan="6" style="text-align: left;">
-                        <strong>HORÁRIODETRABALHO:</strong>{{ horario }}
+                        <strong>HORÁRIODETRABALHO:</strong>{{ servidor.horario_trabalho }}
                     </td>
                     <td colspan="4" >
                         <strong>Mês:</strong> {{ mes_atual|title }}

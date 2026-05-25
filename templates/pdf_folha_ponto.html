@@ -75,7 +75,8 @@
                 </tr>
                 <tr>
                     <td colspan="9" style="text-align: left;">
-                        <strong>CARGO/FUNÇÃO: {{ servidor.cargo }} / {{ servidor.funcao|title }}</strong>
+                        <strong>CARGO/FUNÇÃO: {{ servidor.cargo }} {% if servidor.funcao != None %}/ {{ servidor.funcao|title }}
+                        {% endif %}</strong>
                     </td>
                     <td colspan="7" style="text-align: left;">
                         <strong>INÍCIO DO EXERCÍCIO: {{ servidor.admissao }}</strong>
