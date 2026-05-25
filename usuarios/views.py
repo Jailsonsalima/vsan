@@ -9,20 +9,23 @@ from servidores.models import Servidor
 from agendamentos.models import Agendamento, AutorizacaoAgendamento
 
 # Create your views here.
+@login_required(login_url='/login/')
 def home(request):
     #return render(request, 'usuarios/login.html')
-    if request.user.is_authenticated:
-        # Usuário logado → vai para o dashboard
-        return redirect('dashboard')
+    
+    if request.user.tipo_usuario != "funcionario" and request.user.tipo_usuario != "coordenador":
+        return render(request, 'usuarios/home.html')
     else:
-        # Usuário não logado → vai para login
-        return redirect('login')
+        # Usuário logado como funcionario → vai para o dashboard
+        return redirect('dashboard')
+        
+@login_required(login_url='/login/')
+def configuracoes(request):
+    return render(request, 'configuracoes.html')
 
-def about(request):
-    return render(request, 'about.html')
-
-def contact(request):
-    return render(request, 'contact.html')
+@login_required(login_url='/login/')
+def recursos_humanos(request):
+    return render(request, 'recursos-humanos.html')
 
 def cadastrar_usuario(request):
     if request.method == 'POST':
@@ -51,7 +54,6 @@ def cadastrar_usuario(request):
 def sucesso(request):
     return render(request, 'usuarios/sucesso.html')
 
-from atividades.models import Atividade
 
 @login_required(login_url='/login/')
 def dashboard(request):
@@ -100,13 +102,13 @@ def login_view(request):
 
             # Se for superuser, vai direto para o dashboard
             if user.is_superuser:
-                return redirect('dashboard')
+                return redirect('home')
 
             # Se não for superuser, verifica vínculo com servidor
             #if hasattr(user, "servidor") and user.servidor is not None:
             # Se não for superuser, verifica vínculo com servidor
             if user.servidor:
-                return redirect('dashboard')
+                return redirect('home')
             else:
                 return redirect('cadastro_servidor')
         else:

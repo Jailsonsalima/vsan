@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
-from servidores.models import Servidor
+from servidores.models import Servidor, HistoricoSituacao
 from django.utils.dateformat import DateFormat
 from datetime import datetime, date
 from setores.models import Setor
@@ -390,8 +390,12 @@ def gerar_folha_ponto(request):
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
             for servidor in servidores_selecionados:
+
+                # pega a última situação funcional registrada
+                situacao = servidor.historico_situacoes.last()
                 html = render_to_string("pdf_folha_ponto.html", {
                     "servidor": servidor,
+                    "situacao": situacao,
                     "dias_mes": dias_mes,
                     "mes_atual": nome_mes,
                     "ano_atual": ano_atual,

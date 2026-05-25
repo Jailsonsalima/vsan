@@ -28,8 +28,8 @@ from memorandos import views as memorandos_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path('about/', views.about, name='about'),
-    path('contact/', views.contact, name='contact'),
+    path('configuracoes/', views.configuracoes, name='configuracoes'),
+    path('recursos-humanos/', views.recursos_humanos, name='recursos_humanos'),
     path('cadastrar-usuario/', views.cadastrar_usuario, name='cadastrar_usuario'),
     path('cadastrar-setor/', setor_views.cadastrar_setor, name='cadastrar_setor'),
     path('cadastrar-chefe/', setor_views.cadastrar_chefe, name='cadastrar_chefe'),
@@ -43,11 +43,15 @@ urlpatterns = [
     path('definir-tipo-usuario/<int:usuario_id>/', views.definir_tipo_usuario, name='definir_tipo_usuario'),
     path("cadastro_servidor/", servidor_views.cadastro_servidor, name="cadastro_servidor"),
     path("servidores/", servidor_views.lista_servidores, name="lista_servidores"),
+    path("gerenciar_servidores/", servidor_views.gerenciar_servidores, name="gerenciar_servidores"),
+    path("historico_servidor/<int:servidor_id>/", servidor_views.historico_servidor, name="historico_servidor"),
+    
     path('cadastro-atividade/', atividades_views.cadastrar_atividade, name="cadastrar_atividade"),
 
     path("dias-especiais/", atividades_views.cadastrar_dia_especial, name="cadastrar_dia_especial"),
     path('atividades/gerar-folha-plantao/', atividades_views.gerar_folha_plantao, name="gerar_folha_plantao"),
     path('atividades/gerar-folha-ponto/', atividades_views.gerar_folha_ponto, name="gerar_folha_ponto"),
+
 
     path("atividades/cadastrar/<int:agendamento_id>/", atividades_views.cadastrar_atividade, name="cadastrar_atividade_agendamento"),
     path("atividade/<int:atividade_id>/pdfs/", atividades_views.gerar_zip_pdfs, name="gerar_zip_pdfs"),

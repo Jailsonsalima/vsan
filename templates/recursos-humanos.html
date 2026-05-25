@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        {% if agendamentos_pendentes %}
+            <div class="alert alert-warning"  style="margin-top: 15px;">
+                Existem {{ agendamentos_pendentes.count }} agendamentos pendentes para processar.
+            </div>
+        {% endif %}
+        <div class="card-container">
+            <p>Recursos Humanos (RH)</p>
+            {% if request.user.tipo_usuario != "funcionario" and request.user.tipo_usuario != "coordenador" %}
+                <!-- Card 1 -->
+                <a href="{% url 'cadastro_servidor_publico' %}" >
+                    <div class="card">
+                        <div class="icon">👤</div>
+                        <div class="card-text">Cadastro Público</div>
+                    </div>
+                </a>
+                <!-- Card 2 -->
+                <a href="{% url 'cadastrar_dia_especial' %}" >
+                    <div class="card">
+                        <div class="icon">📅</div>
+                        <div class="card-text">Feriados e Facultados</div>
+                    </div>
+                </a>
+                <!-- Card 3 -->
+                <a href="{% url 'gerar_folha_plantao' %}" >
+                    <div class="card">
+                        <div class="icon">📋</div>
+                        <div class="card-text">Folha de Plantão</div>
+                    </div>
+                </a>
+                <!-- Card 4 -->
+                <a href="{% url 'gerar_folha_ponto' %}" >
+                    <div class="card">
+                        <div class="icon">📃</div>
+                        <div class="card-text">Folha de Ponto</div>
+                    </div>
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

@@ -45,3 +45,15 @@ class Servidor(models.Model):
         return f"{self.nome}"
     class Meta:
         ordering = ["nome"]
+
+# Histórico da situação funcional (férias, licença, afastamento, ativo etc.)
+class HistoricoSituacao(models.Model):
+    servidor = models.ForeignKey(Servidor, on_delete=models.CASCADE, related_name="historico_situacoes")
+    situacao = models.CharField(max_length=100)  # Ex: "Ativo", "Férias", "Licença Médica"
+    descricao = models.TextField(blank=True, null=True)  # Detalhes adicionais
+    mes = models.IntegerField()  # 1 a 12
+    ano = models.IntegerField()
+    data_registro = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.servidor.nome} - {self.situacao} ({self.mes}/{self.ano})"

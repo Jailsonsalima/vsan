@@ -1,8 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container">
-        <h1>Bem-vindo à página inicial!</h1>
-        <p>Esta é a página inicial do nosso site.</p>
-    </div>
+    
+    {% if user.is_authenticated %}
+        {% if agendamentos_pendentes %}
+            <div class="alert alert-warning"  style="margin-top: 15px;">
+                Existem {{ agendamentos_pendentes.count }} agendamentos pendentes para processar.
+            </div>
+        {% endif %}
+        <div class="card-container">
+            <p>Home</p>
+            {% if request.user.tipo_usuario != "funcionario" and request.user.tipo_usuario != "coordenador" %}
+                
+            {% endif %}
+    {% endif %}
 {% endblock %}

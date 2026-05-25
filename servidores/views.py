@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
-from .models import Servidor
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Servidor, HistoricoSituacao
 from setores.models import Setor
 from django.contrib.auth.decorators import login_required
 from datetime import date, datetime
 from django.contrib import messages
+from django.core.paginator import Paginator
 
 @login_required(login_url='/login/')
 def cadastro_servidor(request):
@@ -128,3 +129,48 @@ def cadastro_servidor_publico(request):
     
 
     return render(request, "servidores/cadastro_servidor_publico.html", {"setores": setores})
+
+
+@login_required(login_url='/login/')
+def gerenciar_servidores(request):
+    servidores = Servidor.objects.all().order_by("nome")
+
+    # Paginação
+    paginator = Paginator(servidores, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    if request.method == "POST":
+        servidor_id = request.POST.get("servidor_id")
+        situacao = request.POST.get("situacao")
+        descricao = request.POST.get("descricao")
+
+        servidor = Servidor.objects.get(id=servidor_id)
+
+        # mês/ano automático do sistema
+        hoje = datetime.today()
+        HistoricoSituacao.objects.create(
+            servidor=servidor,
+            situacao=situacao,
+            descricao=descricao,
+            mes=hoje.month,
+            ano=hoje.year
+        )
+
+        messages.success(request, f"Situação funcional de {servidor.nome} atualizada.")
+        return redirect("gerenciar_servidores")
+
+    return render(request, "servidores/gerenciar_servidores.html", {
+        "page_obj": page_obj
+    })
+
+
+@login_required(login_url='/login/')
+def historico_servidor(request, servidor_id):
+    servidor = get_object_or_404(Servidor, id=servidor_id)
+    historico = servidor.historico_situacoes.order_by("-ano", "-mes")  # mais recente primeiro
+
+    return render(request, "servidores/historico_servidor.html", {
+        "servidor": servidor,
+        "historico": historico
+    })

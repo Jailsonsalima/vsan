@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+    {% if user.is_authenticated %}
+        {% if agendamentos_pendentes %}
+            <div class="alert alert-warning"  style="margin-top: 15px;">
+                Existem {{ agendamentos_pendentes.count }} agendamentos pendentes para processar.
+            </div>
+        {% endif %}
+        <div class="card-container">
+            <p>Configurações</p>
+            {% if request.user.tipo_usuario != "funcionario" and request.user.tipo_usuario != "coordenador" %}
+                <!-- Card 1 -->
+                <a href="{% url 'cadastrar_setor' %}" >
+                    <div class="card">
+                        <div class="icon">📝</div>
+                        <div class="card-text">Cadastrar Novo Setor</div>
+                    </div>
+                </a>
+                <!-- Card 2 -->
+                <a href="{% url 'gerenciar_contas' %}" >
+                    <div class="card">
+                        <div class="icon">🔐</div>
+                        <div class="card-text">Gerenciar Contas</div>
+                    </div>
+                </a>
+                <!-- Card 3 -->
+                <a href="{% url 'gerenciar_autorizacoes' %}" >
+                    <div class="card">
+                        <div class="icon">✅</div>
+                        <div class="card-text">Gerenciar Autorizações</div>
+                    </div>
+                </a>
+                <!-- Card 4 -->
+                <a href="{% url 'gerenciar_memorando' %}" >
+                    <div class="card">
+                        <div class="icon">🗂️</div>
+                        <div class="card-text">Gerenciar Memorandos</div>
+                    </div>
+                </a>
+            {% endif %}
+    {% endif %}
+{% endblock %}

@@ -28,12 +28,30 @@
             .assinatura { text-align: center; width: 40%; }
             .linha { border-top: 1px solid #000; margin-bottom: 5px; }
             .texto { font-size: 14px; }
+            .watermark {
+                position: absolute;
+                top: 400px;                 /* começa na célula do dia */
+                left: 35%;              /* centraliza horizontalmente */
+                transform: translateX(-50%) rotate(25deg);
+                font-size: 36px;
+                color: rgba(0, 0, 0, 0.6);
+                white-space: nowrap;
+                z-index: 0;
+                pointer-events: none;
+            }
+
+
+
         </style>
     </head>
     <body>
        
             
             <table>
+                <div class="watermark" style="text-align: center; white-space: pre-line;">
+    {{ situacao.descricao }}
+</div>
+
                 <tr>
                     <td colspan="11" style="text-align: center; line-height: 1.4; width: 65%;" >
                         <strong>SECRETARIA DE ESTADO DE SAÚDE PÚBLICA</strong><br>
@@ -137,8 +155,13 @@
                 {% if servidor.horario_trabalho != "07h - 12h / 13h - 16h" and servidor.horario_trabalho != "08h - 12h / 14h - 18h" %}
                     {% for dia, semana, especial in dias_mes %}
                     <tr >
-                        <td >
+                        <td style="position: relative;">
                             {{ dia }}
+                            {% if situacao and situacao.mes == mes_atual and dia >= situacao.dia %}
+        <div class="watermark">
+            {{ situacao.descricao }}
+        </div>
+        {% endif %}
                         </td>
                         <td {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #c0c0c0;" {% endif %}>
                             {{ semana }}

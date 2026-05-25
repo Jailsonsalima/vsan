@@ -109,6 +109,11 @@ main {
     flex-wrap: wrap; /* permite quebrar linha em telas pequenas */
 }
 
+.form-row a{
+    text-decoration: none;
+    color: #2724ee;
+    font-weight: bold;
+}
 .form-row .form-group {
     flex: 1; /* cada campo ocupa espaço proporcional */
     min-width: 200px; /* largura mínima para não ficar muito pequeno */

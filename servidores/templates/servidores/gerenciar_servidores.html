@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Gerenciar Servidores</h2>
+
+    <table class="dashboard-table">
+        <tr>
+            <th>Nome</th>
+            <th>Matrícula</th>
+            <th>Cargo</th>
+            <th>Horário de Trabalho</th>
+            <th>Situação Funcional Atual</th>
+            <th>Ações</th>
+        </tr>
+        {% for servidor in page_obj %}
+        <tr>
+            <td><a href="{% url 'historico_servidor' servidor.id %}">{{ servidor.nome }}</a></td>
+            <td>{{ servidor.matricula }}</td>
+            <td>{{ servidor.cargo }}</td>
+            <td>{{ servidor.horario_trabalho }}</td>
+            <td>
+                {% if servidor.historico_situacoes.last %}
+                    {{ servidor.historico_situacoes.last.situacao }} 
+                    ({{ servidor.historico_situacoes.last.mes }}/{{ servidor.historico_situacoes.last.ano }})
+                {% else %}
+                    Não definido
+                {% endif %}
+            </td>
+            <td>
+                <form method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="servidor_id" value="{{ servidor.id }}">
+                    <input type="text" name="situacao" placeholder="Nova situação">
+
+                    <textarea name="descricao" id="objetivo" rows="3" placeholder="Descrição opcional"></textarea>
+                    <!--<input type="text" name="descricao" placeholder="Descrição opcional">-->
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">Nenhum servidor encontrado.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Paginação -->
+    <div class="pagination" style="margin-top:20px; text-align:center;">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="btn-secondary">Anterior</a>
+        {% endif %}
+        <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn-secondary">Próxima</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
