@@ -6,6 +6,10 @@ from datetime import date, datetime
 from django.contrib import messages
 from django.core.paginator import Paginator
 
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from weasyprint import HTML
+
 @login_required(login_url='/login/')
 def cadastro_servidor(request):
     setores = Setor.objects.all()
@@ -174,3 +178,41 @@ def historico_servidor(request, servidor_id):
         "servidor": servidor,
         "historico": historico
     })
+
+
+def gerar_boletim_pdf(request):
+    registros = HistoricoSituacao.objects.all()
+    context = {
+        'registros': registros,
+        'mes': 'Abril',
+        'ano': '2026'
+    }
+    html_string = render_to_string('pdf_boletim_frequencia.html', context)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="boletim_frequencia.pdf"'
+    return response
+
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from weasyprint import HTML
+from .models import Servidor
+import datetime
+
+def gerar_mapa_pdf(request):
+    servidores = Servidor.objects.all()
+    #chefe_id = atividades.filter(municipio__icontains=municipio)
+    #chefe = Setor.objects.get(id=chefe_id).filter(chefe_imediato__icontains="Diretor ")
+    context = {
+        'servidores': servidores,
+        'mes': 'Abril',
+        'ano': '2026',
+        'data_atual': datetime.date.today()
+    }
+    html_string = render_to_string('pdf_mapa_frequencia.html', context)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="mapa_frequencia.pdf"'
+    return response

@@ -98,6 +98,12 @@ def login_view(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            # Se logar, mas ainda não tiver vínculo com servidor, tenta associar
+            if not user.servidor and user.matricula:
+                servidor_existente = Servidor.objects.filter(matricula=user.matricula).first()
+                if servidor_existente:
+                    user.servidor = servidor_existente
+                    user.save()
             login(request, user)
 
             # Se for superuser, vai direto para o dashboard

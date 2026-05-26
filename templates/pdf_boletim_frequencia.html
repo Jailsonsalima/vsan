@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Boletim de Frequência</title>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/pdf.css">
+</head>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @page {
+    size: A4 landscape;  /* Define o tamanho A4 em modo paisagem */
+    margin: 6mm;        /* Ajuste de margens */
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    th, td {
+        border: 1px solid #000;
+        padding: 5px;
+        text-align: center;
+    }
+
+    h2 {
+        margin-bottom: 10px;
+    }
+    .brasao { max-width: 100px; height: auto; display: block; top: 0; margin: 0 auto; }
+</style>
+<body>
+                    <div class="brasao" style="align-items: center;">
+                        <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Brasao" class="brasao">
+                    </div>
+                    <div colspan="14" style="text-align: center; line-height: 1.4;" >
+                        <strong>DIRETORIA DE GESTÃO DO TRABALHO E DA EDUCAÇÃO NA SAÚDE-DGTES/SESPA</strong><br>
+  
+                        <strong>GERÊNCIA DE CADASTRO E PROVIMENTO-GCP/DGTES/SESPA</strong><br>
+                    </div>
+                
+
+    <h2 style="text-align:center;">BF - BOLETIM DE FREQUÊNCIA</h2>
+
+    <table>
+        <thead>
+            <tr style="background-color: #969696;">
+                <td colspan="6" style="width: 50%; text-align: left;">Unidade Administrativa: Departamento de Vigilância Sanitária/DVS/SESPA</td>
+                <td colspan="3" style="width: 50%;">Mês/Ano: {{ mes }}/{{ ano }}</td>
+            </tr>
+            <tr>
+                <th style="background-color: #c0c0c0;">Matrícula</th>
+                <th style="background-color: #c0c0c0;">Vínculo</th>
+                <th style="background-color: #969696;">Nome</th>
+                <th style="background-color: #c0c0c0;">Data Início</th>
+                <th style="background-color: #c0c0c0;">Data Fim</th>
+                <th style="background-color: #c0c0c0;">COD Frequência</th>
+                <th style="background-color: #c0c0c0;">Hora p/ Dia</th>
+                <th style="background-color: #c0c0c0;">Processo PAE</th>
+                <th style="background-color: #c0c0c0;">Observações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registro in registros %}
+            <tr>
+                <td>{{ registro.matricula }}</td>
+                <td>{{ registro.vinculo }}</td>
+                <td>{{ registro.nome }}</td>
+                <td>{{ registro.data_inicio|date:"d/m/Y" }}</td>
+                <td>{{ registro.data_fim|date:"d/m/Y" }}</td>
+                <td>{{ registro.cod_frequencia }}</td>
+                <td>{{ registro.horas_dia }}</td>
+                <td>{{ registro.processo_pae }}</td>
+                <td>{{ registro.observacoes }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9">Nenhum registro encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tr style="background-color: #c0c0c0;">
+            <td colspan="9" style="text-align: left;">LEGENDA: FAB-Falta Abonada; FIJ-Falta Injustificada; FGR-Falta Greve; DSA-Doação de Sangue; REF-Retificação de Falta Injustificada; LJE-Folga de Eleição;</td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                {% for setor in setores %}
+                {% if setor.cargo_chefe == "Diretor do Departamento de Vigilância Sanitária/DEVS/DVS/SESPA" %}
+                <div class="assinaturas" style="line-height: 1;">
+                    <p style="color: #00b0f0;">(Assinatura eletrônica)</p>
+                    <strong>{{ setor.chefe_imediato }}</strong><br>
+                    {{ setor.cargo_chefe }}/{{ setor.nome }}<br>
+                    Portaria nº {{ setor.portaria_chefe }}<br>
+                    Matrícula nº {{ setor.matricula_chefe }}
+                </div>
+                {% endif %}
+                {% endfor %}
+            </td>
+            <td colspan="3"></td>
+            <td colspan="2"></td>
+        </tr>
+    </table>
+    <p style="font-weight: bold;">OBS: Este Boletim de Frequencia deve ser enviado quando houver algum dos casos descritos nas legendas e com todos os campos devidamente preenchidos</p>
+</body>
+</html>

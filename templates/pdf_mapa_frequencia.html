@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Boletim de Frequência</title>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/pdf.css">
+</head>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @page {
+    size: A4 landscape;  /* Define o tamanho A4 em modo paisagem */
+    margin: 6mm;        /* Ajuste de margens */
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 5px;
+    }
+
+    th, td {
+        border: 1px solid #000;
+        padding: 5px;
+        text-align: center;
+    }
+
+    h2 {
+        margin-bottom: 10px;
+    }
+    .brasao { max-width: 100px; height: auto; display: block; top: 0; margin: 0 auto; }
+</style>
+<body>
+                    <div class="brasao" style="align-items: center;">
+                        <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Brasao" class="brasao">
+                    </div>
+                    <div colspan="14" style="text-align: center; line-height: 1.4;" >
+                        <strong>DIRETORIA DE GESTÃO DO TRABALHO E DA EDUCAÇÃO NA SAÚDE-DGTES/SESPA</strong><br>
+  
+                        <strong>GERÊNCIA DE CADASTRO E PROVIMENTO-GCP/DGTES/SESPA</strong><br>
+                    </div>
+                
+
+
+<h2 style="text-align: center;">MAPA MENSAL DE FREQUÊNCIA</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Nº</th>
+            <th>Nome do Servidor</th>
+            <th>Matrícula</th>
+            <th>Vínculo</th>
+            <th>Cargo</th>
+            <th>Horário de Trabalho</th>
+            <th>Situação Funcional</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for servidor in servidores %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td style="text-align: left;">{{ servidor.nome }}</td>
+            <td>{{ servidor.matricula }}</td>
+            <td>{{ servidor.vinculo }}</td>
+            <td>{{ servidor.cargo }}</td>
+            <td>{{ servidor.horario_trabalho }}</td>
+            <td>{{ servidor.situacao_funcional }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

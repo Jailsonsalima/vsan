@@ -45,7 +45,9 @@ urlpatterns = [
     path("servidores/", servidor_views.lista_servidores, name="lista_servidores"),
     path("gerenciar_servidores/", servidor_views.gerenciar_servidores, name="gerenciar_servidores"),
     path("historico_servidor/<int:servidor_id>/", servidor_views.historico_servidor, name="historico_servidor"),
-    
+    path('boletim/pdf/', servidor_views.gerar_boletim_pdf, name='gerar_boletim_pdf'),
+    path('mapa/pdf/', servidor_views.gerar_mapa_pdf, name='gerar_mapa_pdf'),
+
     path('cadastro-atividade/', atividades_views.cadastrar_atividade, name="cadastrar_atividade"),
 
     path("dias-especiais/", atividades_views.cadastrar_dia_especial, name="cadastrar_dia_especial"),
