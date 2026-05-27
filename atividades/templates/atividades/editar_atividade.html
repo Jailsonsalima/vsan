@@ -9,13 +9,14 @@
             <div class="form-group">
                 <strong>Período da Viagem</strong>
                 <div class="form-row">
-                    <!--{% if not ocultar_diarias %}-->
+                    
                     <div class="form-group">
                         <label>Nº Memorando:</label>
                         <input type="text" name="n_memorando" value="{{ atividade.n_memorando }}" readonly
                         style="background-color: #f0f0f0; color: #555; font-weight: bold;">
                         <small style="color: #777;">Este campo é preenchido automaticamente.</small>
                     </div>
+                    <!--{% if not ocultar_diarias %}-->
                     <!--{% endif %}-->
                     <div class="form-group">
                         <label for="data_ida">Data de Ida:</label>
@@ -30,7 +31,7 @@
             <!-- Nº Dias / Diárias -->
             <div class="form-group">
                 <div class="form-row">
-                    <!--{% if not ocultar_diarias %}-->
+                    
                     <div class="form-group">
                         <label for="dias_diarias">Nº Dias / Diárias:</label>
                         <input type="text" name="dias_diarias" id="dias_diarias" readonly
@@ -48,6 +49,7 @@
                             <label for="pernoite_nao">Não</label>
                         </div>
                     </div>
+                    <!--{% if not ocultar_diarias %}-->
                     <!--{% endif %}-->
                     <!-- Meio de Transporte -->
                     <div class="form-group">
