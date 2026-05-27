@@ -75,6 +75,9 @@ urlpatterns = [
     path('solicitar-agendamento/', agendamento_views.solicitar_agendamento, name='solicitar_agendamento'),
     path('processar-agendamento/<int:agendamento_id>/', agendamento_views.processar_agendamento, name='processar_agendamento'),
     path("agendamentos/", agendamento_views.listar_agendamentos, name="listar_agendamentos"),
+
+    path("agendamento/<int:agendamento_id>/pdf/", agendamento_views.gerar_pdf_solicitacao_veiculo, name="gerar_pdf_solicitacao_veiculo"),
+
     path("gerenciar-autorizacoes/", agendamento_views.gerenciar_autorizacoes, name="gerenciar_autorizacoes"),
     path("gerenciar_motoristas/", agendamento_views.gerenciar_motoristas, name="gerenciar_motoristas"),
     path("cadastro_motorista_externo/", agendamento_views.cadastrar_motorista_externo, name="cadastrar_motorista_externo"),

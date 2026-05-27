@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family:'Times New Roman', Times, serif; margin: 0px; font-size: 14px;}
+            .brasao { position: fixed; top: 0; margin-bottom: 10px; margin-top: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: auto; }
+            .sus { position: fixed; top: 0; margin-left: 40px; margin-top: 20px;  left: 0; width: 90px; height: auto; }
+            .vsan { position: fixed; top: 0; margin-right: 40px; margin-top: 20px;  right: 0; width: 90px; height: auto; }
+            .top-text { font-family: 'Arial Narrow'; font-size: 10px; text-align: center; margin-top: 40px;}
+            /* Linha superior centralizada */
+            .linha-topo { position: fixed; top: 140px; left: 0; width: 100%; height: auto; }
+            h3 { text-align: center; margin-bottom: 2px; margin-top: 25px;}
+            table { width: 100%; border-collapse: collapse; margin-bottom: 3px; }
+            th { background-color: #f4f4f4; }
+            th, td { border: 2px solid #000000; padding: 4px; text-align: left; }
+            /* Remove margens padrão do PDF */
+            @page { margin: 0; padding: 0; }
+            body { margin: 20px; padding: 20px; font-family: 'Times New Roman', Times, serif; font-size: 14px; }
+            /* Estrela canto inferior esquerdo */
+            .estrela { position: fixed; bottom: 0; left: 0; width: 120px; height: auto; z-index: 2; }
+            .assinaturas { margin-bottom: 10px; width: 100%; text-align: center; line-height: 1.4; }
+            /* Linha inferior centralizada */
+            .linha-boton { position: fixed; bottom: 45px; right: 0; width: 95%; height: auto; z-index: 1; }
+            .footer-devs { font-family: 'Arial Narrow'; text-align: center; font-size: 10px; color: #000; line-height: 1.2; bottom: 25px; position: fixed; width: 100%; }
+    </style>
+</head>
+<body>
+    <h2>Memorando</h2>
+    <p><strong>DO:</strong> Departamento de Vigilância Sanitária - DEVS</p>
+    <p><strong>PARA:</strong> STRANSP/SEDE - SESPA</p>
+    <p><strong>ASSUNTO:</strong> Solicitação de Veículo</p>
+    <p><strong>DATA:</strong> {{ agendamento.data_solicitacao|date:"d/m/Y" }}</p>
+
+    <p>Solicitamos a liberação de veículo oficial para atender a demanda:</p>
+    <ul>
+        <li><strong>Município:</strong> {{ agendamento.municipio }}</li>
+        <li><strong>Período:</strong> {{ agendamento.data_ida|date:"d/m/Y" }} a {{ agendamento.data_retorno|date:"d/m/Y" }}</li>
+        <li><strong>Transporte:</strong> {{ agendamento.transporte }}</li>
+        <li><strong>Motivo:</strong> {{ agendamento.motivo }}</li>
+    </ul>
+
+    <div class="assinaturas">
+        <p>Atenciosamente,</p>
+        <p>{{ agendamento.servidor.nome }}</p>
+        <p>Setor: {{ agendamento.servidor.setor.nome }}</p>
+    </div>
+</body>
+</html>

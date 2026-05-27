@@ -21,6 +21,11 @@ from setores.models import Setor
 from datetime import datetime
 from django.utils.dateformat import DateFormat
 
+from django.template.loader import render_to_string
+from weasyprint import HTML
+
+from django.http import HttpResponse
+
 def formatar_periodo(data_ida, data_retorno):
     if not data_ida or not data_retorno:
         return ""
@@ -715,3 +720,22 @@ def cancelar_agendamento(request, agendamento_id):
 
     messages.success(request, "Agendamento cancelado com sucesso.")
     return redirect("listar_agendamentos")
+
+
+
+@login_required(login_url='/login/')
+def gerar_pdf_solicitacao_veiculo(request, agendamento_id):
+    agendamento = get_object_or_404(Agendamento, id=agendamento_id)
+
+    # Renderiza HTML com os dados do agendamento
+    html_string = render_to_string("pdf_solicitacao_veiculo.html", {
+        "agendamento": agendamento,
+    })
+
+    # Gera PDF em memória
+    pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+
+    # Retorna como download
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response['Content-Disposition'] = f'attachment; filename="agendamento_{agendamento.id}.pdf"'
+    return response

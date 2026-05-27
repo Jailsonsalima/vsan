@@ -224,10 +224,16 @@ document.addEventListener("DOMContentLoaded", function() {
             <tr class="agendamento-item" data-municipio="{{ agendamento.municipio }}">
                 <td>
                     {% if agendamento.atividade and agendamento.atividade.numero_processo %}
-                        <span style="margin-left:10px;">{{ agendamento.atividade.numero_processo }}</span>
+                        <span style="margin-left:10px;">{{ agendamento.atividade.numero_processo }}</span><br>
+                        
                     {% else %}
                         --
                     {% endif %}
+                    {% if agendamento.atividade.transporte == "Veículo Oficial (VAN)" or agendamento.transporte == "Veículo Oficial" and agendamento.status == "pendente" %}
+                            <a href="{% url 'gerar_pdf_solicitacao_veiculo' agendamento.id %}" class="btn btn-sm btn-primary">
+                                Gerar PDF 📄
+                            </a>
+                        {% endif %}
                 </td>
                 <td>{{ agendamento.servidor.nome }}</td>
                 <td>{{ agendamento.municipio }}</td>
