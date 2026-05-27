@@ -22,7 +22,7 @@ class Atividade(models.Model):
     #periodo_viagem = models.CharField(max_length=100, blank=True, null=True)
     dias_diarias = models.CharField(max_length=50, blank=True, null=True)
     PERNOITE_CHOICES = [("Sim", "Sim"), ("Não", "Não")]
-    pernoite = models.CharField(max_length=3, choices=PERNOITE_CHOICES, default="Não")
+    pernoite = models.CharField(max_length=3, choices=PERNOITE_CHOICES, default="Não", blank=True, null=True)
     transporte = models.CharField(max_length=50, blank=True, null=True)
     municipio = models.CharField(max_length=100, blank=True, null=True)
     objetivo = models.TextField(blank=True, null=True)

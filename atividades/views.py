@@ -50,7 +50,8 @@ def cadastrar_atividade(request, agendamento_id=None):
             data_ida = datetime.strptime(data_ida_str, "%Y-%m-%d").date() if data_ida_str else None
             data_retorno = datetime.strptime(data_retorno_str, "%Y-%m-%d").date() if data_retorno_str else None
             n_memorando = request.POST.get("n_memorando")
-
+            if not n_memorando or not n_memorando.strip():
+                n_memorando = None
             # Busca ou cria recurso ativo padrão
             recurso_ativo, _ = RecursoAtivo.objects.get_or_create(id=1, defaults={"codigo": "01"})
 
@@ -117,7 +118,17 @@ def cadastrar_atividade(request, agendamento_id=None):
     for servidor in servidores:
         em_conflito = servidor.id in servidores_conflito_ids
         servidores_status.append({"servidor": servidor, "em_conflito": em_conflito})
-        
+    
+    ocultar_diarias = False
+    if agendamento and agendamento.municipio:
+        municipios_sem_diarias = [
+            "belém", "ananindeua", "benevides", "marituba",
+            "santa bárbara do pará", "santa izabel do pará",
+            "castanhal", "barcarena"
+        ]
+        municipio_normalizado = agendamento.municipio.lower().strip()
+        if any(m in municipio_normalizado for m in municipios_sem_diarias):
+            ocultar_diarias = True
     return render(request, "atividades/cadastro_atividades.html", {
         "servidores_status": servidores_status,
         "setores": setores,
@@ -125,6 +136,7 @@ def cadastrar_atividade(request, agendamento_id=None):
         "motoristas_externos": motoristas_externos,
         "motorista_sorteado": motorista_sorteado,
         "agendamento": agendamento,
+        "ocultar_diarias": ocultar_diarias,
     })
 
 def formatar_periodo(data_ida, data_retorno):
@@ -226,6 +238,7 @@ def editar_atividade(request, atividade_id):
     servidores = Servidor.objects.all()
     setores = Setor.objects.all()
     motoristas_externos = MotoristaExterno.objects.all()
+    transporte_choices = Agendamento._meta.get_field("transporte").choices
 
     if request.method == "POST":
         try:
@@ -277,11 +290,23 @@ def editar_atividade(request, atividade_id):
             "em_conflito": em_conflito,
             "eh_motorista": eh_motorista
         })
+    ocultar_diarias = False
+    if atividade and atividade.municipio:
+        municipios_sem_diarias = [
+            "belém", "ananindeua", "benevides", "marituba",
+            "santa bárbara do pará", "santa izabel do pará",
+            "castanhal", "barcarena"
+        ]
+        municipio_normalizado = atividade.municipio.lower().strip()
+        if any(m in municipio_normalizado for m in municipios_sem_diarias):
+            ocultar_diarias = True
     return render(request, "atividades/editar_atividade.html", {
         "atividade": atividade,
         "servidores_status": servidores_status,
         "setores": setores,
         "motoristas_externos": motoristas_externos,
+        "ocultar_diarias": ocultar_diarias,
+        "transporte_choices": transporte_choices,
     })
 
 from django.core.paginator import Paginator

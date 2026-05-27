@@ -215,6 +215,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 <th>Motivo</th>
                 <th>Status</th>
                 <th>Motorista</th>
+                <th>Transporte</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -255,6 +256,13 @@ document.addEventListener("DOMContentLoaded", function() {
                     --
                 {% endif %}
                 </td>
+                {% if agendamento.transporte == "Veículo Oficial (VAN)" %}
+                    <td style="color: red; font-weight: bold;">
+                {% else %}
+                    <td>
+                {% endif %}
+                    {{ agendamento.transporte }}
+                    </td>
                 <td>
                     {% if agendamento.status == "processado" %}
                         {% if agendamento.atividade %}

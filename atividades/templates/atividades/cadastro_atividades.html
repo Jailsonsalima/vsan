@@ -21,7 +21,7 @@
                 <div class="form-row">
                     <div class="form-group">
                     <label for="n_memorando">Nº do Memorando:</label>
-                    <input type="text" id="n_memorando" name="n_memorando" required>
+                    <input type="text" id="n_memorando" name="n_memorando" placeholder="Ex: 0001/2026">
                 </div>
                 <div class="form-group">
                     <label for="data_ida">Data de Ida:</label>
@@ -38,7 +38,7 @@
             </div>
         </div>
         <!-- Nº Dias / Diárias -->
-        
+        {% if not ocultar_diarias %}
             <div class="form-row">
                 <div class="form-group">
                     <label for="dias_diarias">Nº Dias / Diárias:</label>
@@ -66,7 +66,7 @@
                     <small style="color: #777;">Este campo é preenchido automaticamente a partir do agendamento.</small>
                 </div>
             </div>
-          
+        {% endif %}
         <!-- Município -->
          
         <div class="form-group">

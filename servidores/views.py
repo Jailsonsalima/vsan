@@ -194,11 +194,6 @@ def gerar_boletim_pdf(request):
     response['Content-Disposition'] = 'inline; filename="boletim_frequencia.pdf"'
     return response
 
-from django.template.loader import render_to_string
-from django.http import HttpResponse
-from weasyprint import HTML
-from .models import Servidor
-import datetime
 
 def gerar_mapa_pdf(request):
     servidores = Servidor.objects.all()

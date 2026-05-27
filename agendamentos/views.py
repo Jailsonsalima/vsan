@@ -99,33 +99,60 @@ def solicitar_agendamento(request):
                             )
 
                     return redirect('cadastrar_atividade_agendamento', agendamento_id=agendamento.id)
-                
+                # Não há motorista interno disponível
                 else:
-                    # Não há motorista interno disponível
-                    messages.info(request, "Não há motorista da Vigilância disponível.\n Aguarde designação de motorista externo.")
+                    # Não há motorista interno disponível com VAN
+                    if agendamento.transporte == "Veículo Oficial (VAN)":
+                        messages.info(request, "Não há motorista da Vigilância disponível.\n Aguarde designação de motorista externo e da VAN.")
 
-                    # Envia e-mail ao solicitante
-                    send_mail(
-                        'Agendamento aguardando motorista externo',
-                        f'Sua solicitação foi registrada. Aguarde confirmação.\n\n'
-                        f'Dados do agendamento:\n'
-                        f'Ida: {agendamento.data_ida.strftime("%d/%m/%Y")}\n'
-                        f'Retorno: {agendamento.data_retorno.strftime("%d/%m/%Y")}\n'
-                        f'Município: {agendamento.municipio}\n'
-                        f'Motivo: {agendamento.motivo}',
-                        'sistema@vsan.com',
-                        [request.user.email]
-                    )
+                        # Envia e-mail aos autorizados
+                        autorizados = AutorizacaoAgendamento.objects.filter(pode_visualizar=True)
+                        for autorizacao in autorizados:
+                            send_mail(
+                                'Agendamento aguardando motorista externo e VAN',
+                                f'Um novo agendamento foi solicitado e está aguardando motorista externo e uma VAN.\nDados: {agendamento}',
+                                'sistema@vsan.com',
+                                [autorizacao.usuario.email]
+                            )
+                        send_mail(
+                            'Agendamento aguardando motorista externo e VAN',
+                            f'Sua solicitação foi registrada. Aguarde confirmação.\n\n'
+                            f'Dados do agendamento:\n'
+                            f'Ida: {agendamento.data_ida.strftime("%d/%m/%Y")}\n'
+                            f'Retorno: {agendamento.data_retorno.strftime("%d/%m/%Y")}\n'
+                            f'Transporte {agendamento.transporte}\n'
+                            f'Município: {agendamento.municipio}\n'
+                            f'Motivo: {agendamento.motivo}',
+                            'sistema@vsan.com',
+                            [request.user.email]
+                        )
+                    else:
+                        # Não há motorista interno disponível
+                        messages.info(request, "Não há motorista da Vigilância disponível.\n Aguarde designação de motorista externo.")
 
-                    # Envia e-mail aos autorizados
-                    autorizados = AutorizacaoAgendamento.objects.filter(pode_visualizar=True)
-                    for autorizacao in autorizados:
+                        # Envia e-mail ao solicitante
                         send_mail(
                             'Agendamento aguardando motorista externo',
-                            f'Um novo agendamento foi solicitado e está aguardando motorista externo.\nDados: {agendamento}',
+                            f'Sua solicitação foi registrada. Aguarde confirmação.\n\n'
+                            f'Dados do agendamento:\n'
+                            f'Ida: {agendamento.data_ida.strftime("%d/%m/%Y")}\n'
+                            f'Retorno: {agendamento.data_retorno.strftime("%d/%m/%Y")}\n'
+                            f'Transporte {agendamento.transporte}\n'
+                            f'Município: {agendamento.municipio}\n'
+                            f'Motivo: {agendamento.motivo}',
                             'sistema@vsan.com',
-                            [autorizacao.usuario.email]
+                            [request.user.email]
                         )
+
+                        # Envia e-mail aos autorizados
+                        autorizados = AutorizacaoAgendamento.objects.filter(pode_visualizar=True)
+                        for autorizacao in autorizados:
+                            send_mail(
+                                'Agendamento aguardando motorista externo',
+                                f'Um novo agendamento foi solicitado e está aguardando motorista externo.\nDados: {agendamento}',
+                                'sistema@vsan.com',
+                                [autorizacao.usuario.email]
+                            )
 
                     return redirect('listar_agendamentos')
             else:
