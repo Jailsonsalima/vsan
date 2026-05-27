@@ -304,7 +304,7 @@ def editar_atividade(request, atividade_id):
         municipios_sem_diarias = [
             "belém", "ananindeua", "benevides", "marituba",
             "santa bárbara do pará", "santa izabel do pará",
-            "castanhal", "barcarena"
+            "castanhal"
         ]
         municipio_normalizado = atividade.municipio.lower().strip()
         if any(m in municipio_normalizado for m in municipios_sem_diarias):
