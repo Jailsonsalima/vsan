@@ -233,7 +233,7 @@
                             <!--<a href="{% url 'editar_atividade' atividade.id %}" class="btn-secondary" style="display: block; margin-bottom: 10px;">Editar</a>-->
                         {% endif %}
                             <a href="{% url 'editar_atividade' atividade.id %}" class="btn-secondary" style="display: block; margin-bottom: 10px;">Editar 🗘</a>
-                            {% if atividade.n_memorando != None %}<a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-primary" style="display: block;">PDFs 🗐</a>{% endif %}
+                            <a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-primary" style="display: block;">PDFs 🗐</a>{% if atividade.n_memorando != None %}{% endif %}
                     {% endif %}
                 </td>
             </tr>
