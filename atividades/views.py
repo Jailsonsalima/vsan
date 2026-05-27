@@ -263,6 +263,15 @@ def editar_atividade(request, atividade_id):
             atividade.servidores.set(Servidor.objects.filter(id__in=ids))
             atividade.data_criacao = timezone.now()
             atividade.save()
+
+            # Atualiza também o agendamento vinculado
+            if atividade.agendamento:
+                atividade.agendamento.municipio = atividade.municipio
+                atividade.agendamento.transporte = atividade.transporte
+                atividade.agendamento.data_ida = atividade.data_ida
+                atividade.agendamento.data_retorno = atividade.data_retorno
+                atividade.agendamento.motivo = atividade.objetivo
+                atividade.agendamento.save()
             messages.success(request, "Atividade atualizada com sucesso!")
             return redirect("listar_atividades")
         except IntegrityError:
