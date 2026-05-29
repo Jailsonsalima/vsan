@@ -21,6 +21,14 @@ class AutorizacaoAgendamentoAdmin(admin.ModelAdmin):
 
 @admin.register(ProcessamentoAgendamento)
 class ProcessamentoAgendamentoAdmin(admin.ModelAdmin):
-    list_display = ("tipo", "agendamento", "data_processamento")
+    list_display = (
+        "id", "agendamento", "tipo",
+        "motorista_servidor", "motorista_externo", "data_processamento"
+    )
     list_filter = ("tipo", "data_processamento")
-    search_fields = ("agendamento__municipio",)
+    search_fields = (
+        "agendamento__municipio",
+        "motorista_servidor__nome",
+        "motorista_externo__nome"
+    )
+    date_hierarchy = "data_processamento"
