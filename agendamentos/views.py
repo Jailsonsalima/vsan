@@ -69,7 +69,8 @@ def solicitar_agendamento(request):
                 motoristas_servidores = Servidor.objects.filter(cargo__icontains="Motorista", disponivel=True)
                 motoristas_ocupados = ProcessamentoAgendamento.objects.filter(
                     agendamento__data_ida__lte=agendamento.data_retorno,
-                    agendamento__data_retorno__gte=agendamento.data_ida
+                    agendamento__data_retorno__gte=agendamento.data_ida,
+                    agendamento__status="processado" # só considera ocupado os com status processado
                 ).values_list("motorista_servidor_id", flat=True)
 
                 motoristas_disponiveis = motoristas_servidores.exclude(id__in=motoristas_ocupados)
@@ -750,9 +751,11 @@ def adicionar_memorando_agendamento(request, agendamento_id):
 def gerar_pdf_solicitacao_veiculo(request, agendamento_id):
     agendamento = get_object_or_404(Agendamento, id=agendamento_id)
 
+    periodo_formatado = formatar_periodo(agendamento.data_ida, agendamento.data_retorno)
     # Renderiza HTML com os dados do agendamento
     html_string = render_to_string("pdf_solicitacao_veiculo.html", {
         "agendamento": agendamento,
+        "periodo_formatado": periodo_formatado,
     })
 
     # Gera PDF em memória

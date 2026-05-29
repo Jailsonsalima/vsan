@@ -22,7 +22,7 @@
             .estrela { position: fixed; bottom: 0; left: 0; width: 120px; height: auto; z-index: 2; }
             .assinaturas { margin-bottom: 10px; width: 100%; text-align: center; line-height: 1.4; }
             /* Linha inferior centralizada */
-            .linha-boton { position: fixed; bottom: 45px; right: 0; width: 95%; height: auto; z-index: 1; }
+            .linha-boton { position: fixed; bottom: 45px; right: 0; width: 100%; height: auto; z-index: 1; }
             .footer-devs { font-family: 'Arial Narrow'; text-align: center; font-size: 10px; color: #000; line-height: 1.2; bottom: 25px; position: fixed; width: 100%; }
     </style>
 </head>
@@ -53,12 +53,17 @@ Setor de Transporte<br>
 Secretaria de Estado de Saúde Pública – SESPA<br><br>
 <strong>Assunto:</strong> Solicitação de 
 {% if agendamento.status == "pendente" and agendamento.transporte != "Veículo Oficial (VAN)" %}
-    motorista e 01 (um) veículo oficial
+    motorista e veículo oficial
 {% elif agendamento.status == "pendente" and agendamento.transporte == "Veículo Oficial (VAN)" %}
-    01 (um) veículo oficial tipo VAN com motorista,
+    veículo oficial tipo VAN com motorista,
 {% else %}
-    01 (um) veículo oficial tipo VAN,
-{% endif %} para viagem a {{ agendamento.municipio }} – {{ agendamento.data_ida|date:"d/m/Y" }}.<br><br>
+    veículo oficial tipo VAN,
+{% endif %} para viagem a {{ agendamento.municipio }} – 
+{% if agendamento.data_ida == agendamento.data_retorno %}
+    {{ agendamento.data_ida|date:"d/m/Y" }}
+{% else %}
+    {{ periodo_formatado }}
+{% endif %}.<br><br>
 <p style="text-align: justify;">&emsp;&emsp;Solicitamos a Vossa Senhoria a disponibilização de 
     {% if agendamento.status == "pendente" and agendamento.transporte != "Veículo Oficial (VAN)" %}
         um motorista e 01 (um) veículo oficial
@@ -66,7 +71,12 @@ Secretaria de Estado de Saúde Pública – SESPA<br><br>
         01 (um) veículo oficial tipo VAN com motorista,
     {% else %}
         01 (um) veículo oficial tipo VAN,
-    {% endif %} para a realização de viagem a localidade de {{ agendamento.municipio }}, a ser realizada nesta data, {{ agendamento.data_ida }}.</p><br>
+    {% endif %} para a realização de viagem a localidade de {{ agendamento.municipio }}, a ser realizada 
+    {% if agendamento.data_ida == agendamento.data_retorno %}
+        nesta data, {{ agendamento.data_ida|date:"d/m/Y" }}
+    {% else %}
+        neste período, {{ periodo_formatado }}
+    {% endif %}.</p><br>
 <p style="text-align: justify;">&emsp;&emsp;Informamos que 
     {% if agendamento.status == "pendente" and agendamento.transporte != "Veículo Oficial (VAN)" %}
         todos os motoristas lotados neste Departamento de Vigilância Sanitária encontram-se
