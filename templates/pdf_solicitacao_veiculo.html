@@ -73,9 +73,9 @@ Secretaria de Estado de Saúde Pública – SESPA<br><br>
         01 (um) veículo oficial tipo VAN,
     {% endif %} para a realização de viagem a localidade de {{ agendamento.municipio }}, a ser realizada 
     {% if agendamento.data_ida == agendamento.data_retorno %}
-        nesta data, {{ agendamento.data_ida|date:"d/m/Y" }}
+        em {{ agendamento.data_ida|date:"d/m/Y" }}
     {% else %}
-        neste período, {{ periodo_formatado }}
+        no período de {{ periodo_formatado }}
     {% endif %}.</p><br>
 <p style="text-align: justify;">&emsp;&emsp;Informamos que 
     {% if agendamento.status == "pendente" and agendamento.transporte != "Veículo Oficial (VAN)" %}
