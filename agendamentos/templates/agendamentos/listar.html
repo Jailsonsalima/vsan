@@ -229,11 +229,14 @@ document.addEventListener("DOMContentLoaded", function() {
                     {% else %}
                         --
                     {% endif %}
-                    {% if agendamento.atividade.transporte == "Veículo Oficial (VAN)" or agendamento.transporte == "Veículo Oficial" and agendamento.status == "pendente" %}
-                            <a href="{% url 'gerar_pdf_solicitacao_veiculo' agendamento.id %}" class="btn btn-sm btn-primary">
-                                Gerar PDF 📄
+                    {% if agendamento.n_memorando %}
+                        {% if agendamento.transporte == "Veículo Oficial (VAN)" or agendamento.transporte == "Veículo Oficial" and agendamento.status == "pendente" %}
+                            <a href="{% url 'gerar_pdf_solicitacao_veiculo' agendamento.id %}" class="btn-primary">
+                                PDF
                             </a>
                         {% endif %}
+                    {% endif %}
+                        
                 </td>
                 <td>{{ agendamento.servidor.nome }}</td>
                 <td>{{ agendamento.municipio }}</td>
@@ -273,8 +276,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     {% if agendamento.status == "processado" %}
                         {% if agendamento.atividade %}
                             <!-- Já existe atividade vinculada, não mostra o botão -->
-                                <span style="color: gray;">Atividade já criada</span>
-                            {% else %}
+                            <span style="color: gray;">Atividade já criada</span>
+                        {% else %}
                             <a href="{% url 'cadastrar_atividade_agendamento' agendamento.id %}" class="btn-card" style="display:flex;">
                                 📃 Criar Atividade
                             </a>
@@ -282,10 +285,29 @@ document.addEventListener("DOMContentLoaded", function() {
                         <a href="{% url 'cancelar_agendamento' agendamento.id %}" class="btn-card cancelar-btn" style="margin-top:5px; display:block;">
                             ❌ Cancelar Viagem
                         </a>
+                        {% if agendamento.transporte == "Veículo Oficial (VAN)" %}
+                            <form method="post" action="{% url 'adicionar_memorando_agendamento' agendamento.id %}">
+                                {% csrf_token %}
+                                <input type="text" name="n_memorando" placeholder="Nº Memorando" required>
+                                <button type="submit" class="btn btn-sm btn-primary">Salvar Memorando</button>
+                            </form>
+                        {% endif %}
                     {% elif agendamento.status == "pendente" %}
-                        <a href="{% url 'processar_agendamento' agendamento.id %}" class="btn-primary">
-                            Processar
-                        </a>
+                        {% if not agendamento.n_memorando %}
+                            <form method="post" action="{% url 'adicionar_memorando_agendamento' agendamento.id %}">
+                                {% csrf_token %}
+                                <input type="text" name="n_memorando" placeholder="Nº Memorando" required>
+                                <button type="submit" class="btn btn-sm btn-primary">Salvar Memorando</button>
+                            </form>
+                        {% else %}
+                            Memorando: {{ agendamento.n_memorando }}<br><br>
+                            <a href="{% url 'processar_agendamento' agendamento.id %}" class="btn-primary">
+                                Processar
+                            </a>
+
+                        {% endif %}
+
+                        
                     {% elif agendamento.status == "cancelado" %}
                         <span style="color:red;">Cancelado</span>
                     {% endif %}

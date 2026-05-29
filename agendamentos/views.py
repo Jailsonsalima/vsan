@@ -721,6 +721,29 @@ def cancelar_agendamento(request, agendamento_id):
     messages.success(request, "Agendamento cancelado com sucesso.")
     return redirect("listar_agendamentos")
 
+@login_required(login_url='/login/')
+def adicionar_memorando_agendamento(request, agendamento_id):
+    agendamento = get_object_or_404(Agendamento, id=agendamento_id)
+
+    if request.method == "POST":
+        numero = request.POST.get("n_memorando")
+        servidor = getattr(request.user, "servidor", None)
+
+        agendamento.n_memorando = numero
+        if servidor:
+            agendamento.memorando_servidor = servidor
+            agendamento.memorando_nome = servidor.nome
+            agendamento.memorando_matricula = servidor.matricula
+            agendamento.memorando_setor = servidor.setor.nome if servidor.setor else ""
+        if not request.user.servidor:
+                messages.error(request, "Seu usuário não está vinculado a um servidor. Contate o administrador.")
+                return redirect('home')
+        agendamento.save()
+
+        messages.success(request, "Memorando registrado com sucesso.")
+        return redirect("listar_agendamentos")
+
+    return render(request, "agendamentos/adicionar_memorando.html", {"agendamento": agendamento})
 
 
 @login_required(login_url='/login/')
@@ -739,3 +762,71 @@ def gerar_pdf_solicitacao_veiculo(request, agendamento_id):
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response['Content-Disposition'] = f'attachment; filename="agendamento_{agendamento.id}.pdf"'
     return response
+
+@login_required(login_url='/login/')
+def calendario_motorista_pessoal(request):
+    usuario = request.user
+    if not hasattr(usuario, "servidor") or "Motorista" not in usuario.servidor.cargo:
+        messages.error(request, "Você não tem permissão para acessar este calendário.")
+        return redirect("listar_agendamentos")
+
+    motorista = usuario.servidor
+    ano = int(request.GET.get("ano", timezone.now().year))
+    mes = int(request.GET.get("mes", timezone.now().month))
+
+    cal = calendar.Calendar(firstweekday=6)
+    semanas = cal.monthdayscalendar(ano, mes)
+
+    agendamentos = ProcessamentoAgendamento.objects.filter(
+        motorista_servidor=motorista,
+        agendamento__data_ida__month=mes,
+        agendamento__data_ida__year=ano,
+        agendamento__status="processado"
+    ).exclude(agendamento__status="cancelado").select_related("agendamento")
+
+    # mapa de dias -> municípios
+    colors = ["#f46236", "#2196f3", "#4caf50", "#ff9800", "#b031c7", "#00bcd4", "#AD8273", "#7fa0b1"]
+
+    ocupados_map = {}
+    viagens = []
+
+    for idx, proc in enumerate(agendamentos):
+        ag = proc.agendamento
+        cor = colors[idx % len(colors)]  # pega cor da paleta ciclicamente
+        for dia in range(ag.data_ida.day, ag.data_retorno.day + 1):
+            ocupados_map.setdefault(dia, []).append({"municipio": ag.municipio, "cor": cor})
+        viagens.append({
+            "municipio": ag.municipio,
+            "periodo": formatar_periodo(ag.data_ida, ag.data_retorno),
+            "cor": cor
+        })
+
+    # transforma semanas em estrutura com municípios + cor
+    semanas_com_dados = []
+    for semana in semanas:
+        dias = []
+        for dia in semana:
+            if dia == 0:
+                dias.append({"numero": 0, "municipios": []})
+            else:
+                dias.append({"numero": dia, "municipios": ocupados_map.get(dia, [])})
+        semanas_com_dados.append(dias)
+
+    mes_anterior = mes - 1 if mes > 1 else 12
+    ano_anterior = ano if mes > 1 else ano - 1
+    mes_proximo = mes + 1 if mes < 12 else 1
+    ano_proximo = ano if mes < 12 else ano + 1
+    nome_mes = calendar.month_name[mes].capitalize()
+
+    return render(request, "agendamentos/calendario_motorista_pessoal.html", {
+        "motorista": motorista,
+        "semanas": semanas_com_dados,
+        "mes": mes,
+        "ano": ano,
+        "nome_mes": nome_mes,
+        "mes_anterior": mes_anterior,
+        "ano_anterior": ano_anterior,
+        "mes_proximo": mes_proximo,
+        "ano_proximo": ano_proximo,
+        "viagens": viagens,
+    })

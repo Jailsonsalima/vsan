@@ -13,10 +13,16 @@ from agendamentos.models import Agendamento, AutorizacaoAgendamento
 def home(request):
     #return render(request, 'usuarios/login.html')
     
-    if request.user.tipo_usuario != "funcionario" and request.user.tipo_usuario != "coordenador":
+    # Se não for funcionário nem coordenador → vai para home padrão
+    if request.user.tipo_usuario not in ["funcionario", "coordenador"]:
         return render(request, 'usuarios/home.html')
+
+    # Se for funcionário e tiver vínculo com servidor do cargo Motorista → vai para calendário
+    elif request.user.tipo_usuario == "funcionario" and hasattr(request.user, "servidor") and request.user.servidor and "Motorista" in request.user.servidor.cargo:
+        return redirect('calendario_motorista_pessoal')
+
     else:
-        # Usuário logado como funcionario → vai para o dashboard
+        # Funcionário comum ou coordenador → vai para dashboard
         return redirect('dashboard')
         
 @login_required(login_url='/login/')

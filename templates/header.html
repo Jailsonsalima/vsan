@@ -3,8 +3,6 @@
 <header class="header">
     <a href="{% url 'home' %}" class="logo">VSAN</a>
     
-    <!-- Botão hamburger -->
-    <!--<button class="menu-toggle" aria-label="Abrir Menu">&#9776;</button>-->
     
     <nav class="nav">
         {% if user.is_authenticated %}
@@ -53,6 +51,7 @@
                 </div>
             </a>
         {% else %}
+            {% if request.user.servidor.cargo != "Motorista" %}
             <!-- Card 3 -->
             <a href="{% url 'dashboard' %}" >
                 <div class="card">
@@ -60,6 +59,7 @@
                     <div class="card-text">Operacional</div>
                 </div>
             </a>
+            {% endif %}
         {% endif %}
     </div>
 {% endif %}

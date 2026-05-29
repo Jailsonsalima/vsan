@@ -30,6 +30,12 @@ class Agendamento(models.Model):
         ("cancelado", "Cancelado"),
     ]
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pendente") #status
+    # dados para memorando do documento de solicitação de motorista externo
+    n_memorando = models.CharField(max_length=10, blank=True, null=True)
+    memorando_nome = models.CharField(max_length=200, blank=True, null=True)
+    memorando_matricula = models.CharField(max_length=20, blank=True, null=True)
+    memorando_setor = models.CharField(max_length=100, blank=True, null=True)
+    memorando_servidor = models.ForeignKey("servidores.Servidor", on_delete=models.SET_NULL, null=True, blank=True, related_name="agendamentos_memorando")
 
     def __str__(self):
         return f"Agendamento - {self.servidor.nome} ({self.municipio})"
