@@ -18,7 +18,7 @@ import json
 import locale
 import calendar
 from setores.models import Setor
-from datetime import datetime
+from datetime import datetime, date
 from django.utils.dateformat import DateFormat
 
 from django.template.loader import render_to_string
@@ -776,6 +776,10 @@ def calendario_motorista_pessoal(request):
     motorista = usuario.servidor
     ano = int(request.GET.get("ano", timezone.now().year))
     mes = int(request.GET.get("mes", timezone.now().month))
+    # calcula a diferença de dias entre hoje e cada agendamento
+    hoje = date.today()
+    mais_proxima = None
+    menor_diferenca = None
 
     cal = calendar.Calendar(firstweekday=6)
     semanas = cal.monthdayscalendar(ano, mes)
@@ -796,13 +800,24 @@ def calendario_motorista_pessoal(request):
     for idx, proc in enumerate(agendamentos):
         ag = proc.agendamento
         cor = colors[idx % len(colors)]  # pega cor da paleta ciclicamente
+        periodo = formatar_periodo(ag.data_ida, ag.data_retorno)
         for dia in range(ag.data_ida.day, ag.data_retorno.day + 1):
             ocupados_map.setdefault(dia, []).append({"municipio": ag.municipio, "cor": cor})
+
+        # só considera se a data de ida for hoje ou futura
+        if ag.data_ida >= hoje:
+            diferenca = (ag.data_ida - hoje).days
+            if menor_diferenca is None or diferenca < menor_diferenca:
+                menor_diferenca = diferenca
+                mais_proxima = idx
         viagens.append({
             "municipio": ag.municipio,
-            "periodo": formatar_periodo(ag.data_ida, ag.data_retorno),
+            "periodo": periodo,
             "cor": cor
         })
+    # marca o agendamento mais próximo
+    if mais_proxima is not None:
+        viagens[mais_proxima]["mais_proxima"] = True
 
     # transforma semanas em estrutura com municípios + cor
     semanas_com_dados = []
