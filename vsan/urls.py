@@ -62,6 +62,7 @@ urlpatterns = [
     path("atividade/editar/<int:atividade_id>/", atividades_views.editar_atividade, name="editar_atividade"),
     path("atividades/", atividades_views.listar_atividades, name="listar_atividades"),
     path("gerenciar_contas/", views.gerenciar_contas, name="gerenciar_contas"),
+    path('privacidade/', views.politica_privacidade, name='politica_privacidade'),
 
     # Solicitar redefinição
     path('reset_password/', auth_views.PasswordResetView.as_view(), name='reset_password'),

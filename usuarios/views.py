@@ -9,6 +9,9 @@ from servidores.models import Servidor
 from agendamentos.models import Agendamento, AutorizacaoAgendamento
 
 # Create your views here.
+def politica_privacidade(request):
+    return render(request, 'privacidade.html')
+
 @login_required(login_url='/login/')
 def home(request):
     #return render(request, 'usuarios/login.html')
