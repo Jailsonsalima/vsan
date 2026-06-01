@@ -40,7 +40,7 @@
         <h2>Viagens de {{ nome_mes }}/{{ ano }}</h2>
         <ul>
             {% for viagem in viagens %}
-                <li style="{% if viagem.mais_proxima %}color:red;{% endif %}">
+                <li style="{% if viagem.mais_proxima %}color:red; font-weight: bold;{% endif %}">
                     <span style="display:inline-block; width:12px; height:12px; background-color:{{ viagem.cor }}; margin-right:5px;"></span>
                     <strong>{{ viagem.municipio }}</strong> — {{ viagem.periodo }}
                 </li>

@@ -813,11 +813,16 @@ def calendario_motorista_pessoal(request):
         viagens.append({
             "municipio": ag.municipio,
             "periodo": periodo,
-            "cor": cor
+            "cor": cor,
+            "data_ida": ag.data_ida,
         })
+    # ordena pela data_ida (do menor para o maior)
+    viagens = sorted(viagens, key=lambda x: x["data_ida"])
     # marca o agendamento mais próximo
-    if mais_proxima is not None:
-        viagens[mais_proxima]["mais_proxima"] = True
+    for viagem in viagens:
+        if viagem["data_ida"] >= hoje:
+            viagem["mais_proxima"] = True
+            break  # só a primeira futura/atual
 
     # transforma semanas em estrutura com municípios + cor
     semanas_com_dados = []
