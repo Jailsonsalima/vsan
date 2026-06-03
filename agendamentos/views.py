@@ -752,10 +752,16 @@ def gerar_pdf_solicitacao_veiculo(request, agendamento_id):
     agendamento = get_object_or_404(Agendamento, id=agendamento_id)
 
     periodo_formatado = formatar_periodo(agendamento.data_ida, agendamento.data_retorno)
+
+    # pega o servidor vinculado ao usuário logado
+    servidor = getattr(request.user, "servidor", None)
+
     # Renderiza HTML com os dados do agendamento
     html_string = render_to_string("pdf_solicitacao_veiculo.html", {
         "agendamento": agendamento,
         "periodo_formatado": periodo_formatado,
+        "usuario": request.user,
+        "servidor": servidor,
     })
 
     # Gera PDF em memória
