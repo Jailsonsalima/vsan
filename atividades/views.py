@@ -424,20 +424,23 @@ def gerar_folha_ponto(request):
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
             for servidor in servidores_selecionados:
-
-                # pega a última situação funcional registrada
-                situacao = servidor.historico_situacoes.last()
-                html = render_to_string("pdf_folha_ponto.html", {
-                    "servidor": servidor,
-                    "situacao": situacao,
-                    "dias_mes": dias_mes,
-                    "mes_atual": nome_mes,
-                    "ano_atual": ano_atual,
-                    
-                })
-                pdf_bytes = HTML(string=html).write_pdf()
-                zip_file.writestr(f"folha_ponto_{servidor.primeiro_e_ultimo_nome()}_{nome_mes}_{ano_atual}.pdf", pdf_bytes)
-
+                try:
+                    # pega a última situação funcional registrada
+                    situacao = servidor.historico_situacoes.last()
+                    html = render_to_string("pdf_folha_ponto.html", {
+                        "servidor": servidor,
+                        "situacao": situacao,
+                        "dias_mes": dias_mes,
+                        "mes_atual": nome_mes,
+                        "ano_atual": ano_atual,
+                        
+                    })
+                    pdf_bytes = HTML(string=html).write_pdf()
+                    if pdf_bytes:  # só adiciona se o PDF foi gerado corretamente
+                        zip_file.writestr(f"folha_ponto_{servidor.primeiro_e_ultimo_nome()}_{nome_mes}_{ano_atual}.pdf", pdf_bytes)
+                except Exception as e:
+                    # loga o erro no console para depuração
+                    print(f"Erro ao gerar PDF para {servidor}: {e}")
         buffer.seek(0)
         response = HttpResponse(buffer.getvalue(), content_type="application/zip")
         response['Content-Disposition'] = f'attachment; filename="folhas_ponto_{nome_mes}_{ano_atual}.zip"'
