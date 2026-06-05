@@ -407,7 +407,7 @@ def gerar_dias_mes(ano, mes):
         dias_mes.append((dia, semana, especial))
     return dias_mes
 
-#@login_required(login_url='/login/')
+@login_required(login_url='/login/')
 def gerar_folha_ponto(request):
     servidores = Servidor.objects.all()
     ano_atual = datetime.now().year
