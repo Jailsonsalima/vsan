@@ -21,6 +21,14 @@ from django.core.paginator import Paginator
 
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
+import unicodedata
+
+def normalizar(texto):
+    return ''.join(
+        c for c in unicodedata.normalize('NFD', texto)
+        if unicodedata.category(c) != 'Mn'
+    ).lower().strip()
+
 @login_required(login_url='/login/')
 def cadastrar_atividade(request, agendamento_id=None):
     servidores = Servidor.objects.all()
@@ -123,15 +131,21 @@ def cadastrar_atividade(request, agendamento_id=None):
     ocultar_diarias = False
     if agendamento and agendamento.municipio:
         municipios_sem_diarias = [
-            "belém", "ananindeua", "benevides", "marituba",
-            "santa bárbara do pará", "santa izabel do pará",
-            "castanhal", "barcarena"
+            "Belém", "Ananindeua", "Benevides", "Marituba",
+            "Santa Bárbara do Pará", "Santa Isabel do Pará",
+            "Castanhal", "Barcarena"
         ]
-        municipio_normalizado = agendamento.municipio.lower().strip()
-        # se o município tiver qualquer parte igual a um dos nomes da lista, ele já oculta
-        #if any(m in municipio_normalizado for m in municipios_sem_diarias):
+        # normaliza toda a lista
+        municipios_sem_diarias = [normalizar(m) for m in municipios_sem_diarias]
+
+        # normaliza o valor selecionado
+        municipio_normalizado = normalizar(agendamento.municipio)
+
         if municipio_normalizado in municipios_sem_diarias:
             ocultar_diarias = True
+        # se o município tiver qualquer parte igual a um dos nomes da lista, ele já oculta
+        #if any(m in municipio_normalizado for m in municipios_sem_diarias):
+
     return render(request, "atividades/cadastro_atividades.html", {
         "servidores_status": servidores_status,
         "setores": setores,
@@ -305,15 +319,21 @@ def editar_atividade(request, atividade_id):
     ocultar_diarias = False
     if atividade and atividade.municipio:
         municipios_sem_diarias = [
-            "belém", "ananindeua", "benevides", "marituba",
-            "santa bárbara do pará", "santa izabel do pará",
-            "castanhal", "barcarena"
+            "Belém", "Ananindeua", "Benevides", "Marituba",
+            "Santa Bárbara do Pará", "Santa Isabel do Pará",
+            "Castanhal", "Barcarena"
         ]
-        municipio_normalizado = atividade.municipio.lower().strip()
-        # se o município tiver qualquer parte igual a um dos nomes da lista, ele já oculta
-        #if any(m in municipio_normalizado for m in municipios_sem_diarias):
+        # normaliza toda a lista
+        municipios_sem_diarias = [normalizar(m) for m in municipios_sem_diarias]
+
+        # normaliza o valor selecionado
+        municipio_normalizado = normalizar(atividade.municipio)
+
         if municipio_normalizado in municipios_sem_diarias:
             ocultar_diarias = True
+
+        # se o município tiver qualquer parte igual a um dos nomes da lista, ele já oculta
+        #if any(m in municipio_normalizado for m in municipios_sem_diarias):
     return render(request, "atividades/editar_atividade.html", {
         "atividade": atividade,
         "servidores_status": servidores_status,
