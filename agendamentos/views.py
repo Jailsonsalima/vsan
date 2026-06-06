@@ -35,7 +35,7 @@ def formatar_periodo(data_ida, data_retorno):
         return f"{DateFormat(data_ida).format('d/m/Y')} a {DateFormat(data_retorno).format('d/m/Y')}"
     
 @login_required(login_url='/login/')
-def solicitar_agendamento(request):
+def solicitar_agendamento(request, template_name="solicitar_agendamento.html"):
     if request.method == 'POST':
         form = AgendamentoForm(request.POST)
         if form.is_valid():
@@ -173,7 +173,7 @@ def solicitar_agendamento(request):
             form = AgendamentoForm()
     else:
         form = AgendamentoForm()
-    return render(request, 'agendamentos/solicitar.html', {'form': form})
+    return render(request, f'agendamentos/{template_name}', {'form': form})
 
 
 @login_required(login_url='/login/')

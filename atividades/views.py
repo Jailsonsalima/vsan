@@ -17,6 +17,7 @@ from agendamentos.models import MotoristaExterno, Agendamento
 import calendar
 import locale
 from django.utils import timezone
+from django.core.paginator import Paginator
 
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
@@ -127,7 +128,9 @@ def cadastrar_atividade(request, agendamento_id=None):
             "castanhal", "barcarena"
         ]
         municipio_normalizado = agendamento.municipio.lower().strip()
-        if any(m in municipio_normalizado for m in municipios_sem_diarias):
+        # se o município tiver qualquer parte igual a um dos nomes da lista, ele já oculta
+        #if any(m in municipio_normalizado for m in municipios_sem_diarias):
+        if municipio_normalizado in municipios_sem_diarias:
             ocultar_diarias = True
     return render(request, "atividades/cadastro_atividades.html", {
         "servidores_status": servidores_status,
@@ -304,10 +307,12 @@ def editar_atividade(request, atividade_id):
         municipios_sem_diarias = [
             "belém", "ananindeua", "benevides", "marituba",
             "santa bárbara do pará", "santa izabel do pará",
-            "castanhal"
+            "castanhal", "barcarena"
         ]
         municipio_normalizado = atividade.municipio.lower().strip()
-        if any(m in municipio_normalizado for m in municipios_sem_diarias):
+        # se o município tiver qualquer parte igual a um dos nomes da lista, ele já oculta
+        #if any(m in municipio_normalizado for m in municipios_sem_diarias):
+        if municipio_normalizado in municipios_sem_diarias:
             ocultar_diarias = True
     return render(request, "atividades/editar_atividade.html", {
         "atividade": atividade,
@@ -318,7 +323,6 @@ def editar_atividade(request, atividade_id):
         "transporte_choices": transporte_choices,
     })
 
-from django.core.paginator import Paginator
 
 @login_required(login_url='/login/')
 def listar_atividades(request):

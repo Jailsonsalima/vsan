@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>Solicitar agendamento sem diária</h2>
+
+    <!-- Formulário de solicitação -->
+    <form method="post" class="form">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group">
+                <label for="data_ida">Data de Ida</label>
+                {{ form.data_ida }}
+            </div>
+
+            <div class="form-group">
+                <label for="data_retorno">Data de Retorno</label>
+                {{ form.data_retorno }}
+            </div>
+
+            <!-- Município -->
+            <div class="form-group">
+                <label for="municipio">Município:</label>
+                <select name="municipio" id="municipio" required>
+                    <option value="">-- Selecione --</option>
+                    <option value="Ananindeua">Ananindeua</option>
+                    <option value="Barcarena">Barcarena</option>
+                    <option value="Belém">Belém</option>
+                    <option value="Benevides">Benevides</option>
+                    <option value="Castanhal">Castanhal</option>
+                    <option value="Marituba">Marituba</option>
+                    <option value="Santa Bárbara do Pará">Santa Bárbara do Pará</option>
+                    <option value="Santa Isabel do Pará">Santa Isabel do Pará</option>
+                    <!-- ... demais municípios ... -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="transporte">Meio de Transporte:</label>
+                {{ form.transporte }}
+            </div>
+            <div class="form-group" id="campo-motorista" style="display:none;">
+                <label for="necessita_motorista" style="color: red; font-weight: bold;">Necessita de motorista?</label>
+                <select name="necessita_motorista" id="necessita_motorista">
+                    <option value="sim">Sim</option>
+                    <option value="nao" selected>Não</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="motivo">Objetivo do Agendamento</label>
+            {{ form.motivo }}
+        </div>
+        <button type="submit" class="btn btn-primary" id="btn-confirmar">Próximo</button>
+    </form>
+</div>
+<!-- Importa o script.js para validações -->
+<script src="{% static 'js/script.js' %}"></script>
+<!-- Script para alternar selects dinamicamente -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {     
+        const btnConfirmar = document.getElementById("btn-confirmar");
+
+        btnConfirmar.addEventListener("click", function() {
+            btnConfirmar.disabled = true;
+            btnConfirmar.innerText = "Processando..."; // feedback visual
+            btnConfirmar.form.submit(); // força o envio do formulário
+        });
+        const transporteSelect = document.getElementById("transporte");
+        const campoMotorista = document.getElementById("campo-motorista");
+
+        transporteSelect.addEventListener("change", function() {
+            if (["Fluvial", "Aéreo"].includes(transporteSelect.value)) {
+                campoMotorista.style.display = "block";
+            } else {
+                campoMotorista.style.display = "none";
+            }
+        });
+
+    });
+</script>
+{% endblock %}

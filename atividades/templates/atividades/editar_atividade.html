@@ -12,7 +12,7 @@
                     
                     <div class="form-group">
                         <label>Nº Memorando:</label>
-                        <input type="text" name="n_memorando" value="{{ atividade.n_memorando }}">
+                        <input type="text" name="n_memorando" value="{{ atividade.n_memorando }}" {% if not ocultar_diarias %}required{% endif %}>
                         <!--<small style="color: #777;">Este campo é preenchido automaticamente.</small>-->
                     </div>
                     <!--{% if not ocultar_diarias %}-->
@@ -30,7 +30,7 @@
             <!-- Nº Dias / Diárias -->
             <div class="form-group">
                 <div class="form-row">
-                    
+                    {% if not ocultar_diarias %}
                     <div class="form-group">
                         <label for="dias_diarias">Nº Dias / Diárias:</label>
                         <input type="text" name="dias_diarias" id="dias_diarias" readonly
@@ -41,15 +41,15 @@
                     <div>
                         <label>Pernoite:</label>
                         <div class="radio-group">
-                            <input type="radio" id="pernoite_sim" name="pernoite" value="Sim" required>
+                            <input type="radio" id="pernoite_sim" name="pernoite" value="Sim" {% if not ocultar_diarias %}required{% endif %}>
                             <label for="pernoite_sim">Sim</label>
 
-                            <input type="radio" id="pernoite_nao" name="pernoite" value="Não" required>
+                            <input type="radio" id="pernoite_nao" name="pernoite" value="Não" {% if not ocultar_diarias %}required{% endif %}>
                             <label for="pernoite_nao">Não</label>
                         </div>
                     </div>
-                    <!--{% if not ocultar_diarias %}-->
-                    <!--{% endif %}-->
+                    
+                    {% endif %}
                     <!-- Meio de Transporte -->
                     <div class="form-group">
                         <label for="transporte">Meio de Transporte:</label>
@@ -67,9 +67,9 @@
             <!-- Município -->
             <div class="form-group">
                 <label for="municipio">Município:</label>
-                <input list="municipios" name="municipio" id="municipio" value="{{ atividade.municipio }}" required>
+                <input list="municipios" name="municipio" id="municipio" value="{{ atividade.municipio }}" required autocomplete="off">
                 <datalist id="municipios">
-                    <option value="Abaetetuba">
+                    {% if not ocultar_diarias %}<option value="Abaetetuba">
                     <option value="Abel Figueiredo">
                     <option value="Acará">
                     <option value="Afuá">
@@ -77,20 +77,20 @@
                     <option value="Alenquer">
                     <option value="Almeirim">
                     <option value="Altamira">
-                    <option value="Anajás">
+                    <option value="Anajás">{% endif %}
                     <option value="Ananindeua">
-                    <option value="Anapu">
+                    {% if not ocultar_diarias %}<option value="Anapu">
                     <option value="Augusto Corrêa">
                     <option value="Aurora do Pará">
                     <option value="Aveiro">
                     <option value="Bagre">
                     <option value="Baião">
-                    <option value="Bannach">
+                    <option value="Bannach">{% endif %}
                     <option value="Barcarena">
                     <option value="Belém">
-                    <option value="Belterra">
+                    {% if not ocultar_diarias %}<option value="Belterra">{% endif %}
                     <option value="Benevides">
-                    <option value="Bom Jesus do Tocantins">
+                    {% if not ocultar_diarias %}<option value="Bom Jesus do Tocantins">
                     <option value="Bonito">
                     <option value="Bragança">
                     <option value="Brasil Novo">
@@ -103,9 +103,9 @@
                     <option value="Cametá">
                     <option value="Canaã dos Carajás">
                     <option value="Capanema">
-                    <option value="Capitão Poço">
+                    <option value="Capitão Poço">{% endif %}
                     <option value="Castanhal">
-                    <option value="Chaves">
+                    {% if not ocultar_diarias %}<option value="Chaves">
                     <option value="Colares">
                     <option value="Conceição do Araguaia"> <!-- Colônia do Gurupi -->
                     <option value="Concórdia do Pará">
@@ -136,9 +136,9 @@
                     <option value="Magalhães Barata">
                     <option value="Marabá">
                     <option value="Maracanã">
-                    <option value="Marapanim">
+                    <option value="Marapanim">{% endif %}
                     <option value="Marituba">
-                    <option value="Medicilândia">
+                    {% if not ocultar_diarias %}<option value="Medicilândia">
                     <option value="Melgaço">
                     <option value="Mocajuba">
                     <option value="Moju">
@@ -174,11 +174,11 @@
                     <option value="Rondon do Pará">
                     <option value="Rurópolis">
                     <option value="Salinópolis">
-                    <option value="Salvaterra">
+                    <option value="Salvaterra">{% endif %}
                     <option value="Santa Bárbara do Pará">
-                    <option value="Santa Cruz do Arari">
+                    {% if not ocultar_diarias %}<option value="Santa Cruz do Arari">{% endif %}
                     <option value="Santa Isabel do Pará">
-                    <option value="Santa Luzia do Pará">
+                    {% if not ocultar_diarias %}<option value="Santa Luzia do Pará">
                     <option value="Santa Maria das Barreiras">
                     <option value="Santa Maria do Pará">
                     <option value="Santana do Araguaia">
@@ -212,7 +212,7 @@
                     <option value="Vigia">
                     <option value="Viseu">
                     <option value="Vitória do Xingu">
-                    <option value="Xinguara">
+                    <option value="Xinguara">{% endif %}
                 </datalist>
             </div>
 

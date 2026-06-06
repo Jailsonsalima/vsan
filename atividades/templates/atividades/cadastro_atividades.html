@@ -20,8 +20,9 @@
             <strong>Período da Viagem</strong>
                 <div class="form-row">
                     <div class="form-group">
-                    <label for="n_memorando">Nº do Memorando:</label>
-                    <input type="text" id="n_memorando" name="n_memorando" placeholder="Ex: 0001/2026">
+                    <label for="n_memorando">Nº do Memorando: </label>
+                    <input type="text" id="n_memorando" name="n_memorando" placeholder="Ex: 0001/2026" {% if not ocultar_diarias %}required{% endif %}>
+                    {% if ocultar_diarias %}<small style="color: #777;">Este campo <b>não</b> é obrigatório.</small>{% endif %}
                 </div>
                 <div class="form-group">
                     <label for="data_ida">Data de Ida:</label>
@@ -38,8 +39,9 @@
             </div>
         </div>
         <!-- Nº Dias / Diárias -->
-        {% if not ocultar_diarias %}
+        
             <div class="form-row">
+            {% if not ocultar_diarias %}
                 <div class="form-group">
                     <label for="dias_diarias">Nº Dias / Diárias:</label>
                     <input type="text" name="dias_diarias" id="dias_diarias" readonly
@@ -50,13 +52,14 @@
                 <div>
                     <label>Pernoite:</label>
                     <div class="radio-group">
-                        <input type="radio" id="pernoite_sim" name="pernoite" value="Sim" required>
+                        <input type="radio" id="pernoite_sim" name="pernoite" value="Sim" {% if not ocultar_diarias %}required{% endif %}>
                         <label for="pernoite_sim">Sim</label>
 
-                        <input type="radio" id="pernoite_nao" name="pernoite" value="Não" required>
+                        <input type="radio" id="pernoite_nao" name="pernoite" value="Não" {% if not ocultar_diarias %}required{% endif %}>
                         <label for="pernoite_nao">Não</label>
                     </div>
                 </div>
+            {% endif %}
                 <!-- Meio de Transporte -->
                  <div class="form-group">
                     <label for="transporte">Meio de Transporte:</label>
@@ -66,7 +69,7 @@
                     <small style="color: #777;">Este campo é preenchido automaticamente a partir do agendamento.</small>
                 </div>
             </div>
-        {% endif %}
+        
         <!-- Município -->
          
         <div class="form-group">

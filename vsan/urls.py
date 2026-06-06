@@ -73,7 +73,9 @@ urlpatterns = [
     # Finalização da redefinição
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     # Agendamentos
-    path('solicitar-agendamento/', agendamento_views.solicitar_agendamento, name='solicitar_agendamento'),
+    path('solicitar-agendamento-sem-diaria/', agendamento_views.solicitar_agendamento, {"template_name": "solicitar_metropolitana.html"}, name='solicitar_agendamento_sem_diaria'),
+
+    path('solicitar-agendamento/', agendamento_views.solicitar_agendamento, {"template_name": "solicitar.html"}, name='solicitar_agendamento'),
     path('processar-agendamento/<int:agendamento_id>/', agendamento_views.processar_agendamento, name='processar_agendamento'),
     path("agendamentos/", agendamento_views.listar_agendamentos, name="listar_agendamentos"),
 
