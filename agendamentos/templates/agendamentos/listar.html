@@ -285,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         <a href="{% url 'cancelar_agendamento' agendamento.id %}" class="btn-card cancelar-btn" style="margin-top:5px; display:block;">
                             ❌ Cancelar Viagem
                         </a>
-                        {% if agendamento.transporte == "Veículo Oficial (VAN)" %}
+                        {% if agendamento.transporte == "Veículo Oficial (VAN)" and autorizado %}
                             <form method="post" action="{% url 'adicionar_memorando_agendamento' agendamento.id %}">
                                 {% csrf_token %}
                                 <input type="text" name="n_memorando" placeholder="Nº Memorando" required>
@@ -293,7 +293,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             </form>
                         {% endif %}
                     {% elif agendamento.status == "pendente" %}
-                        {% if not agendamento.n_memorando %}
+                        {% if not agendamento.n_memorando and autorizado %}
                             <form method="post" action="{% url 'adicionar_memorando_agendamento' agendamento.id %}">
                                 {% csrf_token %}
                                 <input type="text" name="n_memorando" placeholder="Nº Memorando" required>
