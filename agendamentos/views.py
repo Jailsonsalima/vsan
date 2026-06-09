@@ -816,11 +816,19 @@ def calendario_motorista_pessoal(request):
             if menor_diferenca is None or diferenca < menor_diferenca:
                 menor_diferenca = diferenca
                 mais_proxima = idx
+
+        equipe = []
+        if hasattr(ag, "atividade") and ag.atividade:
+            # pega servidores e motoristas externos vinculados à atividade
+            equipe_servidores = [s.nome for s in ag.atividade.servidores.all()]
+            equipe_motoristas = [m.nome for m in ag.atividade.motoristas_externos.all()]
+            equipe = equipe_servidores + equipe_motoristas
         viagens.append({
             "municipio": ag.municipio,
             "periodo": periodo,
             "cor": cor,
             "data_ida": ag.data_ida,
+            "equipe": equipe,
         })
     # ordena pela data_ida (do menor para o maior)
     viagens = sorted(viagens, key=lambda x: x["data_ida"])
