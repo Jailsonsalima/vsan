@@ -54,7 +54,21 @@
                 <a href="?mes={{ mes_proximo }}&ano={{ ano_proximo }}" class="btn-secondary">Próx. mês ▶</a>
             {% endif %}
         </div>
-
+        {% if motorista_selecionado %}
+            <h2>Viagens de {{ nome_mes }}/{{ ano }}</h2>
+            <ul>
+                {% for viagem in viagens %}
+                    <li>
+                        <strong>{{ viagem.municipio }}</strong> — {{ viagem.periodo }}
+                        {% if viagem.equipe %}
+                            <br><small>Equipe: {{ viagem.equipe|join:", " }}</small>
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <li>Nenhuma viagem registrada neste mês.</li>
+                {% endfor %}
+            </ul>
+        {% else %}
         <!-- Legenda de cores -->
         <div style="margin-top:20px;">
             <h4>Legenda:</h4>

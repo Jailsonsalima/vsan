@@ -406,9 +406,33 @@ def listar_agendamentos(request):
                     dias_por_motorista[motorista.id]["dias"].extend(
                         range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
                     )
+            viagens = []
+            for proc in agendamentos_motorista:
+                ag = proc.agendamento
+                periodo = formatar_periodo(ag.data_ida, ag.data_retorno)
+                equipe = []
+                if hasattr(ag, "atividade") and ag.atividade:
+                    equipe_servidores = [s.nome for s in ag.atividade.servidores.all()]
+                    equipe_motoristas = [m.nome for m in ag.atividade.motoristas_externos.all()]
+                    equipe = equipe_servidores + equipe_motoristas
+                viagens.append({
+                    "municipio": ag.municipio,
+                    "periodo": periodo,
+                    "data_ida": ag.data_ida,
+                    "equipe": equipe,
+                    "mais_proxima": False,
+                })
+            # marcar a viagem mais próxima (a primeira futura)
+            hoje = date.today()
+            futuras = [v for v in viagens if v["data_ida"] >= hoje]
+            if futuras:
+                viagem_proxima = min(futuras, key=lambda v: v["data_ida"])
+                viagem_proxima["mais_proxima"] = True
         except Servidor.DoesNotExist:
             motorista = None
+            viagens = []
     else:
+        viagens = None
         # modo todos juntos
         for i, m in enumerate(motoristas):
             agendamentos_motorista = ProcessamentoAgendamento.objects.filter(motorista_servidor=m)
@@ -481,6 +505,7 @@ def listar_agendamentos(request):
         "page_obj": page_obj,
         "filtro_municipio": filtro_municipio,
         "autorizado": autorizado,
+        "viagens": viagens,
     })
     
 @login_required(login_url='/login/')
