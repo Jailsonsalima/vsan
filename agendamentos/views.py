@@ -399,7 +399,7 @@ def listar_agendamentos(request):
 
         try:
             motorista = Servidor.objects.get(id=motorista_id)
-            agendamentos_motorista = ProcessamentoAgendamento.objects.filter(motorista_servidor=motorista)
+            agendamentos_motorista = ProcessamentoAgendamento.objects.filter(motorista_servidor=motorista).order_by("agendamento__data_ida")
             dias_por_motorista[motorista.id] = {"nome": motorista.nome, "dias": [], "cor": paleta[0]}
             for ag in agendamentos_motorista:
                 if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
@@ -409,19 +409,21 @@ def listar_agendamentos(request):
             viagens = []
             for proc in agendamentos_motorista:
                 ag = proc.agendamento
-                periodo = formatar_periodo(ag.data_ida, ag.data_retorno)
-                equipe = []
-                if hasattr(ag, "atividade") and ag.atividade:
-                    equipe_servidores = [s.nome for s in ag.atividade.servidores.all()]
-                    equipe_motoristas = [m.nome for m in ag.atividade.motoristas_externos.all()]
-                    equipe = equipe_servidores + equipe_motoristas
-                viagens.append({
-                    "municipio": ag.municipio,
-                    "periodo": periodo,
-                    "data_ida": ag.data_ida,
-                    "equipe": equipe,
-                    "mais_proxima": False,
-                })
+                if ag.data_ida.month == mes and ag.data_ida.year == ano:
+                    
+                    periodo = formatar_periodo(ag.data_ida, ag.data_retorno)
+                    equipe = []
+                    if hasattr(ag, "atividade") and ag.atividade:
+                        equipe_servidores = [s.nome for s in ag.atividade.servidores.all()]
+                        equipe_motoristas = [m.nome for m in ag.atividade.motoristas_externos.all()]
+                        equipe = equipe_servidores + equipe_motoristas
+                    viagens.append({
+                        "municipio": ag.municipio,
+                        "periodo": periodo,
+                        "data_ida": ag.data_ida,
+                        "equipe": equipe,
+                        "mais_proxima": False,
+                    })
             # marcar a viagem mais próxima (a primeira futura)
             hoje = date.today()
             futuras = [v for v in viagens if v["data_ida"] >= hoje]
