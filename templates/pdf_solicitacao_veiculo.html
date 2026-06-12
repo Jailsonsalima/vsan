@@ -53,7 +53,7 @@ Setor de Transporte<br>
 Secretaria de Estado de Saúde Pública – SESPA<br><br>
 <strong>Assunto:</strong> Solicitação de 
 {% if agendamento.status == "pendente" and agendamento.transporte != "Veículo Oficial (VAN)" %}
-    motorista e veículo oficial
+    veículo oficial com motorista
 {% elif agendamento.status == "pendente" and agendamento.transporte == "Veículo Oficial (VAN)" %}
     veículo oficial tipo VAN com motorista,
 {% else %}
@@ -66,12 +66,12 @@ Secretaria de Estado de Saúde Pública – SESPA<br><br>
 {% endif %}.<br><br>
 <p style="text-align: justify;">&emsp;&emsp;Solicitamos a Vossa Senhoria a disponibilização de 
     {% if agendamento.status == "pendente" and agendamento.transporte != "Veículo Oficial (VAN)" %}
-        um motorista e 01 (um) veículo oficial
+        01 (um) veículo oficial com motorista 
     {% elif agendamento.status == "pendente" and agendamento.transporte == "Veículo Oficial (VAN)" %}
         01 (um) veículo oficial tipo VAN com motorista,
     {% else %}
         01 (um) veículo oficial tipo VAN,
-    {% endif %} para a realização de viagem a localidade de {{ agendamento.municipio }}, a ser realizada 
+    {% endif %} {% if agendamento.municipio == "Belém" %}para região metropolitana de Belém {% else %}para a realização de viagem a localidade de {{ agendamento.municipio }}{% endif %}, a ser realizada 
     {% if agendamento.data_ida == agendamento.data_retorno %}
         em {{ agendamento.data_ida|date:"d/m/Y" }}
     {% else %}
