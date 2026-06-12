@@ -894,3 +894,101 @@ def calendario_motorista_pessoal(request):
         "ano_proximo": ano_proximo,
         "viagens": viagens,
     })
+
+@login_required(login_url='/login/')
+def calendario_servidor_pessoal(request):
+    usuario = request.user
+
+    # Verifica se o usuário tem servidor vinculado
+    if not hasattr(usuario, "servidor") or not usuario.servidor:
+        messages.error(request, "Seu usuário não está vinculado a um servidor.")
+        return redirect("listar_agendamentos")
+
+    servidor = usuario.servidor
+    ano = int(request.GET.get("ano", timezone.now().year))
+    mes = int(request.GET.get("mes", timezone.now().month))
+    hoje = date.today()
+
+    # gera estrutura de semanas do mês
+    cal = calendar.Calendar(firstweekday=6)
+    semanas = cal.monthdayscalendar(ano, mes)
+
+    # busca apenas agendamentos do servidor logado
+    agendamentos = (
+        Agendamento.objects.filter(
+            atividade__servidores=servidor,
+            data_ida__month=mes,
+            data_ida__year=ano
+        )
+        .exclude(status="cancelado")
+        .order_by("data_ida")
+    )
+
+    ocupados_map = {}
+    viagens = []
+
+    colors = ["#f46236", "#2196f3", "#4caf50", "#ff9800",
+              "#b031c7", "#00bcd4", "#AD8273", "#7fa0b1"]
+
+    for idx, ag in enumerate(agendamentos):
+        cor = colors[idx % len(colors)]
+        periodo = formatar_periodo(ag.data_ida, ag.data_retorno)
+
+        # marca os dias ocupados no calendário
+        for dia in range(ag.data_ida.day, ag.data_retorno.day + 1):
+            ocupados_map.setdefault(dia, []).append({"municipio": ag.municipio, "cor": cor})
+
+        equipe = []
+        if hasattr(ag, "atividade") and ag.atividade:
+            equipe_servidores = [s.nome for s in ag.atividade.servidores.all()]
+            equipe_motoristas = [m.nome for m in ag.atividade.motoristas_externos.all()]
+            equipe = equipe_servidores + equipe_motoristas
+
+        viagens.append({
+            "municipio": ag.municipio,
+            "periodo": periodo,
+            "cor": cor,
+            "data_ida": ag.data_ida,
+            "equipe": equipe,
+            "mais_proxima": False,
+        })
+
+    # ordena viagens pela data de ida
+    viagens = sorted(viagens, key=lambda x: x["data_ida"])
+
+    # marca a viagem mais próxima (primeira futura ou de hoje)
+    for viagem in viagens:
+        if viagem["data_ida"] >= hoje:
+            viagem["mais_proxima"] = True
+            break
+
+    # estrutura de semanas com dados de municípios
+    semanas_com_dados = []
+    for semana in semanas:
+        dias = []
+        for dia in semana:
+            if dia == 0:
+                dias.append({"numero": 0, "municipios": []})
+            else:
+                dias.append({"numero": dia, "municipios": ocupados_map.get(dia, [])})
+        semanas_com_dados.append(dias)
+
+    mes_anterior = mes - 1 if mes > 1 else 12
+    ano_anterior = ano if mes > 1 else ano - 1
+    mes_proximo = mes + 1 if mes < 12 else 1
+    ano_proximo = ano if mes < 12 else ano + 1
+    nome_mes = calendar.month_name[mes].capitalize()
+
+    return render(request, "agendamentos/calendario_servidor_pessoal.html", {
+        "servidor": servidor,
+        "semanas": semanas_com_dados,
+        "mes": mes,
+        "ano": ano,
+        "nome_mes": nome_mes,
+        "mes_anterior": mes_anterior,
+        "ano_anterior": ano_anterior,
+        "mes_proximo": mes_proximo,
+        "ano_proximo": ano_proximo,
+        "viagens": viagens,
+        "today": hoje,
+    })

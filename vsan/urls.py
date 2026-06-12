@@ -83,6 +83,8 @@ urlpatterns = [
     path("agendamento/<int:agendamento_id>/pdf/", agendamento_views.gerar_pdf_solicitacao_veiculo, name="gerar_pdf_solicitacao_veiculo"),
     path("calendario_motorista_pessoal/", agendamento_views.calendario_motorista_pessoal, name="calendario_motorista_pessoal"),
 
+    path("calendario_servidor_pessoal/", agendamento_views.calendario_servidor_pessoal, name="calendario_servidor_pessoal"),
+
     path("gerenciar-autorizacoes/", agendamento_views.gerenciar_autorizacoes, name="gerenciar_autorizacoes"),
     path("gerenciar_motoristas/", agendamento_views.gerenciar_motoristas, name="gerenciar_motoristas"),
     path("cadastro_motorista_externo/", agendamento_views.cadastrar_motorista_externo, name="cadastrar_motorista_externo"),

@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container" style="display:flex; gap:40px;">
     <div style="flex:1;">
-        <h2>Calendário de {{ motorista.nome }}</h2>
+        <h2>Calendário de {{ servidor.nome }}</h2>
         <h3>{{ nome_mes }}/{{ ano }}</h3>
         <table class="dashboard-table calendario">
             <tr>
@@ -19,7 +19,10 @@
                                 {% if dia.municipios %}
                                     <ul class="municipios">
                                         {% for mun in dia.municipios %}
-                                            <li><strong>{{ mun.municipio }}</strong></li>
+                                            <li>
+                                                <span style="display:inline-block; width:12px; height:12px; background-color:{{ mun.cor }}; margin-right:5px;"></span>
+                                                <strong>{{ mun.municipio }}</strong>
+                                            </li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
@@ -54,10 +57,10 @@
         </ul>
     </div>
 </div>
+
 <style>
 .calendario td { text-align:center; padding:5px; vertical-align:top; }
 .calendario td.vazio { background-color:#eee; }
-
 .dia-numero { font-weight:bold; font-size:16px; display:block; }
 .municipios { font-size:12px; color:#333; margin-top:5px; list-style:none; padding:0; }
 .municipios li { margin:2px 0; }
