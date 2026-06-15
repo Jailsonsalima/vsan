@@ -234,7 +234,7 @@
                         {% endif %}
                             <a href="{% url 'editar_atividade' atividade.id %}" class="btn-secondary" style="display: block; margin-bottom: 10px;">Editar 🗘</a>
                             {% if atividade.municipio != "Ananindeua" and atividade.municipio != "Barcarena" and atividade.municipio != "Belém" and atividade.municipio != "Benevides" and atividade.municipio != "Castanhal" and atividade.municipio != "Marituba" and atividade.municipio != "Santa Bárbara do Pará" and atividade.municipio != "Santa Isabel do Pará" %}<a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-primary" style="display: block;">PDFs 🗐</a>{% endif %}{% if atividade.n_memorando != None %}{% endif %}
-                    <a href="{% url 'prestar_contas' atividade.id %}" class="btn-primary">PrestarContas</a>
+                    <!--<a href="{% url 'prestar_contas' atividade.id %}" class="btn-primary">PrestarContas</a>-->
                     {% endif %}
                 </td>
             </tr>
