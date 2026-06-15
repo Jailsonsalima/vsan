@@ -533,7 +533,7 @@ def gerenciar_motoristas(request):
             motorista.save()
 
         messages.success(request, "Motoristas atualizados com sucesso.")
-        return redirect('gerenciar_motoristas')
+        return redirect('gerenciar_autorizacoes')
 
     return render(request, 'agendamentos/gerenciar_autorizacoes.html', {
         'usuarios': Usuario.objects.filter(is_superuser=False).exclude(id=request.user.id),

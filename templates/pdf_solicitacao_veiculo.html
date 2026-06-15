@@ -58,7 +58,7 @@ Secretaria de Estado de Saúde Pública – SESPA<br><br>
     veículo oficial tipo VAN com motorista,
 {% else %}
     veículo oficial tipo VAN,
-{% endif %} {% if agendamento.municipio == "Belém" %}para região metropolitana de Belém{% else %}para viagem a {{ agendamento.municipio }}{% endif %} – 
+{% endif %} {% if agendamento.municipio == "Belém" %}para região metropolitana de Belém{% else %}para o município de {{ agendamento.municipio }}{% endif %} – 
 {% if agendamento.data_ida == agendamento.data_retorno %}
     {{ agendamento.data_ida|date:"d/m/Y" }}
 {% else %}
@@ -71,7 +71,7 @@ Secretaria de Estado de Saúde Pública – SESPA<br><br>
         01 (um) veículo oficial tipo VAN com motorista,
     {% else %}
         01 (um) veículo oficial tipo VAN,
-    {% endif %} {% if agendamento.municipio == "Belém" %}para região metropolitana de Belém{% else %}para a realização de viagem a localidade de {{ agendamento.municipio }}{% endif %}, a ser realizada 
+    {% endif %} {% if agendamento.municipio == "Belém" %}para região metropolitana de Belém{% else %}para o município de {{ agendamento.municipio }}{% endif %}, a ser realizada 
     {% if agendamento.data_ida == agendamento.data_retorno %}
         em {{ agendamento.data_ida|date:"d/m/Y" }}
     {% else %}

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>pdf_prestacao_contas</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { margin: 20px; padding: 20px; font-family: 'Times New Roman', Times, serif; font-size: 14px; }
+            .brasao { position: fixed; top: 0; margin-right: 40px; margin-top: 20px; right: 0; width: 80px; height: auto; }
+            .select { width: 30px; height: auto; }
+            .sus { position: fixed; top: 0; margin-left: 20px; margin-top: 30px;  left: 0; width: 200px; height: auto; }
+            .vsan { position: fixed; top: 0; margin-right: 40px; margin-top: 20px;  right: 0; width: 90px; height: auto; }
+            .top-text { font-size: 12.5px; position: fixed; text-align: center; top: 0; margin-top: 30px; margin-bottom: 35px; left: 52%; transform: translateX(-50%); }
+            /* Linha superior centralizada */
+            .linha-topo { position: fixed; top: 140px; left: 0; width: 100%; height: auto; }
+            h3 { text-align: center;  margin-bottom: 1px; }
+            .center_text { text-align: center; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 15px; margin-top: 80px; }
+            tr, td { border: 0.5px solid #000000; text-align: left; padding: 2px;}
+            /* Remove margens padrão do PDF */
+            @page { margin: 0; padding: 0; }
+            
+            /* Estrela canto inferior esquerdo */
+            .estrela { position: fixed; bottom: 0; left: 0; width: 120px; /* ajuste conforme necessário */ height: auto; z-index: 2; }
+            /* Linha inferior centralizada */
+            .linha-boton { position: fixed; bottom: 45px; right: 0; width: 100%; height: auto; z-index: 1; }
+            .footer-devs { text-align: center; color: #000; bottom: 25px; position: fixed; width: 100%; }
+            .fundo_titulo { background-color: #8db3e2;}
+        </style>
+    </head>
+    <body>
+        {% for servidor in servidores %}
+            <!--<img src="file:///home/vsan/vsan/static/img/estrela_para.png" alt="Estrela" class="estrela">-->
+            <!--<img src="file:///home/vsan/vsan/static/img/linha_boton.png" alt="Linha inferior" class="linha-boton">-->
+            <!--<img src="file:///home/vsan/vsan/static/img/linha_topo.png" alt="Linha superior" class="linha-topo">-->
+            <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Brasao" class="brasao">
+            <!--<img src="file:///home/vsan/vsan/static/img/vsan.png" alt="Vigilância Sanitária" class="vsan">-->
+            <img src="file:///home/vsan/vsan/static/img/sespa.png" alt="SUS" class="sus">
+            <div  class="top-text">
+            <strong>SECRETARIA DE ESTADO DE SAÚDE PÚBLICA DO PARÁ</strong><br>
+            DIRETORIA ADMINISTRATIVA E FINANCEIRA<br>
+            DIVISÃO DE PRESTAÇÃO DE CONTAS
+        </div>
+            
+            <table>
+                <tr class="fundo_titulo">
+                    <td colspan="6" class="center_text">
+                        <strong><h3>RELATÓRIO DE VIAGEM</h3></strong> Decreto Estadual N° 3.792 de 22 de Março de 2024, Publicado no DOE Nº 35.757 de 25/03/2024.
+                    </td>
+                    
+                </tr>
+                <tr class="fundo_titulo">
+                    <td colspan="6" >
+                        <strong><h3>DADOS DO BENEFICIÁRIO</h3></strong><p style="font-size: 10px;">&nbsp;</p>
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td class="center_text" style="width: 165px;">
+                        Nome
+                    </td>
+                    <td colspan="5">
+                        {{ servidor.nome|upper }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="center_text">
+                        CPF
+                    </td>
+                    <td colspan="2" style="">
+                        {{ servidor.cpf }}
+                    </td>
+                    <td class="center_text" style="width: 30px; margin: 1px;">
+                        Matrícula
+                    </td>
+                    <td colspan="2" style="">
+                        {{ servidor.matricula }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="center_text">
+                        Cargo/Função
+                    </td>
+                    <td colspan="2" style="">
+                        {{ servidor.cargo }}/
+                        {% if servidor.funcao != None %}
+                            {{ servidor.funcao|title }}
+                        {% endif %}
+                    </td>
+                    <td class="center_text">
+                        Lotação
+                    </td>
+                    <td colspan="2" style="">
+                        {{ servidor.setor.nome }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="center_text">
+                        Telefone
+                    </td>
+                    <td class="center_text">
+                        Telefone
+                    </td>
+                    <td colspan="3" class="center_text">
+                        Nº do processo de concessão de diárias
+                    </td>
+                    <td style="">
+                        
+                    </td>
+                </tr>
+                <tr class="fundo_titulo">
+                    <td colspan="6" >
+                        <h3>DADOS GERAIS DA VIAGEM</h3><p style="font-size: 10px;">&nbsp;</p>
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td class="center_text">
+                        Portaria Nº
+                    </td>
+                    <td colspan="3" style="">
+                        Portaria Nº
+                    </td>
+                    <td class="center_text">
+                        Data
+                    </td>
+                    <td style="">
+                        {{ atividade.data_criacao|date:"d/m/Y" }}
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td class="center_text">
+                        Objetivo
+                    </td>
+                    <td colspan="5" style="">
+                        Objetivo
+                    </td>
+
+
+<!--
+                    <td colspan="1" style="width:30%;">
+                        <strong>Período da Viagem:</strong><br>{{ periodo_formatado }}
+                    </td>
+                    <td colspan="1" style="width:30%;">
+                        <strong>Nº Dias / Diárias:</strong><br>{{ atividade.dias_diarias }}
+                    </td>
+                    <td>
+                        <strong>Pernoite:</strong><br>{{ atividade.pernoite }}
+                    </td>
+                    <td colspan="1" style="width:33%;">
+                        <strong>CPF:</strong><br>{{ servidor.cpf }}
+                    </td>
+                    <td colspan="1" style="width:33%;">
+                        <strong>RG:</strong><br>{{ servidor.rg }}
+                    </td>
+                    <td>
+                        <strong>Data Nascimento:</strong><br>{{ servidor.nascimento }}
+                    </td>
+                    -->
+                </tr>
+                <tr>
+                    <td class="center_text">
+                        Locais de destino
+                    </td>
+                    <td colspan="5" style="">
+                        Belém/{{ atividade.municipio }}/Belém
+                    </td>
+
+                    <!--
+                    <td colspan="4" style="width:80%;">
+                        <strong>Endereço:</strong><br>{{ servidor.endereco }}
+                    </td>
+                    <td colspan="5">
+                        <strong>Meio de Transporte:</strong><br>{{ atividade.transporte }}
+                    </td>
+                    -->
+                </tr>
+
+
+                
+
+
+
+
+
+
+
+                <tr>
+                    <td rowspan="3" class="center_text">
+                        Período
+                    </td>
+                    <td rowspan="2" class="center_text" style="height: 60px; width: 140px;">
+                        Início
+                    </td>
+                    <td rowspan="2" class="center_text" style="height: 60px; width: 140px;">
+                        Retorno
+                    </td>
+                    <td colspan="3" class="center_text" >
+                        Observação
+                    </td>
+                </tr>
+                <tr>
+                    
+                    <td colspan="3" rowspan="2">
+                        Observação
+                    </td>
+                    
+                    
+                </tr>
+               <tr>
+                    
+                
+                    <td rowspan="1" style="">
+                        {{ atividade.data_ida }}
+                    </td>
+                    <td rowspan="1" style="">
+                        {{ atividade.data_retorno }}
+                    </td>
+                    
+                </tr>
+                <tr>
+                    
+                    
+                    <!--
+                    <td colspan="2">
+                        <strong>Banco:</strong><br>{{ servidor.banco }}
+                    </td>
+                    <td colspan="2">
+                        <strong>Agência:</strong><br>{{ servidor.agencia }}
+                    </td>
+                    <td>
+                        <strong>Conta Corrente:</strong><br>{{ servidor.conta }}
+                    </td>
+                    -->
+                
+                    <!--
+                    {% if servidor.cargo == "Motorista" %}
+                        <td colspan="5" style="text-align: justify; white-space: pre-line;"><strong>Objetivo:</strong> Conduzir o veículo para {{ atividade.objetivo|lower }}</td>
+                    {% else %}
+                        <td colspan="5" style="text-align: justify; white-space: pre-line;"><strong>Objetivo:</strong> {{ atividade.objetivo|capfirst }}</td>
+                    {% endif %}
+                    -->
+                
+                    <!--
+                    <td colspan="5" style="text-align: justify;">
+                        <strong> Férias/Licenças Oficiais:</strong> Declaramos que não foi encaminhado à Diretoria do Trabalho e de Educação na Saúde - DGTES o
+                        documento de marcação de férias oficiais ou qualquer licença oficial (Lei nº 5.810, de Janeiro de 1994 - RJU-PA) em nome do(a)
+                        servidor(a) {{ servidor.nome }} no período do deslocamento indicado neste documento.
+                    </td>
+                    -->
+                </tr>
+
+
+
+
+
+
+
+
+
+                <tr>
+                    <td colspan="2" class="center_text" >
+                        Quantidade de diárias
+                    </td>
+                    <td colspan="2" class="center_text" >
+                        Valor unitário
+                    </td>
+                    <td colspan="2" class="center_text" >
+                        Valor total
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        {{ diarias }}
+                    </td>
+                    <td colspan="2">
+                        {{ valor_unitario }}
+                    </td>
+                    <td colspan="2">
+                        {{ valor_total }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fundo_titulo" colspan="6" >
+                        <h3>MEIO DE TRANSPORTE</h3><p style="font-size: 10px;">&nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        &emsp;( ) Aéreo
+                    </td>
+                    <td colspan="4">* Os Bilhetes Devem Ser Anexados Ao Presente Relatório.</td>
+                    </tr>
+                <tr>
+                    <td colspan="2">
+                        &emsp;( ) Rodoviário
+                    </td>
+                    <td colspan="4">* Os Bilhetes Devem Ser Anexados Ao Presente Relatório.</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        &emsp;( ) Fluvial
+                    </td>
+                    <td colspan="4">* Os Bilhetes Devem Ser Anexados Ao Presente Relatório.</td>
+                    </tr>
+                <tr>
+                    <td colspan="2">
+                        &emsp;( ) Terrestre (Carro Oficial)
+                    </td>
+                    <td colspan="4" >
+                        Veículo: ______________ <br>
+                        Placa: _______________<br>
+                        Motorista: __________________________________<p style="line-height: 10px;">&emsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fundo_titulo" colspan="6" >
+                        <h3>DESCRIÇÃO DAS ATIVIDADES DESENVOLVIDAS</h3><p style="font-size: 10px;">&nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="height: 250px;">
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fundo_titulo" colspan="6" >
+                        <h3>DEVOLUÇÃO DE RECURSOS</h3><p style="font-size: 10px;">&nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="padding: 10px;">
+                        &nbsp;<img src="file:///home/vsan/vsan/static/img/select.png" alt="select" class="select"> Devolução Total
+                        <img src="file:///home/vsan/vsan/static/img/select.png" alt="select" class="select"> Devolução Parcial
+                        <img src="file:///home/vsan/vsan/static/img/select.png" alt="select" class="select"> Não se Aplica
+                    </td>
+                </tr>
+            </table>
+            <footer class="footer-devs">
+                <strong>DIVISÃO DE PRESTAÇÃO DE CONTAS</strong><br>End: Tv. Lomas Valentinas, 2190, Marco, Belém, Pará, CEP 66.093-677<br>
+                Fone: (91) 4006-4239 | E-mail: <a href="mailto:contatodipcsespa@gmail.com">contatodipcsespa@gmail.com</a>
+            </footer>
+        {% endfor %}
+
+    </body>
+</html>

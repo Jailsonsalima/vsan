@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Atividade, RecursoAtivo, DiaEspecial
+from .models import Atividade, RecursoAtivo, DiaEspecial, ValorDiaria
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -409,14 +409,35 @@ def adicionar_processo_atividade(request, atividade_id):
 def definir_recurso(request):
     recurso_ativo, _ = RecursoAtivo.objects.get_or_create(id=1, defaults={"codigo": "01"})
 
-    if request.method == "POST":
-        codigo = request.POST.get("recurso")
-        recurso_ativo.codigo = codigo
-        recurso_ativo.save()
-        messages.success(request, f"Recurso alterado para {codigo}")
-        return redirect("definir_recurso")
+    # Garante que os dois tipos existam
+    ValorDiaria.objects.get_or_create(tipo="PARA", defaults={"valor": 0})
+    ValorDiaria.objects.get_or_create(tipo="OUTROS", defaults={"valor": 0})
 
-    return render(request, "setores/cadastrar_setor.html", {"recurso_ativo": recurso_ativo})
+    valores = ValorDiaria.objects.all()
+    if request.method == "POST":
+        acao = request.POST.get("acao")
+        if acao == "recurso":
+            codigo = request.POST.get("recurso")
+            recurso_ativo.codigo = codigo
+            recurso_ativo.save()
+            messages.success(request, f"Recurso alterado para {codigo}")
+            return redirect("definir_recurso")
+        
+        elif acao == "valor":
+            tipo = request.POST.get("tipo")
+            valor = request.POST.get("valor")
+            ValorDiaria.objects.update_or_create(
+                tipo=tipo,
+                defaults={"valor": valor}
+            )
+            messages.success(request, f"Valor atualizado para {tipo}: R$ {valor}")
+            return redirect("definir_recurso")
+
+    return render(request, "setores/cadastrar_setor.html", {
+        "recurso_ativo": recurso_ativo, 
+        "setores": Setor.objects.all(), 
+        "valores": valores,
+        })
 
 def gerar_dias_mes(ano, mes):
     dias_semana = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "DOM"]
@@ -534,3 +555,57 @@ def gerar_folha_plantao(request):
         "mes_atual": nome_mes,
         "ano_atual": ano_atual,
     })
+
+@login_required(login_url='/login/')
+def prestar_contas(request, atividade_id):
+    atividade = get_object_or_404(Atividade, id=atividade_id)
+    servidores = atividade.servidores.all()
+    setores = Setor.objects.all()
+
+    dias_diarias_str = atividade.dias_diarias  # exemplo: "2 / 1,5"
+
+    # Quebra a string em duas partes
+    partes = dias_diarias_str.split("/")
+
+    # Pega a parte depois da barra, remove espaços e troca vírgula por ponto
+    valor_str = partes[1].strip().replace(",", ".")
+
+    # Converte para float
+    valor_float = float(valor_str)
+
+    # Para viagem dentro do Pará
+    valor_para = ValorDiaria.objects.get(tipo="PARA").valor
+
+    # Para viagem para outros estados
+    valor_outros = ValorDiaria.objects.get(tipo="OUTROS").valor
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        # 1. Para cada servidor, gerar um PDF de prestação de contas/Relatório de Viagem
+        for servidor in servidores:
+            html_relatorio = render_to_string("pdf_prestacao_contas.html", {
+                "atividade": atividade,
+                "servidores": [servidor],
+                "setores": setores,
+                "periodo_formatado": formatar_periodo(atividade.data_ida, atividade.data_retorno),
+                "valor_unitario": valor_para,
+                "valor_total": round(float(valor_float or 0) * float(valor_para), 2),
+                "diarias":valor_float,
+            })
+            pdf_relatorio = HTML(string=html_relatorio, base_url=request.build_absolute_uri('/')).write_pdf()
+            zip_file.writestr(f"relatorio_viagem_{servidor.primeiro_e_ultimo_nome()}_{atividade.id}.pdf", pdf_relatorio)
+
+        # 2. PDF Memorando
+        html_memorando = render_to_string("pdf_memorando_prestacao_contas.html", {
+            "atividade": atividade,
+            "servidores": servidores,
+            "setores": setores,
+            "chefe_eh_servidor": False,  # ajuste conforme sua lógica
+        })
+        pdf_memorando = HTML(string=html_memorando, base_url=request.build_absolute_uri('/')).write_pdf()
+        zip_file.writestr(f"memorando_{atividade.id}.pdf", pdf_memorando)
+
+    buffer.seek(0)
+    response = HttpResponse(buffer.getvalue(), content_type="application/zip")
+    response['Content-Disposition'] = f'attachment; filename="prestacao_contas_{atividade.id}.zip"'
+    return response
