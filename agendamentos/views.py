@@ -454,25 +454,24 @@ def listar_agendamentos(request):
     if motorista_externo_id:
         try:
             motorista_externo = MotoristaExterno.objects.get(id=motorista_externo_id)
-            agendamentos_externos = ProcessamentoAgendamento.objects.filter(motorista_externo=motorista_externo)
-            dias_por_motorista_externo = {}
-
-            for i, m in enumerate(motoristas_externos):
-                agendamentos_motorista = ProcessamentoAgendamento.objects.filter(motorista_externo=m)
-                dias_por_motorista_externo[m.id] = {"nome": m.nome, "dias": [], "cor": paleta[i % len(paleta)]}
-                for ag in agendamentos_motorista:
-                    if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
-                        dias_por_motorista_externo[m.id]["dias"].extend(
-                            range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
-                        )
-
+            agendamentos_externos = ProcessamentoAgendamento.objects.filter(motorista_externo=motorista_externo).order_by("agendamento__data_ida")
+            dias_por_motorista_externo[motorista_externo.id] = {"nome": motorista_externo.nome, "dias": [], "cor": paleta[0]}
             for ag in agendamentos_externos:
                 if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
+                    dias_por_motorista_externo[motorista_externo.id]["dias"].extend(
+                        range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
+                    )
                     periodo = formatar_periodo(ag.agendamento.data_ida, ag.agendamento.data_retorno)
+                    equipe = []
+                    if hasattr(ag.agendamento, "atividade") and ag.agendamento.atividade:
+                        equipe_servidores = [s.nome for s in ag.agendamento.atividade.servidores.all()]
+                        equipe_motoristas = [m.nome for m in ag.agendamento.atividade.motoristas_externos.all()]
+                        equipe = equipe_servidores + equipe_motoristas
                     viagens_externas.append({
                         "municipio": ag.agendamento.municipio,
                         "periodo": periodo,
                         "data_ida": ag.agendamento.data_ida,
+                        "equipe": equipe,
                         "mais_proxima": False,
                     })
             # marca viagem mais próxima
@@ -484,8 +483,7 @@ def listar_agendamentos(request):
         except MotoristaExterno.DoesNotExist:
             motorista_externo = None
     else:
-        
-
+        # modo todos juntos
         for i, m in enumerate(motoristas_externos):
             agendamentos_motorista = ProcessamentoAgendamento.objects.filter(motorista_externo=m)
             dias_por_motorista_externo[m.id] = {"nome": m.nome, "dias": [], "cor": paleta[i % len(paleta)]}
@@ -563,9 +561,6 @@ def listar_agendamentos(request):
 
         "dias_por_motorista": dias_por_motorista,
         "dias_por_motorista_externo": dias_por_motorista_externo,
-        "motoristas_externos": motoristas_externos,
-        "motorista_externo_selecionado": motorista_externo,
-        "viagens_externas": viagens_externas,
         "motoristas_externos": motoristas_externos,
         "motorista_externo_selecionado": motorista_externo,
         "viagens_externas": viagens_externas,
