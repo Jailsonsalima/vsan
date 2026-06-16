@@ -82,13 +82,20 @@
                 </tr>
             {% endfor %}
             {% for motorista in atividade.motoristas_externos.all %}
-                <tr>
-                    <td>{{ motorista.nome|upper }}</td>
-                    <td>{{ motorista.cargo|upper }} / {{ motorista.funcao|upper }}</td>
-                </tr>
+                {% if motorista.vinculo != "colaborador da KAPA Capital" %}
+                    <tr>
+                        <td>{{ motorista.nome|upper }}</td>
+                        <td>{{ motorista.cargo|upper }} / {{ motorista.funcao|upper }}</td>
+                    </tr>
+                {% endif %}
             {% endfor %}
 
         </table>
+        {% for motorista in atividade.motoristas_externos.all %}
+            {% if motorista.vinculo == "colaborador da KAPA Capital" %}
+                <strong>OBS:</strong> O condutor da viagem será {{ motorista.nome|upper }} ({{ motorista.vinculo }})<br><br>
+            {% endif %}
+        {% endfor %}
         &emsp;&emsp;Informamos que abaixo seguem as informações complementares exigidas pela Gestão Administrativa e
         Financeira:<br><br>
         <strong><u>Informações orçamentarias:</u></strong><br><br>

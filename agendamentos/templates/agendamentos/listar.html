@@ -2,53 +2,10 @@
 {% load static %}
 {% block content %}
 <div class="container">
+    
     {% if autorizado %}
-    <div class="container" style="display:flex; gap:40px;">
-    <div style="flex:1;">
-        <form method="get" class="form">
-            <label for="motorista">Escolha o motorista:</label>
-            <select name="motorista" id="motorista" onchange="this.form.submit()">
-                <option value="">-- Todos juntos --</option>
-                {% for m in motoristas %}
-                    <option value="{{ m.id }}" {% if motorista_selecionado and m.id == motorista_selecionado.id %}selected{% endif %}>
-                        {{ m.nome }}
-                    </option>
-                {% endfor %}
-            </select>
-            <input type="hidden" name="mes" value="{{ mes }}">
-            <input type="hidden" name="ano" value="{{ ano }}">
-        </form>
-
-        <h2>Calendário de Motoristas</h2>        
-        <h3>{{ nome_mes }}/{{ ano }}</h3>
-
-        <table class="dashboard-table calendario">
-            <tr>
-                <th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sab</th>
-            </tr>
-            {% for semana in dias_mes %}
-            <tr>
-                {% for dia in semana %}
-                    {% if dia == 0 %}
-                        <td class="vazio"></td>
-                    {% else %}
-                        <td>
-                            <span class="dia-numero">{{ dia }}</span>
-                            <div class="motoristas-dia">
-                                {% for mid, dados in dias_por_motorista.items %}
-                                    {% if dia in dados.dias %}
-                                        <div class="linha-motorista" style="background-color: {{ dados.cor }};"></div>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                        </td>
-                    {% endif %}
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </table>
-
-        <div style="margin-top:20px; left: 0;">
+        <div style="text-align: center;">
+            <h3>{{ nome_mes }}/{{ ano }}</h3> <br>
             {% if motorista_selecionado %}
                 <a href="?motorista={{ motorista_selecionado.id }}&mes={{ mes_anterior }}&ano={{ ano_anterior }}" class="btn-secondary">◀ Mês ant.</a>
                 <a href="?motorista={{ motorista_selecionado.id }}&mes={{ mes_proximo }}&ano={{ ano_proximo }}" class="btn-secondary">Próx. mês ▶</a>
@@ -57,158 +14,261 @@
                 <a href="?mes={{ mes_proximo }}&ano={{ ano_proximo }}" class="btn-secondary">Próx. mês ▶</a>
             {% endif %}
         </div>
+    
+        <div class="container" style="display:flex; gap:40px;">
+            <div style="flex:1;">
+                <form method="get" class="form">
+                    <label for="motorista">Escolha o motorista:</label>
+                    <select name="motorista" id="motorista" onchange="this.form.submit()">
+                        <option value="">-- Todos juntos --</option>
+                        {% for m in motoristas %}
+                            <option value="{{ m.id }}" {% if motorista_selecionado and m.id == motorista_selecionado.id %}selected{% endif %}>
+                                {{ m.nome }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" name="mes" value="{{ mes }}">
+                    <input type="hidden" name="ano" value="{{ ano }}">
+                </form>
 
-        <!-- Legenda de cores -->
-        <div style="margin-top:20px;">
-            <h4>Legenda:</h4>
-            <ul style="list-style:none; padding:0;">
-                {% for mid, dados in dias_por_motorista.items %}
-                    <li>
-                        <span style="display:inline-block; width:20px; height:10px; background-color:{{ dados.cor }}; margin-right:5px;"></span>
-                        {{ dados.nome }}
-                    </li>
-                {% endfor %}
-            </ul>
+                <h2>Calendário de Motoristas</h2>        
+                <h3>{{ nome_mes }}/{{ ano }}</h3>
+
+                <table class="dashboard-table calendario">
+                    <tr>
+                        <th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sab</th>
+                    </tr>
+                    {% for semana in dias_mes %}
+                        <tr>
+                            {% for dia in semana %}
+                                {% if dia == 0 %}
+                                    <td class="vazio"></td>
+                                {% else %}
+                                    <td>
+                                        <span class="dia-numero">{{ dia }}</span>
+                                        <div class="motoristas-dia">
+                                            {% for mid, dados in dias_por_motorista.items %}
+                                                {% if dia in dados.dias %}
+                                                    <div class="linha-motorista" style="background-color: {{ dados.cor }};"></div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+
+
+                <!-- Legenda de cores -->
+                <div style="margin-top:20px;">
+                    <h4>Legenda:</h4>
+                    <ul style="list-style:none; padding:0;">
+                        {% for mid, dados in dias_por_motorista.items %}
+                            <li>
+                                <span style="display:inline-block; width:20px; height:10px; background-color:{{ dados.cor }}; margin-right:5px;"></span>
+                                {{ dados.nome }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <h2>Calendário de Motoristas Externos</h2>
+                <form method="get" class="form">
+                    <label for="motorista_externo">Escolha o motorista externo:</label>
+                    <select name="motorista_externo" id="motorista_externo" onchange="this.form.submit()">
+                        <option value="">-- Todos juntos --</option>
+                        {% for m in motoristas_externos %}
+                            <option value="{{ m.id }}" {% if motorista_externo_selecionado and m.id == motorista_externo_selecionado.id %}selected{% endif %}>
+                                {{ m.nome }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" name="mes" value="{{ mes }}">
+                    <input type="hidden" name="ano" value="{{ ano }}">
+                </form>
+
+
+                <h3>{{ nome_mes }}/{{ ano }}</h3>
+
+                <table class="dashboard-table calendario">
+                    <tr>
+                        <th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th>
+                    </tr>
+                    {% for semana in dias_mes %}
+                        <tr>
+                            {% for dia in semana %}
+                                {% if dia == 0 %}
+                                    <td class="vazio"></td>
+                                {% else %}
+                                    <td>
+                                        <span class="dia-numero">{{ dia }}</span>
+                                        <div class="motoristas-dia">
+                                            {% for mid, dados in dias_por_motorista_externo.items %}
+                                                {% if dia in dados.dias %}
+                                                    <div class="linha-motorista" style="background-color: {{ dados.cor }};"></div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+
+                {% if motorista_externo_selecionado %}
+                    <h3>Viagens de {{ nome_mes }}/{{ ano }}</h3>
+                    <ul>
+                        {% for viagem in viagens_externas %}
+                        <li style="{% if viagem.mais_proxima %}color:red; font-weight:bold;{% endif %}">
+                            <strong>{{ viagem.municipio }}</strong> - {{ viagem.periodo }}
+                        </li>
+                        {% empty %}
+                        <li>Nenhuma viagem registrada neste mês.</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+            </div>
+
+            <div style="flex:1;">
+                {% if motorista_selecionado %}
+                    <h2 style="margin-top:40px;">Viagens de {{ nome_mes }}/{{ ano }}</h2>
+                    <ul>
+                        {% for viagem in viagens %}
+                            <li style="{% if viagem.mais_proxima %}color:red; font-weight:bold;{% endif %}">
+                                <strong>{{ viagem.municipio }}</strong> — {{ viagem.periodo }}
+                                {% if viagem.equipe %}
+                                    <br><small>Equipe: {{ viagem.equipe|join:", " }}</small>
+                                {% endif %}
+                            </li>
+                        {% empty %}
+                            <li>Nenhuma viagem registrada neste mês.</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <h2>Nº de Agendamentos de Viagens</h2>
+                    <canvas id="graficoMotoristas"></canvas>
+
+                    <h2 style="margin-top:40px;">Nº de Dias em Viagem</h2>
+                    <canvas id="graficoDiasMotoristas"></canvas>
+                {% endif %}
+                
+            </div>
         </div>
-    </div>
 
-    <div style="flex:1;">
-        {% if motorista_selecionado %}
-        <h2 style="margin-top:40px;">Viagens de {{ nome_mes }}/{{ ano }}</h2>
-        <ul>
-            {% for viagem in viagens %}
-                <li style="{% if viagem.mais_proxima %}color:red; font-weight:bold;{% endif %}">
-                    <strong>{{ viagem.municipio }}</strong> — {{ viagem.periodo }}
-                    {% if viagem.equipe %}
-                        <br><small>Equipe: {{ viagem.equipe|join:", " }}</small>
-                    {% endif %}
-                </li>
-            {% empty %}
-                <li>Nenhuma viagem registrada neste mês.</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <h2>Nº de Agendamentos de Viagens</h2>
-        <canvas id="graficoMotoristas"></canvas>
-
-        <h2 style="margin-top:40px;">Nº de Dias em Viagem</h2>
-        <canvas id="graficoDiasMotoristas"></canvas>
-{% endif %}
-        
-    </div>
-</div>
-
-<style>
-.calendario td {
-    position: relative;
-}
-.dia-numero {
-    position: relative;
-    z-index: 2;   /* número sempre na frente */
-    font-weight: bold;
-    font-size: 16px;
-}
-.calendario td.vazio {
-    background-color: #eee;
-}
-.motoristas-dia {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;   /* faixas ficam atrás */
-}
-.linha-motorista {
-    display: block;     /* garante que seja um bloco */
-    width: 100%;        /* ocupa toda a largura da célula */
-    height: 15.5px;        /* altura da faixa */
-    margin: 0;          /* remove margens extras */
-    border-radius: 0;   /* sem arredondamento */
-}
-</style>
-
-{% load static %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Primeiro gráfico
-    const dados = {{ dados_motoristas|safe }};
-    const nomes = dados.map(d => d.motorista_servidor__nome);
-    const totais = dados.map(d => d.total);
-    const ids = dados.map(d => d.motorista_servidor__id);
-
-    const ctx1 = document.getElementById('graficoMotoristas').getContext('2d');
-    new Chart(ctx1, {
-        type: 'bar',
-        data: {
-            labels: nomes,
-            datasets: [{
-                label: 'Agendamentos',
-                data: totais,
-                backgroundColor: ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0','#00bcd4']
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true, ticks: {
-                    stepSize: 1,
-                    precision: 0
-                } } },
-            onClick: (evt, elements) => {
-                if (elements.length > 0) {
-                    const index = elements[0].index;
-                    const motoristaId = ids[index];
-                    if (motoristaId) {
-                        const url = `?motorista=${motoristaId}&mes={{ mes }}&ano={{ ano }}`;
-                        window.location.href = url;
-                    }
-                }
+        <style>
+            .calendario td {
+                position: relative;
             }
-        }
-    });
-
-    // Segundo gráfico
-    const dadosDias = {{ dados_dias_motoristas|safe }};
-    const nomesDias = dadosDias.map(d => d.motorista_servidor__nome);
-    const totaisDias = dadosDias.map(d => d.total_dias);
-    const idsDias = dadosDias.map(d => d.motorista_servidor__id);
-
-    const ctx2 = document.getElementById('graficoDiasMotoristas').getContext('2d');
-    new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: nomesDias,
-            datasets: [{
-                label: 'Dias em Viagem',
-                data: totaisDias,
-                backgroundColor: ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0','#00bcd4']
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true } },
-            onClick: (evt, elements) => {
-                if (elements.length > 0) {
-                    const index = elements[0].index;
-                    const motoristaId = idsDias[index];
-                    if (motoristaId) {
-                        const url = `?motorista=${motoristaId}&mes={{ mes }}&ano={{ ano }}`;
-                        window.location.href = url;
-                    }
-                }
+            .dia-numero {
+                position: relative;
+                z-index: 2;   /* número sempre na frente */
+                font-weight: bold;
+                font-size: 16px;
             }
-        }
-    });
+            .calendario td.vazio {
+                background-color: #eee;
+            }
+            .motoristas-dia {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 1;   /* faixas ficam atrás */
+            }
+            .linha-motorista {
+                display: block;     /* garante que seja um bloco */
+                width: 100%;        /* ocupa toda a largura da célula */
+                height: 15.5px;        /* altura da faixa */
+                margin: 0;          /* remove margens extras */
+                border-radius: 0;   /* sem arredondamento */
+            }
+        </style>
 
-});
-</script>
-    <!--<div class="container-btn-dashboard" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;" >
-        <a href="{% url 'cadastrar_motorista_externo' %}" class="btn-card" >🧑‍✈️ Cadastrar Motorista Externo</a>
+        {% load static %}
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Primeiro gráfico
+                const dados = {{ dados_motoristas|safe }};
+                const nomes = dados.map(d => d.motorista_servidor__nome);
+                const totais = dados.map(d => d.total);
+                const ids = dados.map(d => d.motorista_servidor__id);
 
-        <a href="{% url 'calendario_motorista' %}" class="btn-card">📅 Agenda de Motoristas</a>
-    </div>-->
+                const ctx1 = document.getElementById('graficoMotoristas').getContext('2d');
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: nomes,
+                        datasets: [{
+                            label: 'Agendamentos',
+                            data: totais,
+                            backgroundColor: ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0','#00bcd4']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: {
+                                stepSize: 1,
+                                precision: 0
+                            } } },
+                        onClick: (evt, elements) => {
+                            if (elements.length > 0) {
+                                const index = elements[0].index;
+                                const motoristaId = ids[index];
+                                if (motoristaId) {
+                                    const url = `?motorista=${motoristaId}&mes={{ mes }}&ano={{ ano }}`;
+                                    window.location.href = url;
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Segundo gráfico
+                const dadosDias = {{ dados_dias_motoristas|safe }};
+                const nomesDias = dadosDias.map(d => d.motorista_servidor__nome);
+                const totaisDias = dadosDias.map(d => d.total_dias);
+                const idsDias = dadosDias.map(d => d.motorista_servidor__id);
+
+                const ctx2 = document.getElementById('graficoDiasMotoristas').getContext('2d');
+                new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: nomesDias,
+                        datasets: [{
+                            label: 'Dias em Viagem',
+                            data: totaisDias,
+                            backgroundColor: ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0','#00bcd4']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } },
+                        onClick: (evt, elements) => {
+                            if (elements.length > 0) {
+                                const index = elements[0].index;
+                                const motoristaId = idsDias[index];
+                                if (motoristaId) {
+                                    const url = `?motorista=${motoristaId}&mes={{ mes }}&ano={{ ano }}`;
+                                    window.location.href = url;
+                                }
+                            }
+                        }
+                    }
+                });
+
+            });
+        </script>
+            <!--<div class="container-btn-dashboard" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;" >
+                <a href="{% url 'cadastrar_motorista_externo' %}" class="btn-card" >🧑‍✈️ Cadastrar Motorista Externo</a>
+
+                <a href="{% url 'calendario_motorista' %}" class="btn-card">📅 Agenda de Motoristas</a>
+            </div>-->
     {% endif %}
     <!--<h2>Solicitações de Agendamento</h2>
     <div class="container-btn-dashboard" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;" >
@@ -238,102 +298,102 @@ document.addEventListener("DOMContentLoaded", function() {
         </thead>
         <tbody id="tabela-agendamentos">
             {% for agendamento in page_obj %}
-            <tr class="agendamento-item" data-municipio="{{ agendamento.municipio }}">
-                <td>
-                    {% if agendamento.atividade and agendamento.atividade.numero_processo %}
-                        <span style="margin-left:10px;">{{ agendamento.atividade.numero_processo }}</span><br>
-                        
-                    {% else %}
-                        --
-                    {% endif %}
-                    {% if agendamento.n_memorando %}
-                        {% if agendamento.transporte == "Veículo Oficial (VAN)" or agendamento.transporte == "Veículo Oficial" and agendamento.status == "pendente" %}
-                            <a href="{% url 'gerar_pdf_solicitacao_veiculo' agendamento.id %}" class="btn-primary">
-                                PDF
-                            </a>
-                        {% endif %}
-                    {% endif %}
-                        
-                </td>
-                <td>{{ agendamento.servidor.nome }}</td>
-                <td>{{ agendamento.municipio }}</td>
-                <td>{{ agendamento.periodo_formatado }}</td>
-
-                <td>{{ agendamento.motivo }}</td>
-                <td>
-                    {% if agendamento.status == "processado" %}
-                        <span class="status ativo">Processado</span>
-                    {% elif agendamento.status == "cancelado" %}
-                        <span class="status cancelado">Cancelado</span>
-                    {% else %}
-                        <span class="status inativo">Pendente</span>
-                    {% endif %}
-                </td>
-                <td>
-                {% if agendamento.status == "processado" or agendamento.status == "cancelado" %}
-                    {% if agendamento.processamento.motorista_servidor %}
-                        {{ agendamento.processamento.motorista_servidor.nome }}
-                    {% elif agendamento.processamento.motorista_externo %}
-                        {{ agendamento.processamento.motorista_externo.nome }} - {{ agendamento.processamento.motorista_externo.telefone }}
-                    {% else %}
-                        {{ agendamento.transporte }}
-                    {% endif %}
-                {% elif agendamento.status == "pendente" %}
-                    --
-                {% endif %}
-                </td>
-                {% if agendamento.transporte == "Veículo Oficial (VAN)" %}
-                    <td style="color: red; font-weight: bold;">
-                {% else %}
+                <tr class="agendamento-item" data-municipio="{{ agendamento.municipio }}">
                     <td>
-                {% endif %}
-                    {{ agendamento.transporte }}
+                        {% if agendamento.atividade and agendamento.atividade.numero_processo %}
+                            <span style="margin-left:10px;">{{ agendamento.atividade.numero_processo }}</span><br>
+                            
+                        {% else %}
+                            --
+                        {% endif %}
+                        {% if agendamento.n_memorando %}
+                            {% if agendamento.transporte == "Veículo Oficial (VAN)" or agendamento.transporte == "Veículo Oficial" and agendamento.status == "pendente" %}
+                                <a href="{% url 'gerar_pdf_solicitacao_veiculo' agendamento.id %}" class="btn-primary">
+                                    PDF
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                            
                     </td>
-                <td>
-                    {% if agendamento.status == "processado" %}
-                        {% if agendamento.atividade %}
-                            <!-- Já existe atividade vinculada, não mostra o botão -->
-                            <span style="color: gray;">Atividade já criada</span>
-                        {% else %}
-                            <a href="{% url 'cadastrar_atividade_agendamento' agendamento.id %}" class="btn-card" style="display:flex;">
-                                📃 Criar Atividade
-                            </a>
-                        {% endif %}
-                        <a href="{% url 'cancelar_agendamento' agendamento.id %}" class="btn-card cancelar-btn" style="margin-top:5px; display:block;">
-                            ❌ Cancelar Viagem
-                        </a>
-                        {% if agendamento.transporte == "Veículo Oficial (VAN)" and autorizado %}
-                            <form method="post" action="{% url 'adicionar_memorando_agendamento' agendamento.id %}">
-                                {% csrf_token %}
-                                <input type="text" name="n_memorando" placeholder="Nº Memorando" required>
-                                <button type="submit" class="btn btn-sm btn-primary">Salvar Memorando</button>
-                            </form>
-                        {% endif %}
-                    {% elif agendamento.status == "pendente" %}
-                        {% if not agendamento.n_memorando and autorizado %}
-                            <form method="post" action="{% url 'adicionar_memorando_agendamento' agendamento.id %}">
-                                {% csrf_token %}
-                                <input type="text" name="n_memorando" placeholder="Nº Memorando" required>
-                                <button type="submit" class="btn btn-sm btn-primary">Salvar Memorando</button>
-                            </form>
-                        {% else %}
-                            Memorando: {{ agendamento.n_memorando }}<br><br>
-                            <a href="{% url 'processar_agendamento' agendamento.id %}" class="btn-primary">
-                                Processar
-                            </a>
+                    <td>{{ agendamento.servidor.nome }}</td>
+                    <td>{{ agendamento.municipio }}</td>
+                    <td>{{ agendamento.periodo_formatado }}</td>
 
+                    <td>{{ agendamento.motivo }}</td>
+                    <td>
+                        {% if agendamento.status == "processado" %}
+                            <span class="status ativo">Processado</span>
+                        {% elif agendamento.status == "cancelado" %}
+                            <span class="status cancelado">Cancelado</span>
+                        {% else %}
+                            <span class="status inativo">Pendente</span>
                         {% endif %}
-
-                        
-                    {% elif agendamento.status == "cancelado" %}
-                        <span style="color:red;">Cancelado</span>
+                    </td>
+                    <td>
+                        {% if agendamento.status == "processado" or agendamento.status == "cancelado" %}
+                            {% if agendamento.processamento.motorista_servidor %}
+                                {{ agendamento.processamento.motorista_servidor.nome }}
+                            {% elif agendamento.processamento.motorista_externo %}
+                                {{ agendamento.processamento.motorista_externo.nome }} - {{ agendamento.processamento.motorista_externo.telefone }}
+                            {% else %}
+                                {{ agendamento.transporte }}
+                            {% endif %}
+                        {% elif agendamento.status == "pendente" %}
+                            --
+                        {% endif %}
+                    </td>
+                    {% if agendamento.transporte == "Veículo Oficial (VAN)" %}
+                        <td style="color: red; font-weight: bold;">
+                    {% else %}
+                        <td>
                     {% endif %}
-                </td>   
-            </tr>
+                        {{ agendamento.transporte }}
+                        </td>
+                    <td>
+                        {% if agendamento.status == "processado" %}
+                            {% if agendamento.atividade %}
+                                <!-- Já existe atividade vinculada, não mostra o botão -->
+                                <span style="color: gray;">Atividade já criada</span>
+                            {% else %}
+                                <a href="{% url 'cadastrar_atividade_agendamento' agendamento.id %}" class="btn-card" style="display:flex;">
+                                    📃 Criar Atividade
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'cancelar_agendamento' agendamento.id %}" class="btn-card cancelar-btn" style="margin-top:5px; display:block;">
+                                ❌ Cancelar Viagem
+                            </a>
+                            {% if agendamento.transporte == "Veículo Oficial (VAN)" and autorizado %}
+                                <form method="post" action="{% url 'adicionar_memorando_agendamento' agendamento.id %}">
+                                    {% csrf_token %}
+                                    <input type="text" name="n_memorando" placeholder="Nº Memorando" required>
+                                    <button type="submit" class="btn btn-sm btn-primary">Salvar Memorando</button>
+                                </form>
+                            {% endif %}
+                        {% elif agendamento.status == "pendente" %}
+                            {% if not agendamento.n_memorando and autorizado %}
+                                <form method="post" action="{% url 'adicionar_memorando_agendamento' agendamento.id %}">
+                                    {% csrf_token %}
+                                    <input type="text" name="n_memorando" placeholder="Nº Memorando" required>
+                                    <button type="submit" class="btn btn-sm btn-primary">Salvar Memorando</button>
+                                </form>
+                            {% else %}
+                                Memorando: {{ agendamento.n_memorando }}<br><br>
+                                <a href="{% url 'processar_agendamento' agendamento.id %}" class="btn-primary">
+                                    Processar
+                                </a>
+
+                            {% endif %}
+
+                            
+                        {% elif agendamento.status == "cancelado" %}
+                            <span style="color:red;">Cancelado</span>
+                        {% endif %}
+                    </td>   
+                </tr>
             {% empty %}
-            <tr>
-                <td colspan="8">Nenhuma solicitação de agendamento encontrada.</td>
-            </tr>
+                <tr>
+                    <td colspan="8">Nenhuma solicitação de agendamento encontrada.</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
