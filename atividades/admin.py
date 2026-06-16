@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Atividade, RecursoAtivo, DiaEspecial
+from .models import Atividade, RecursoAtivo, DiaEspecial, ValorDiaria
 
 @admin.register(Atividade)
 class AtividadeAdmin(admin.ModelAdmin):
@@ -19,3 +19,11 @@ class DiaEspecialAdmin(admin.ModelAdmin):
     list_display = ("data", "tipo", "nome")
     list_filter = ("tipo",)
     search_fields = ("nome",)
+
+
+@admin.register(ValorDiaria)
+class ValorDiariaAdmin(admin.ModelAdmin):
+    list_display = ("tipo", "valor", "atualizado_em")   # colunas visíveis na listagem
+    list_filter = ("tipo",)                             # filtro lateral por tipo
+    search_fields = ("tipo",)                           # campo de busca
+    ordering = ("tipo",)                                # ordenação padrão
