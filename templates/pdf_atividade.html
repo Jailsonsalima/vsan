@@ -93,7 +93,7 @@
         </table>
         {% for motorista in atividade.motoristas_externos.all %}
             {% if motorista.vinculo == "colaborador da KAPA Capital" %}
-                <strong>OBS:</strong> O condutor da viagem será {{ motorista.nome|upper }} ({{ motorista.vinculo }})<br><br>
+                <strong>&emsp;&emsp;OBS:</strong> O condutor da viagem será {{ motorista.nome }} ({{ motorista.vinculo }})<br><br>
             {% endif %}
         {% endfor %}
         &emsp;&emsp;Informamos que abaixo seguem as informações complementares exigidas pela Gestão Administrativa e
