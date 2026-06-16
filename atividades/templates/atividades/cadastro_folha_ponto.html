@@ -8,6 +8,19 @@
     {% endif %}-->
     <h2>Gerar Folha de Ponto</h2>
     <form method="post" class="form">
+      
+  <label>Selecione os meses (opcional):</label><br>
+  <div class="checkbox-list form-row" id="lista-servidores">
+  {% for mes_num, nome_mes in meses %}
+  <div class="servidor-item">
+    <label >
+      <input type="checkbox" name="meses" value="{{ mes_num }}">
+      {{ nome_mes }}/{{ ano_atual }}
+    </label>
+    </div>
+  {% endfor %}
+</div>
+
       {% csrf_token %}
       <div class="form-group">
         <small style="color:#777;">Selecione um ou mais servidores.</small><br>

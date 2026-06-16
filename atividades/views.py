@@ -457,45 +457,59 @@ def gerar_folha_ponto(request):
     servidores = Servidor.objects.all()
     ano_atual = datetime.now().year
     mes_atual = datetime.now().month
-    dias_mes = gerar_dias_mes(ano_atual, mes_atual)
-    # Nome do mês em português
-    nome_mes = datetime.now().strftime("%B").capitalize()
+    dias_mes_atual = gerar_dias_mes(ano_atual, mes_atual)
+    MESES_PT = [
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ]
+    nome_mes_atual = MESES_PT[mes_atual - 1]
 
     if request.method == "POST":
         ids = request.POST.getlist("servidores")
         servidores_selecionados = Servidor.objects.filter(id__in=ids)
-        
+
+        meses_selecionados = request.POST.getlist("meses")
+        if meses_selecionados:
+            meses_selecionados = [int(m) for m in meses_selecionados]
+        else:
+            meses_selecionados = [mes_atual]  # se não selecionar, usa o mês atual
 
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
             for servidor in servidores_selecionados:
-                try:
-                    # pega a última situação funcional registrada
-                    situacao = servidor.historico_situacoes.last()
-                    html = render_to_string("pdf_folha_ponto.html", {
-                        "servidor": servidor,
-                        "situacao": situacao,
-                        "dias_mes": dias_mes,
-                        "mes_atual": nome_mes,
-                        "ano_atual": ano_atual,
-                        
-                    })
-                    pdf_bytes = HTML(string=html).write_pdf()
-                    if pdf_bytes:  # só adiciona se o PDF foi gerado corretamente
-                        zip_file.writestr(f"folha_ponto_{servidor.primeiro_e_ultimo_nome()}_{nome_mes}_{ano_atual}.pdf", pdf_bytes)
-                except Exception as e:
-                    # loga o erro no console para depuração
-                    print(f"Erro ao gerar PDF para {servidor}: {e}")
+                for mes in meses_selecionados:
+                    dias_mes = gerar_dias_mes(ano_atual, mes)
+                    nome_mes = MESES_PT[mes - 1]
+                    try:
+                        situacao = servidor.historico_situacoes.last()
+                        html = render_to_string("pdf_folha_ponto.html", {
+                            "servidor": servidor,
+                            "situacao": situacao,
+                            "dias_mes": dias_mes,
+                            "mes_atual": nome_mes,
+                            "ano_atual": ano_atual,
+                        })
+                        pdf_bytes = HTML(string=html).write_pdf()
+                        if pdf_bytes:
+                            zip_file.writestr(
+                                f"folha_ponto_{servidor.primeiro_e_ultimo_nome()}_{nome_mes}_{ano_atual}.pdf",
+                                pdf_bytes
+                            )
+                    except Exception as e:
+                        print(f"Erro ao gerar PDF para {servidor}: {e}")
+
         buffer.seek(0)
         response = HttpResponse(buffer.getvalue(), content_type="application/zip")
-        response['Content-Disposition'] = f'attachment; filename="folhas_ponto_{nome_mes}_{ano_atual}.zip"'
+        response['Content-Disposition'] = f'attachment; filename="folhas_ponto_{ano_atual}.zip"'
         return response
 
+    meses = [(i, MESES_PT[i - 1]) for i in range(1, 13)]
     return render(request, "atividades/cadastro_folha_ponto.html", {
         "servidores": servidores,
-        "dias_mes": dias_mes,
-        "mes_atual": nome_mes,
+        "dias_mes": dias_mes_atual,
+        "mes_atual": nome_mes_atual,
         "ano_atual": ano_atual,
+        "meses": meses,
     })
 
 
