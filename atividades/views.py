@@ -424,13 +424,12 @@ def definir_recurso(request):
             return redirect("definir_recurso")
         
         elif acao == "valor":
-            tipo = request.POST.get("tipo")
-            valor = request.POST.get("valor")
-            ValorDiaria.objects.update_or_create(
-                tipo=tipo,
-                defaults={"valor": valor}
-            )
-            messages.success(request, f"Valor atualizado para {tipo}: R$ {valor}")
+            for v in ValorDiaria.objects.all():
+                novo_valor = request.POST.get(f"valor_{v.tipo}")
+                if novo_valor:
+                    v.valor = novo_valor
+                    v.save()
+            messages.success(request, "Valores de diárias atualizados com sucesso.")
             return redirect("definir_recurso")
 
     return render(request, "setores/cadastrar_setor.html", {

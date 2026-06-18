@@ -31,6 +31,7 @@
         <h2>Definir Valores de Diárias</h2>
         <form method="post" action="{% url 'definir_recurso' %}">
           {% csrf_token %}
+          <input type="hidden" name="acao" value="valor">
           <table class="dashboard-table">
             <thead>
               <tr>
@@ -45,17 +46,13 @@
                   <td>{{ v.get_tipo_display }}</td>
                   <td>R$ {{ v.valor }}</td>
                   <td>
-                    <form method="post" action="{% url 'definir_recurso' %}">
-                      {% csrf_token %}
-                      <input type="number" step="0.01" name="valor" required>
-                      <input type="hidden" name="tipo" value="{{ v.tipo }}">
-                      <button type="submit" class="btn-primary">Atualizar</button>
-                    </form>
+                    <input type="number" step="0.01" name="valor_{{ v.tipo }}" value="{{ v.valor }}" required>
                   </td>
                 </tr>
               {% endfor %}
             </tbody>
           </table>
+          <button type="submit" class="btn-primary">Atualizar</button>
         </form>
       </div>
       <hr style="margin-top: 20px; margin-bottom: 20px;">
