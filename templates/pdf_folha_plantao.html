@@ -78,7 +78,10 @@
                     <td colspan="4" class="texto-esquerda"><strong>ANO:</strong> {{ ano_atual|title }}</td>
                 </tr>
                 <tr>
-                    <td colspan="14" class="texto-esquerda"><strong>NOME SERVIDOR:</strong> {{ servidor.nome|title }}</td>
+                    <td colspan="10" class="texto-esquerda"><strong>NOME SERVIDOR:</strong> {{ servidor.nome|title }}</td>
+                    <td colspan="4" class="texto-esquerda">
+                        <strong>Matrícula:</strong> {{ servidor.matricula }}
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="9" class="texto-esquerda"><strong>CARGO:</strong> {{ servidor.cargo }}</td>
@@ -127,7 +130,7 @@
                     <td colspan="4" >
                         
                     </td>
-                    <td >
+                    <td {% if semana == "SÁB" or semana == "DOM" or especial %} style="background-color: #d6d4d4;" {% endif %}>
                         <strong>{{ dia }}</strong>
                     </td>
                     <td >
