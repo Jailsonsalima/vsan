@@ -6,9 +6,9 @@
         <title>Folha de Plantão Mensal</title>
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family:'Arial', Times, serif; margin: 10px; padding: 20px; font-size: 14px;}
+            body { font-family:'Arial', Times, serif; font-size: 14px;}
             /*.brasao { position: fixed; top: 0; margin-left: 60px; margin-top: 33px; left: 0; width: 70px; height: auto; }*/
-            .brasao { position: fixed; top: 0; margin-top: 33px; left: 50%; width: 70px; height: auto; transform: translateX(-35px) }
+            .brasao { position: fixed; top: 0; margin-top: 15px; left: 50%; width: 70px; height: auto; transform: translateX(-35px) }
             .sus { position: fixed; top: 0; margin-right: 40px; margin-top: 20px;  right: 0; width: 200px; height: auto; }
             .todo_para { position: fixed; top: 0; margin-right: 40px; margin-top: 33px;  right: 0; width: 135px; height: auto; }
             .vsan { position: fixed; top: 0; margin-right: 40px; margin-top: 20px;  right: 0; width: 90px; height: auto; }
@@ -17,7 +17,7 @@
             /* Linha superior centralizada */
             .linha-topo { position: fixed; top: 140px; left: 0; width: 100%; height: auto; }
             h3 { text-align: center;  margin-bottom: 20px; margin-top: 25px; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+            table { width: 92.5%; border-collapse: collapse; margin-left: 30px; margin-top: 10px; margin-right: 20px; }
             tr, td, th { border: 1px solid #000000; text-align: center; padding: 1px;}
             /* Remove margens padrão do PDF */
             @page { margin: 0; padding: 0; }
@@ -52,6 +52,10 @@
         text-align: left;
         
     }
+    @page {
+        margin-top: 20px; /* espaço fixo no topo */
+        
+        }
         </style>
     </head>
     <body>
@@ -106,7 +110,7 @@
                         PERÍODO TRABALHADO NO PLANTÃO
                     </td>
                     
-                    <td colspan="4" rowspan="2" style="width: 250px;">
+                    <td colspan="4" rowspan="2" style="width: 230px;">
                         OCORRÊNCIA
                     </td>
                 </tr>

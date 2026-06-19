@@ -7,6 +7,20 @@
     </div>
     {% endif %}-->
     <h2>Gerar Folha de Plantão</h2>
+    <div class="form-group">
+      <form method="get" class="form" >
+  <label for="setores">Filtrar por Setor:</label>
+  <select name="setores" id="setores" multiple onchange="this.form.submit()">
+    {% for setor in setores %}
+      <option value="{{ setor.id }}" {% if setor.id|stringformat:"s" in setores_ids %}selected{% endif %}>
+        {{ setor.nome }}
+      </option>
+    {% endfor %}
+  </select>
+  <small>Segure CTRL (ou CMD no Mac) para selecionar múltiplos setores.</small>
+</form>
+
+    </div>
     <form method="post" class="form">
       {% csrf_token %}
       
@@ -17,16 +31,18 @@
         <label for="filtro-servidores">Pesquisar Servidor:</label>
         <input type="text" id="filtro-servidores" placeholder="Digite o nome do servidor...">
       </div>
-        <div class="checkbox-list form-row" id="lista-servidores">
-          {% for servidor in servidores %}
-            <div class="servidor-item">
-              <label>
-                <input type="checkbox" name="servidores" value="{{ servidor.id }}">
-                {{ servidor.primeiro_e_ultimo_nome }}
-              </label>
-            </div>
-          {% endfor %}
-        </div>
+      <div class="checkbox-list form-row" id="lista-servidores">
+  {% for servidor in servidores %}
+    <div class="servidor-item">
+      <label>
+        <input type="checkbox" name="servidores" value="{{ servidor.id }}"
+               {% if servidor.setor.id|stringformat:"s" in setores_ids %}checked{% endif %}>
+        {{ servidor.primeiro_e_ultimo_nome }} - {{ servidor.setor.nome }}
+      </label>
+    </div>
+  {% endfor %}
+</div>
+        
   
     </form>
   </div>

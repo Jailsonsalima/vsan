@@ -534,6 +534,7 @@ def cadastrar_dia_especial(request):
 
 @login_required(login_url='/login/')
 def gerar_folha_plantao(request):
+    setores = Setor.objects.all()
     servidores = Servidor.objects.all()
     ano_atual = datetime.now().year
     mes_atual = datetime.now().month
@@ -541,29 +542,37 @@ def gerar_folha_plantao(request):
     # Nome do mês em português
     nome_mes = datetime.now().strftime("%B").capitalize()
 
+    # pega setores selecionados via GET
+    setores_ids = request.GET.getlist("setores")
+    
     if request.method == "POST":
         ids = request.POST.getlist("servidores")
         servidores_selecionados = Servidor.objects.filter(id__in=ids)
 
         buffer = io.BytesIO()
-        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-            for servidor in servidores_selecionados:
-                html = render_to_string("pdf_folha_plantao.html", {
-                    "servidor": servidor,
-                    "dias_mes": dias_mes,
-                    "mes_atual": nome_mes,
-                    "ano_atual": ano_atual,
-                })
-                pdf_bytes = HTML(string=html).write_pdf()
-                zip_file.writestr(f"folha_plantao_{servidor.primeiro_e_ultimo_nome()}_{nome_mes}_{ano_atual}.pdf", pdf_bytes)
+        html_total = ""
 
-        buffer.seek(0)
-        response = HttpResponse(buffer.getvalue(), content_type="application/zip")
-        response['Content-Disposition'] = f'attachment; filename="folhas_plantoes_{nome_mes}_{ano_atual}.zip"'
+        for servidor in servidores_selecionados:
+            html = render_to_string("pdf_folha_plantao.html", {
+                "servidor": servidor,
+                "dias_mes": dias_mes,
+                "mes_atual": nome_mes,
+                "ano_atual": ano_atual,
+            })
+            # adiciona quebra de página entre servidores
+            html_total += html + '<div style="page-break-after: always;"></div>'
+
+        # gera um único PDF com todas as folhas
+        pdf_bytes = HTML(string=html_total).write_pdf()
+
+        response = HttpResponse(pdf_bytes, content_type="application/pdf")
+        response['Content-Disposition'] = f'attachment; filename="folhas_plantoes_{nome_mes}_{ano_atual}.pdf"'
         return response
 
     return render(request, "atividades/cadastro_folha_plantao.html", {
         "servidores": servidores,
+        "setores": setores,
+        "setores_ids": setores_ids,  # passa para o template
         "dias_mes": dias_mes,
         "mes_atual": nome_mes,
         "ano_atual": ano_atual,
