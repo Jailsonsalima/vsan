@@ -25,6 +25,7 @@ from django.template.loader import render_to_string
 from weasyprint import HTML
 
 from django.http import HttpResponse
+from datetime import timedelta
 
 def formatar_periodo(data_ida, data_retorno):
     if not data_ida or not data_retorno:
@@ -402,10 +403,11 @@ def listar_agendamentos(request):
             agendamentos_motorista = ProcessamentoAgendamento.objects.filter(motorista_servidor=motorista).order_by("agendamento__data_ida")
             dias_por_motorista[motorista.id] = {"nome": motorista.nome, "dias": [], "cor": paleta[0]}
             for ag in agendamentos_motorista:
-                if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
-                    dias_por_motorista[motorista.id]["dias"].extend(
-                        range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
-                    )
+                data = ag.agendamento.data_ida
+                while data <= ag.agendamento.data_retorno:
+                    if data.month == mes and data.year == ano:
+                        dias_por_motorista[motorista.id]["dias"].append(data.day)
+                    data += timedelta(days=1)
             viagens = []
             for proc in agendamentos_motorista:
                 ag = proc.agendamento
@@ -440,10 +442,11 @@ def listar_agendamentos(request):
             agendamentos_motorista = ProcessamentoAgendamento.objects.filter(motorista_servidor=m)
             dias_por_motorista[m.id] = {"nome": m.nome, "dias": [], "cor": paleta[i % len(paleta)]}
             for ag in agendamentos_motorista:
-                if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
-                    dias_por_motorista[m.id]["dias"].extend(
-                        range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
-                    )
+                data = ag.agendamento.data_ida
+                while data <= ag.agendamento.data_retorno:
+                    if data.month == mes and data.year == ano:
+                        dias_por_motorista[m.id]["dias"].append(data.day)
+                    data += timedelta(days=1)
 
     motoristas_externos = MotoristaExterno.objects.filter(disponivel=True)
     motorista_externo_id = request.GET.get("motorista_externo")
@@ -457,10 +460,11 @@ def listar_agendamentos(request):
             agendamentos_externos = ProcessamentoAgendamento.objects.filter(motorista_externo=motorista_externo).order_by("agendamento__data_ida")
             dias_por_motorista_externo[motorista_externo.id] = {"nome": motorista_externo.nome, "dias": [], "cor": paleta[0]}
             for ag in agendamentos_externos:
-                if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
-                    dias_por_motorista_externo[motorista_externo.id]["dias"].extend(
-                        range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
-                    )
+                data = ag.agendamento.data_ida
+                while data <= ag.agendamento.data_retorno:
+                    if data.month == mes and data.year == ano:
+                        dias_por_motorista_externo[motorista_externo.id]["dias"].append(data.day)
+                    data += timedelta(days=1)
                     periodo = formatar_periodo(ag.agendamento.data_ida, ag.agendamento.data_retorno)
                     equipe = []
                     if hasattr(ag.agendamento, "atividade") and ag.agendamento.atividade:

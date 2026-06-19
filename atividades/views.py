@@ -575,6 +575,23 @@ def prestar_contas(request, atividade_id):
     servidores = atividade.servidores.all()
     setores = Setor.objects.all()
 
+    # --- Lógica de setores igual ao pdf_atividade ---
+    setores = Setor.objects.filter(nome__startswith="DEVS")
+    setor_dvs = Setor.objects.filter(nome__startswith="DVS")
+
+    # Verifica se o chefe imediato está entre os servidores
+    chefe_matricula = atividade.chefe_imediato.matricula_chefe if atividade.chefe_imediato else None
+    chefe_eh_servidor = False
+    if chefe_matricula:
+        chefe_eh_servidor = servidores.filter(matricula=chefe_matricula).exists()
+
+    setores_filtrados = []
+    for setor in setores:
+        if not servidores.filter(matricula=setor.matricula_chefe).exists():
+            setores_filtrados.append(setor)
+        else:
+            setores_filtrados.extend(setor_dvs)
+    # --- cálculo das diárias ---
     dias_diarias_str = atividade.dias_diarias  # exemplo: "2 / 1,5"
 
     # Quebra a string em duas partes
@@ -612,7 +629,7 @@ def prestar_contas(request, atividade_id):
         html_memorando = render_to_string("pdf_memorando_prestacao_contas.html", {
             "atividade": atividade,
             "servidores": servidores,
-            "setores": setores,
+            "setores": setores_filtrados,
             "chefe_eh_servidor": False,  # ajuste conforme sua lógica
         })
         pdf_memorando = HTML(string=html_memorando, base_url=request.build_absolute_uri('/')).write_pdf()

@@ -7,11 +7,13 @@
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { font-family:'Arial', Times, serif; margin: 10px; padding: 20px; font-size: 14px;}
-            .brasao { position: fixed; top: 0; margin-left: 60px; margin-top: 33px; left: 0; width: 70px; height: auto; }
+            /*.brasao { position: fixed; top: 0; margin-left: 60px; margin-top: 33px; left: 0; width: 70px; height: auto; }*/
+            .brasao { position: fixed; top: 0; margin-top: 33px; left: 50%; width: 70px; height: auto; transform: translateX(-35px) }
             .sus { position: fixed; top: 0; margin-right: 40px; margin-top: 20px;  right: 0; width: 200px; height: auto; }
             .todo_para { position: fixed; top: 0; margin-right: 40px; margin-top: 33px;  right: 0; width: 135px; height: auto; }
             .vsan { position: fixed; top: 0; margin-right: 40px; margin-top: 20px;  right: 0; width: 90px; height: auto; }
-            .top-text { font-size: 16px; text-align: center; line-height: 1.4; right: 52%; transform: translateX(-1%);  }
+            .top-text { margin-top: 70px; font-size: 16px; text-align: center; line-height: 1.4;  }
+            /*.top-text { margin-top: 70px; font-size: 16px; text-align: center; line-height: 1.4; right: 52%; transform: translateX(-1%);  }*/
             /* Linha superior centralizada */
             .linha-topo { position: fixed; top: 140px; left: 0; width: 100%; height: auto; }
             h3 { text-align: center;  margin-bottom: 20px; margin-top: 25px; }
@@ -54,7 +56,7 @@
     </head>
     <body>
         <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Brasao" class="brasao">
-        <img src="file:///home/vsan/vsan/static/img/todo_para.png" alt="Por todo o Pará" class="todo_para">
+        <!--<img src="file:///home/vsan/vsan/static/img/todo_para.png" alt="Por todo o Pará" class="todo_para">-->
             
             <table>
                 <tr>
@@ -97,7 +99,7 @@
                     <td colspan="4" rowspan="2" style="width: 140px;">
                         ASSINATURA
                     </td>
-                    <td rowspan="2" style="">
+                    <td rowspan="2">
                         DIA
                     </td>
                     <td colspan="5" style="background-color: #bdd7ee; ">
