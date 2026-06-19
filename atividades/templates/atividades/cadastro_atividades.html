@@ -111,34 +111,38 @@
             <button id="btn-proximo" type="submit" class="btn btn-disabled btn-secondary" disabled>Salvar 💾</button>
         </div>
         <!-- Exibe motorista sorteado automaticamente -->
-    {% if motorista_sorteado %}
+    <!--{% if motorista_sorteado %}
     <div class="alert alert-info" style="margin-top:15px;">
         <strong>🚗 Motorista designado:</strong> {{ motorista_sorteado.nome }}
         {% if motorista_sorteado.telefone %}
             - Telefone: {{ motorista_sorteado.telefone }}
         {% endif %}
     </div>
-    {% endif %}
+    {% endif %}-->
         <!-- Equipe -->
         
 <div class="checkbox-list form-row" id="lista-servidores">
     {% for item in servidores_status %}
+        {% if motorista_sorteado and motorista_sorteado.id == item.servidor.id and item.servidor.cargo == "Motorista" %}
+        <!-- Motorista sorteado: envia como hidden -->
+        <input type="hidden" name="servidores" value="{{ item.servidor.id }}">
+    {% else %}
+        <!-- Exibe apenas os servidores normais -->
         <div class="servidor-item {% if item.em_conflito %}conflito{% else %}disponivel{% endif %}">
             <label>
                 <input type="checkbox" name="servidores" value="{{ item.servidor.id }}" 
                        data-nome="{{ item.servidor.nome }}" 
-                       {% if motorista_sorteado.id == item.servidor.id and item.servidor.cargo == "Motorista" %}checked class="fixo"{% endif %}
                        {% if item.em_conflito %}disabled{% endif %}>
                 {{ item.servidor.primeiro_e_ultimo_nome }}
             </label>
             {% if item.em_conflito %}
-                <!-- Campo oculto para garantir envio -->
                 <input type="hidden" name="servidores_conflito" value="{{ item.servidor.id }}">
             {% endif %}
         </div>
+    {% endif %}
     {% endfor %}
 </div>
-        <div class="form-group">
+        <div class="form-group" style="display: none;">
   <small style="color:#777;">Selecione um ou mais motoristas externos.</small>
   <label>Motoristas Externos:</label>
   <div class="checkbox-list form-row" id="lista-motoristas-externos">
