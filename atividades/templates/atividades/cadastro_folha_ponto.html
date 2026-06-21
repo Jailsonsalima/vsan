@@ -7,19 +7,31 @@
       </div>
     {% endif %}-->
     <h2>Gerar Folha de Ponto</h2>
+    <form method="get" class="form">
+  <label for="setores">Filtrar por Setor:</label>
+  <select name="setores" id="setores" multiple onchange="this.form.submit()">
+    {% for setor in setores %}
+      <option value="{{ setor.id }}" {% if setor.id|stringformat:"s" in setores_ids %}selected{% endif %}>
+        {{ setor.nome }}
+      </option>
+    {% endfor %}
+  </select>
+  <small>Segure CTRL (ou CMD no Mac) para selecionar múltiplos setores.</small>
+</form>
+
     <form method="post" class="form">
       
-  <label>Selecione os meses (opcional):</label><br>
-  <div class="checkbox-list form-row" id="lista-servidores">
-  {% for mes_num, nome_mes in meses %}
-  <div class="servidor-item">
-    <label >
-      <input type="checkbox" name="meses" value="{{ mes_num }}">
-      {{ nome_mes }}/{{ ano_atual }}
-    </label>
-    </div>
-  {% endfor %}
-</div>
+      <label>Selecione os meses (opcional):</label><br>
+      <div class="checkbox-list form-row" id="lista-servidores">
+        {% for mes_num, nome_mes in meses %}
+          <div class="servidor-item">
+            <label >
+              <input type="checkbox" name="meses" value="{{ mes_num }}">
+              {{ nome_mes }}/{{ ano_atual }}
+            </label>
+          </div>
+        {% endfor %}
+      </div>
 
       {% csrf_token %}
       <div class="form-group">
@@ -32,8 +44,9 @@
         {% for servidor in servidores %}
           <div class="servidor-item">
             <label>
-              <input type="checkbox" name="servidores" value="{{ servidor.id }}">
-              {{ servidor.primeiro_e_ultimo_nome }}
+              <input type="checkbox" name="servidores" value="{{ servidor.id }}"
+              {% if servidor.setor.id|stringformat:"s" in setores_ids %}checked{% endif %}>
+              {{ servidor.primeiro_e_ultimo_nome }} - {{ servidor.setor.nome }}
             </label>
           </div>
         {% endfor %}
