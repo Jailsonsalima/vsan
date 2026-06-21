@@ -437,16 +437,18 @@ def listar_agendamentos(request):
             viagens = []
     else:
         viagens = None
-        # modo todos juntos
+        # modo todos juntos - motoristas internos
         for i, m in enumerate(motoristas):
             agendamentos_motorista = ProcessamentoAgendamento.objects.filter(motorista_servidor=m)
-            dias_por_motorista[m.id] = {"nome": m.nome, "dias": [], "cor": paleta[i % len(paleta)]}
+            dias_por_motorista[m.id] = {"nome": m.nome, "dias": set(), "cor": paleta[i % len(paleta)]}
             for ag in agendamentos_motorista:
                 data = ag.agendamento.data_ida
                 while data <= ag.agendamento.data_retorno:
                     if data.month == mes and data.year == ano:
-                        dias_por_motorista[m.id]["dias"].append(data.day)
+                        dias_por_motorista[m.id]["dias"].add(data.day)
                     data += timedelta(days=1)
+            # converte para lista ordenada
+            dias_por_motorista[m.id]["dias"] = sorted(list(dias_por_motorista[m.id]["dias"]))
 
     motoristas_externos = MotoristaExterno.objects.filter(disponivel=True)
     motorista_externo_id = request.GET.get("motorista_externo")
@@ -458,26 +460,27 @@ def listar_agendamentos(request):
         try:
             motorista_externo = MotoristaExterno.objects.get(id=motorista_externo_id)
             agendamentos_externos = ProcessamentoAgendamento.objects.filter(motorista_externo=motorista_externo).order_by("agendamento__data_ida")
-            dias_por_motorista_externo[motorista_externo.id] = {"nome": motorista_externo.nome, "dias": [], "cor": paleta[0]}
+            dias_por_motorista_externo[motorista_externo.id] = {"nome": motorista_externo.nome, "dias": set(), "cor": paleta[0]}
             for ag in agendamentos_externos:
                 data = ag.agendamento.data_ida
                 while data <= ag.agendamento.data_retorno:
                     if data.month == mes and data.year == ano:
-                        dias_por_motorista_externo[motorista_externo.id]["dias"].append(data.day)
+                        dias_por_motorista_externo[motorista_externo.id]["dias"].add(data.day)
                     data += timedelta(days=1)
-                    periodo = formatar_periodo(ag.agendamento.data_ida, ag.agendamento.data_retorno)
-                    equipe = []
-                    if hasattr(ag.agendamento, "atividade") and ag.agendamento.atividade:
-                        equipe_servidores = [s.nome for s in ag.agendamento.atividade.servidores.all()]
-                        equipe_motoristas = [m.nome for m in ag.agendamento.atividade.motoristas_externos.all()]
-                        equipe = equipe_servidores + equipe_motoristas
-                    viagens_externas.append({
-                        "municipio": ag.agendamento.municipio,
-                        "periodo": periodo,
-                        "data_ida": ag.agendamento.data_ida,
-                        "equipe": equipe,
-                        "mais_proxima": False,
-                    })
+                # viagens externas
+                periodo = formatar_periodo(ag.agendamento.data_ida, ag.agendamento.data_retorno)
+                equipe = []
+                if hasattr(ag.agendamento, "atividade") and ag.agendamento.atividade:
+                    equipe_servidores = [s.nome for s in ag.agendamento.atividade.servidores.all()]
+                    equipe_motoristas = [m.nome for m in ag.agendamento.atividade.motoristas_externos.all()]
+                    equipe = equipe_servidores + equipe_motoristas
+                viagens_externas.append({
+                    "municipio": ag.agendamento.municipio,
+                    "periodo": periodo,
+                    "data_ida": ag.agendamento.data_ida,
+                    "equipe": equipe,
+                    "mais_proxima": False,
+                })
             # marca viagem mais próxima
             hoje = date.today()
             futuras = [v for v in viagens_externas if v["data_ida"] >= hoje]
@@ -487,15 +490,19 @@ def listar_agendamentos(request):
         except MotoristaExterno.DoesNotExist:
             motorista_externo = None
     else:
-        # modo todos juntos
+        # modo todos juntos - motoristas externos
         for i, m in enumerate(motoristas_externos):
             agendamentos_motorista = ProcessamentoAgendamento.objects.filter(motorista_externo=m)
-            dias_por_motorista_externo[m.id] = {"nome": m.nome, "dias": [], "cor": paleta[i % len(paleta)]}
+            dias_por_motorista_externo[m.id] = {"nome": m.nome, "dias": set(), "cor": paleta[i % len(paleta)]}
             for ag in agendamentos_motorista:
-                if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
-                    dias_por_motorista_externo[m.id]["dias"].extend(
-                        range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
-                    )
+                data = ag.agendamento.data_ida
+                while data <= ag.agendamento.data_retorno:
+                    if data.month == mes and data.year == ano:
+                        dias_por_motorista_externo[m.id]["dias"].add(data.day)
+                    data += timedelta(days=1)
+            # converte para lista ordenada
+            dias_por_motorista_externo[m.id]["dias"] = sorted(list(dias_por_motorista_externo[m.id]["dias"]))
+
 
 
     # número de agendamentos por motorista no mês/ano atual
@@ -652,17 +659,25 @@ def calendario_motorista(request):
         # modo individual
         try:
             motorista = Servidor.objects.get(id=motorista_id)
-            agendamentos = ProcessamentoAgendamento.objects.filter(motorista_servidor=motorista)
+            agendamentos = ProcessamentoAgendamento.objects.filter(
+                motorista_servidor=motorista
+            ).order_by("agendamento__data_ida")
+
             dias_por_motorista[motorista.id] = {
                 "nome": motorista.nome,
-                "dias": [],
+                "dias": set(),
                 "cor": paleta[0]  # cor fixa para o selecionado
             }
             for ag in agendamentos:
-                if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
-                    dias_por_motorista[motorista.id]["dias"].extend(
-                        range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
-                    )
+                data = ag.agendamento.data_ida
+                while data <= ag.agendamento.data_retorno:
+                    if data.month == mes and data.year == ano:
+                        dias_por_motorista[motorista.id]["dias"].add(data.day)
+                    data += timedelta(days=1)
+
+            # converte para lista ordenada
+            dias_por_motorista[motorista.id]["dias"] = sorted(list(dias_por_motorista[motorista.id]["dias"]))
+
         except Servidor.DoesNotExist:
             motorista = None
     else:
@@ -671,14 +686,17 @@ def calendario_motorista(request):
             agendamentos = ProcessamentoAgendamento.objects.filter(motorista_servidor=m)
             dias_por_motorista[m.id] = {
                 "nome": m.nome,
-                "dias": [],
+                "dias": set(),
                 "cor": paleta[i % len(paleta)]  # cor cíclica
             }
             for ag in agendamentos:
-                if ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano:
-                    dias_por_motorista[m.id]["dias"].extend(
-                        range(ag.agendamento.data_ida.day, ag.agendamento.data_retorno.day + 1)
-                    )
+                data = ag.agendamento.data_ida
+                while data <= ag.agendamento.data_retorno:
+                    if data.month == mes and data.year == ano:
+                        dias_por_motorista[m.id]["dias"].add(data.day)
+                    data += timedelta(days=1)
+            # converte para lista ordenada
+            dias_por_motorista[m.id]["dias"] = sorted(list(dias_por_motorista[m.id]["dias"]))
 
     # número de agendamentos por motorista no mês/ano atual
     dados_motoristas_query = ProcessamentoAgendamento.objects.filter(
@@ -707,14 +725,14 @@ def calendario_motorista(request):
             motorista_obj = Servidor.objects.get(id=mid)
         except Servidor.DoesNotExist:
             continue
-        agendamentos = ProcessamentoAgendamento.objects.filter(
+        ags = ProcessamentoAgendamento.objects.filter(
             motorista_servidor_id=mid,
             agendamento__data_ida__month=mes,
             agendamento__data_ida__year=ano
         )
         total_dias = sum(
             (ag.agendamento.data_retorno - ag.agendamento.data_ida).days + 1
-            for ag in agendamentos
+            for ag in ags
         )
         dados_dias_motoristas.append({
             "motorista_servidor__id": mid,
@@ -869,7 +887,7 @@ def calendario_motorista_pessoal(request):
     motorista = usuario.servidor
     ano = int(request.GET.get("ano", timezone.now().year))
     mes = int(request.GET.get("mes", timezone.now().month))
-    # calcula a diferença de dias entre hoje e cada agendamento
+
     hoje = date.today()
     mais_proxima = None
     menor_diferenca = None
@@ -877,14 +895,16 @@ def calendario_motorista_pessoal(request):
     cal = calendar.Calendar(firstweekday=6)
     semanas = cal.monthdayscalendar(ano, mes)
 
-    agendamentos = ProcessamentoAgendamento.objects.filter(
-        motorista_servidor=motorista,
-        agendamento__data_ida__month=mes,
-        agendamento__data_ida__year=ano,
-        agendamento__status="processado"
-    ).exclude(agendamento__status="cancelado").select_related("agendamento")
+    agendamentos = (
+        ProcessamentoAgendamento.objects.filter(
+            motorista_servidor=motorista,
+            agendamento__status="processado"
+        )
+        .exclude(agendamento__status="cancelado")
+        .select_related("agendamento")
+        .order_by("agendamento__data_ida")
+    )
 
-    # mapa de dias -> municípios
     colors = ["#f46236", "#2196f3", "#4caf50", "#ff9800", "#b031c7", "#00bcd4", "#AD8273", "#7fa0b1"]
 
     ocupados_map = {}
@@ -892,40 +912,55 @@ def calendario_motorista_pessoal(request):
 
     for idx, proc in enumerate(agendamentos):
         ag = proc.agendamento
-        cor = colors[idx % len(colors)]  # pega cor da paleta ciclicamente
+        cor = colors[idx % len(colors)]
         periodo = formatar_periodo(ag.data_ida, ag.data_retorno)
-        for dia in range(ag.data_ida.day, ag.data_retorno.day + 1):
-            ocupados_map.setdefault(dia, []).append({"municipio": ag.municipio, "cor": cor})
 
-        # só considera se a data de ida for hoje ou futura
-        if ag.data_ida >= hoje:
-            diferenca = (ag.data_ida - hoje).days
-            if menor_diferenca is None or diferenca < menor_diferenca:
-                menor_diferenca = diferenca
-                mais_proxima = idx
+        # percorre os dias do período, mas só adiciona se forem do mês/ano selecionados
+        data = ag.data_ida
+        while data <= ag.data_retorno:
+            if data.month == mes and data.year == ano:
+                ocupados_map.setdefault(data.day, []).append({"municipio": ag.municipio, "cor": cor})
+            data += timedelta(days=1)
 
-        equipe = []
-        if hasattr(ag, "atividade") and ag.atividade:
-            # pega servidores e motoristas externos vinculados à atividade
-            equipe_servidores = [s.nome for s in ag.atividade.servidores.all()]
-            equipe_motoristas = [m.nome for m in ag.atividade.motoristas_externos.all()]
-            equipe = equipe_servidores + equipe_motoristas
-        viagens.append({
-            "municipio": ag.municipio,
-            "periodo": periodo,
-            "cor": cor,
-            "data_ida": ag.data_ida,
-            "equipe": equipe,
-        })
-    # ordena pela data_ida (do menor para o maior)
+        # só adiciona viagem se o mês/ano da data de ida forem iguais ao selecionado
+        # adiciona viagem se qualquer parte do período cair no mês/ano selecionado
+        if (ag.data_ida.month == mes and ag.data_ida.year == ano) or (ag.data_retorno.month == mes and ag.data_retorno.year == ano):
+            equipe = []
+            if hasattr(ag, "atividade") and ag.atividade:
+                equipe_servidores = [s.nome for s in ag.atividade.servidores.all()]
+                equipe_motoristas = [m.nome for m in ag.atividade.motoristas_externos.all()]
+                equipe = equipe_servidores + equipe_motoristas
+
+            viagens.append({
+                "municipio": ag.municipio,
+                "periodo": periodo,
+                "cor": cor,
+                "data_ida": ag.data_ida,
+                "equipe": equipe,
+            })
+
+            # identifica viagem mais próxima
+            if ag.data_ida >= hoje:
+                diferenca = (ag.data_ida - hoje).days
+                if menor_diferenca is None or diferenca < menor_diferenca:
+                    menor_diferenca = diferenca
+                    mais_proxima = idx
+
+
+                    # identifica viagem mais próxima
+                    if ag.data_ida >= hoje:
+                        diferenca = (ag.data_ida - hoje).days
+                        if menor_diferenca is None or diferenca < menor_diferenca:
+                            menor_diferenca = diferenca
+                            mais_proxima = idx
+
+    # ordena viagens e marca a mais próxima
     viagens = sorted(viagens, key=lambda x: x["data_ida"])
-    # marca o agendamento mais próximo
     for viagem in viagens:
         if viagem["data_ida"] >= hoje:
             viagem["mais_proxima"] = True
-            break  # só a primeira futura/atual
+            break
 
-    # transforma semanas em estrutura com municípios + cor
     semanas_com_dados = []
     for semana in semanas:
         dias = []
@@ -955,11 +990,11 @@ def calendario_motorista_pessoal(request):
         "viagens": viagens,
     })
 
+
 @login_required(login_url='/login/')
 def calendario_servidor_pessoal(request):
     usuario = request.user
 
-    # Verifica se o usuário tem servidor vinculado
     if not hasattr(usuario, "servidor") or not usuario.servidor:
         messages.error(request, "Seu usuário não está vinculado a um servidor.")
         return redirect("listar_agendamentos")
@@ -969,60 +1004,61 @@ def calendario_servidor_pessoal(request):
     mes = int(request.GET.get("mes", timezone.now().month))
     hoje = date.today()
 
-    # gera estrutura de semanas do mês
     cal = calendar.Calendar(firstweekday=6)
     semanas = cal.monthdayscalendar(ano, mes)
 
-    # busca apenas agendamentos do servidor logado
+    # busca agendamentos do servidor logado que começam ou terminam no mês selecionado
     agendamentos = (
         Agendamento.objects.filter(
-            atividade__servidores=servidor,
-            data_ida__month=mes,
-            data_ida__year=ano
+            atividade__servidores=servidor
         )
         .exclude(status="cancelado")
         .order_by("data_ida")
     )
 
-    ocupados_map = {}
-    viagens = []
-
     colors = ["#f46236", "#2196f3", "#4caf50", "#ff9800",
               "#b031c7", "#00bcd4", "#AD8273", "#7fa0b1"]
 
+    ocupados_map = {}
+    viagens = []
+
     for idx, ag in enumerate(agendamentos):
-        cor = colors[idx % len(colors)]
-        periodo = formatar_periodo(ag.data_ida, ag.data_retorno)
+        # só considera viagens que tocam o mês/ano selecionado
+        if (ag.data_ida.month == mes and ag.data_ida.year == ano) or (ag.data_retorno.month == mes and ag.data_retorno.year == ano):
+            cor = colors[idx % len(colors)]
+            periodo = formatar_periodo(ag.data_ida, ag.data_retorno)
 
-        # marca os dias ocupados no calendário
-        for dia in range(ag.data_ida.day, ag.data_retorno.day + 1):
-            ocupados_map.setdefault(dia, []).append({"municipio": ag.municipio, "cor": cor})
+            # percorre os dias do período, mas só adiciona os que pertencem ao mês selecionado
+            data = ag.data_ida
+            while data <= ag.data_retorno:
+                if data.month == mes and data.year == ano:
+                    ocupados_map.setdefault(data.day, []).append({"municipio": ag.municipio, "cor": cor})
+                data += timedelta(days=1)
 
-        equipe = []
-        if hasattr(ag, "atividade") and ag.atividade:
-            equipe_servidores = [s.nome for s in ag.atividade.servidores.all()]
-            equipe_motoristas = [m.nome for m in ag.atividade.motoristas_externos.all()]
-            equipe = equipe_servidores + equipe_motoristas
+            equipe = []
+            if hasattr(ag, "atividade") and ag.atividade:
+                equipe_servidores = [s.nome for s in ag.atividade.servidores.all()]
+                equipe_motoristas = [m.nome for m in ag.atividade.motoristas_externos.all()]
+                equipe = equipe_servidores + equipe_motoristas
 
-        viagens.append({
-            "municipio": ag.municipio,
-            "periodo": periodo,
-            "cor": cor,
-            "data_ida": ag.data_ida,
-            "equipe": equipe,
-            "mais_proxima": False,
-        })
+            viagens.append({
+                "municipio": ag.municipio,
+                "periodo": periodo,
+                "cor": cor,
+                "data_ida": ag.data_ida,
+                "equipe": equipe,
+                "mais_proxima": False,
+            })
 
     # ordena viagens pela data de ida
     viagens = sorted(viagens, key=lambda x: x["data_ida"])
 
-    # marca a viagem mais próxima (primeira futura ou de hoje)
+    # marca a viagem mais próxima
     for viagem in viagens:
         if viagem["data_ida"] >= hoje:
             viagem["mais_proxima"] = True
             break
 
-    # estrutura de semanas com dados de municípios
     semanas_com_dados = []
     for semana in semanas:
         dias = []

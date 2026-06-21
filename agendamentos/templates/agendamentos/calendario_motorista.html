@@ -69,18 +69,19 @@
                 {% endfor %}
             </ul>
         {% else %}
-        <!-- Legenda de cores -->
-        <div style="margin-top:20px;">
-            <h4>Legenda:</h4>
-            <ul style="list-style:none; padding:0;">
-                {% for mid, dados in dias_por_motorista.items %}
-                    <li>
-                        <span style="display:inline-block; width:20px; height:10px; background-color:{{ dados.cor }}; margin-right:5px;"></span>
-                        {{ dados.nome }}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+            <!-- Legenda de cores -->
+            <div style="margin-top:20px;">
+                <h4>Legenda:</h4>
+                <ul style="list-style:none; padding:0;">
+                    {% for mid, dados in dias_por_motorista.items %}
+                        <li>
+                            <span style="display:inline-block; width:20px; height:10px; background-color:{{ dados.cor }}; margin-right:5px;"></span>
+                            {{ dados.nome }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
     </div>
 
     <div style="flex:1;">
