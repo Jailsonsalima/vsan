@@ -459,28 +459,38 @@ def listar_agendamentos(request):
     if motorista_externo_id:
         try:
             motorista_externo = MotoristaExterno.objects.get(id=motorista_externo_id)
-            agendamentos_externos = ProcessamentoAgendamento.objects.filter(motorista_externo=motorista_externo).order_by("agendamento__data_ida")
+            agendamentos_externos = ProcessamentoAgendamento.objects.filter(
+                motorista_externo=motorista_externo
+            ).exclude(agendamento__status="cancelado").order_by("agendamento__data_ida")
+
             dias_por_motorista_externo[motorista_externo.id] = {"nome": motorista_externo.nome, "dias": set(), "cor": paleta[0]}
+
             for ag in agendamentos_externos:
-                data = ag.agendamento.data_ida
-                while data <= ag.agendamento.data_retorno:
-                    if data.month == mes and data.year == ano:
-                        dias_por_motorista_externo[motorista_externo.id]["dias"].add(data.day)
-                    data += timedelta(days=1)
-                # viagens externas
-                periodo = formatar_periodo(ag.agendamento.data_ida, ag.agendamento.data_retorno)
-                equipe = []
-                if hasattr(ag.agendamento, "atividade") and ag.agendamento.atividade:
-                    equipe_servidores = [s.nome for s in ag.agendamento.atividade.servidores.all()]
-                    equipe_motoristas = [m.nome for m in ag.agendamento.atividade.motoristas_externos.all()]
-                    equipe = equipe_servidores + equipe_motoristas
-                viagens_externas.append({
-                    "municipio": ag.agendamento.municipio,
-                    "periodo": periodo,
-                    "data_ida": ag.agendamento.data_ida,
-                    "equipe": equipe,
-                    "mais_proxima": False,
-                })
+                # só considera viagens que tocam o mês/ano selecionado
+                if (ag.agendamento.data_ida.month == mes and ag.agendamento.data_ida.year == ano) or \
+                (ag.agendamento.data_retorno.month == mes and ag.agendamento.data_retorno.year == ano):
+
+                    data = ag.agendamento.data_ida
+                    while data <= ag.agendamento.data_retorno:
+                        if data.month == mes and data.year == ano:
+                            dias_por_motorista_externo[motorista_externo.id]["dias"].add(data.day)
+                        data += timedelta(days=1)
+
+                    periodo = formatar_periodo(ag.agendamento.data_ida, ag.agendamento.data_retorno)
+                    equipe = []
+                    if hasattr(ag.agendamento, "atividade") and ag.agendamento.atividade:
+                        equipe_servidores = [s.nome for s in ag.agendamento.atividade.servidores.all()]
+                        equipe_motoristas = [m.nome for m in ag.agendamento.atividade.motoristas_externos.all()]
+                        equipe = equipe_servidores + equipe_motoristas
+
+                    viagens_externas.append({
+                        "municipio": ag.agendamento.municipio,
+                        "periodo": periodo,
+                        "data_ida": ag.agendamento.data_ida,
+                        "equipe": equipe,
+                        "mais_proxima": False,
+                    })
+
             # marca viagem mais próxima
             hoje = date.today()
             futuras = [v for v in viagens_externas if v["data_ida"] >= hoje]
