@@ -79,9 +79,11 @@
                     <select name="motorista_externo" id="motorista_externo" onchange="this.form.submit()">
                         <option value="">-- Todos juntos --</option>
                         {% for m in motoristas_externos %}
-                            <option value="{{ m.id }}" {% if motorista_externo_selecionado and m.id == motorista_externo_selecionado.id %}selected{% endif %}>
-                                {{ m.nome }}
-                            </option>
+                            {% if m.nome != "Indisponível" %}
+                                <option value="{{ m.id }}" {% if motorista_externo_selecionado and m.id == motorista_externo_selecionado.id %}selected{% endif %}>
+                                    {{ m.nome }}
+                                </option>
+                            {% endif %}
                         {% endfor %}
                     </select>
                     <input type="hidden" name="mes" value="{{ mes }}">
@@ -106,7 +108,9 @@
                                         <div class="motoristas-dia">
                                             {% for mid, dados in dias_por_motorista_externo.items %}
                                                 {% if dia in dados.dias %}
-                                                    <div class="linha-motorista" style="background-color: {{ dados.cor }};"></div>
+                                                    {% if dados.nome != "Indisponível" %}
+                                                        <div class="linha-motorista" style="background-color: {{ dados.cor }};"></div>
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endfor %}
                                         </div>
@@ -116,6 +120,20 @@
                         </tr>
                     {% endfor %}
                 </table>
+                <!-- Legenda de cores para motoristas externos -->
+                <div style="margin-top:20px;">
+                    <h4>Legenda Motoristas Externos:</h4>
+                    <ul style="list-style:none; padding:0;">
+                        {% for mid, dados in dias_por_motorista_externo.items %}
+                            {% if dados.nome != "Indisponível" %}
+                                <li>
+                                    <span style="display:inline-block; width:20px; height:10px; background-color:{{ dados.cor }}; margin-right:5px;"></span>
+                                    {{ dados.nome }}
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
 
                 {% if motorista_externo_selecionado %}
                     <h2 style="margin-top:40px;">Viagens de {{ nome_mes }}/{{ ano }}</h2>

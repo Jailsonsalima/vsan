@@ -11,13 +11,14 @@
             .select { width: 30px; height: auto; }
             .sus { position: fixed; top: 0; margin-left: 20px; margin-top: 30px;  left: 0; width: 200px; height: auto; }
             .vsan { position: fixed; top: 0; margin-right: 40px; margin-top: 20px;  right: 0; width: 90px; height: auto; }
-            .top-text { font-size: 12.5px; position: fixed; text-align: center; top: 0; margin-top: 30px; margin-bottom: 35px; left: 52%; transform: translateX(-50%); }
+            .top-text { font-size: 12.5px; position: fixed; text-align: center; top: 0; margin-top: 30px; left: 52%; transform: translateX(-50%); }
             /* Linha superior centralizada */
             .linha-topo { position: fixed; top: 140px; left: 0; width: 100%; height: auto; }
             h3 { text-align: center;  margin-bottom: 1px; }
             .center_text { text-align: center; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 15px; margin-top: 80px; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 15px; margin-top: 63px; }
             tr, td { border: 0.5px solid #000000; text-align: left; padding: 2px;}
+            @page:first { margin: 0; padding: 0; }
             /* Remove margens padrão do PDF */
             @page { margin: 0; padding: 0; }
             
@@ -27,6 +28,13 @@
             .linha-boton { position: fixed; bottom: 45px; right: 0; width: 100%; height: auto; z-index: 1; }
             .footer-devs { text-align: center; color: #000; bottom: 25px; position: fixed; width: 100%; }
             .fundo_titulo { background-color: #8db3e2;}
+            .bloco-topo {
+                padding-top: 60px; /* altura do top-text + 20px de espaço */
+            }
+            .segunda-tabela {
+                margin-top: 40px;
+            }
+
         </style>
     </head>
     <body>
@@ -289,25 +297,41 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        &emsp;( ) Aéreo
+                        {% if atividade.transporte == "Aéreo" %}
+                            &emsp;(X) Aéreo
+                        {% else %}
+                            &emsp;( ) Aéreo
+                        {% endif %}
                     </td>
                     <td colspan="4">* Os Bilhetes Devem Ser Anexados Ao Presente Relatório.</td>
                     </tr>
                 <tr>
                     <td colspan="2">
-                        &emsp;( ) Rodoviário
+                        {% if atividade.transporte == "Rodoviário" %}
+                            &emsp;(X) Rodoviário
+                        {% else %}
+                            &emsp;( ) Rodoviário
+                        {% endif %}
                     </td>
                     <td colspan="4">* Os Bilhetes Devem Ser Anexados Ao Presente Relatório.</td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        &emsp;( ) Fluvial
+                        {% if atividade.transporte == "Fluvial" %}
+                            &emsp;(X) Fluvial
+                        {% else %}
+                            &emsp;( ) Fluvial
+                        {% endif %}
                     </td>
                     <td colspan="4">* Os Bilhetes Devem Ser Anexados Ao Presente Relatório.</td>
                     </tr>
                 <tr>
                     <td colspan="2">
-                        &emsp;( ) Terrestre (Carro Oficial)
+                        {% if atividade.transporte == "Veículo Oficial" or if atividade.transporte == "Veículo Oficial (VAN)" %}
+                            &emsp;(X) Terrestre (Carro Oficial)
+                        {% else %}
+                            &emsp;( ) Terrestre (Carro Oficial)
+                        {% endif %}
                     </td>
                     <td colspan="4" >
                         Veículo: ______________ <br>
@@ -342,6 +366,227 @@
                 <strong>DIVISÃO DE PRESTAÇÃO DE CONTAS</strong><br>End: Tv. Lomas Valentinas, 2190, Marco, Belém, Pará, CEP 66.093-677<br>
                 Fone: (91) 4006-4239 | E-mail: <a href="mailto:contatodipcsespa@gmail.com">contatodipcsespa@gmail.com</a>
             </footer>
+<br><br>
+<div class="bloco-topo">
+
+<div  class="top-text">
+            <strong>SECRETARIA DE ESTADO DE SAÚDE PÚBLICA DO PARÁ</strong><br>
+            DIRETORIA ADMINISTRATIVA E FINANCEIRA<br>
+            DIVISÃO DE PRESTAÇÃO DE CONTAS
+        </div>
+            
+            <table class="segunda-tabela">
+                <tr class="fundo_titulo">
+                    <td colspan="6" >
+                        <strong><h3>HAVENDO DEVOLUÇÃO DE RECURSOS</h3></strong><p style="font-size: 10px;">&nbsp;</p>
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        *Dados Bancários: <br>
+                        *CNPJ: <br>
+                        *Banco: <br>
+                        *Agência: <br>
+                        *Conta Corrente: <br>
+                        *Informações fornecidas pela DIEF. 
+                    </td>
+                    <td colspan="4">
+                         
+                        Obs 1: Os dados bancários NÃO serão informados via telefone; <br>
+                        Obs 2: Após a efetivação da devolução, anexar o comprovante de depósito ao processo; <br>
+                        Obs 3: NÃO ACEITAMOS PIX – SOMENTE TRANSFERÊNCIA BANCÁRIA. <br>
+                    </td>
+                </tr>
+                
+                <tr class="fundo_titulo">
+                    <td colspan="6" >
+                        <h3>INFORMAÇÕES DO MOTORISTA/CONDUTOR DE VEÍCULO OFICIAL</h3><p style="font-size: 10px;">&nbsp;</p>
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td class="center_text" colspan="2">
+                        Veículo ______________ <br>
+                        Placa _______________ <br>
+                        
+                        *Campo exclusivo para prestação de contas do motorista/condutor de veículo oficial.
+                    </td>
+                    <td colspan="4" style="">
+                        Horário Da Partida ______________ <br>
+                        Horário Da Guarda _______________ <br><br>
+                        
+                        * §2º, I (…) horário da partida do seu local de guarda e a data de retorno do veículo oficial ao seu local de guarda registrado na autorização de entrada e saída de veículo official; (Dec. 3.792/2024) <br>
+                    </td>
+                    
+                    
+                </tr>
+                <tr class="fundo_titulo">
+                    <td colspan="6" >
+                        <h3>ANEXOS</h3><p style="font-size: 10px;">&nbsp;</p>
+                    </td>
+                    
+                </tr>
+                <tr class="fundo_titulo">
+                    <td colspan="2" >
+                        <h3>DOCUMENTOS</h3><p style="font-size: 10px;">&nbsp;</p>
+                    </td>
+                    <td colspan="4" >
+                        <h3>SEQUENCIAL DO ANEXO NO PAE </h3><p style="font-size: 10px;">&nbsp;</p>
+                    </td>
+                </tr>
+
+
+
+                <tr >
+                    <td colspan="2" >
+                        (  ) Portaria de concessão
+                    </td>
+                    <td colspan="4" >
+                        
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="2" >
+                        (  ) Nota de empenho
+                    </td>
+                    <td colspan="4" >
+                        
+                    </td>
+                </tr>
+
+
+                <tr >
+                    <td colspan="2" >
+                        (  ) Ordem bancária
+                    </td>
+                    <td colspan="4" >
+                        
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="2" >
+                        (  ) Comprovação de transporte 
+                    </td>
+                    <td colspan="4" >
+                        
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="2" >
+                        (  ) Registro da autorização de entrada e saída do 
+veículo oficial 
+*Campo exclusivo para prestação de contas do 
+motorista/condutor de veículo oficial. 
+                    </td>
+                    <td colspan="4" >
+                        
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="2" >
+                        (  ) Declaração de participação
+                    </td>
+                    <td colspan="4" >
+                        
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="2" >
+                        (  ) Certificado do evento/curso 
+                    </td>
+                    <td colspan="4" >
+                        
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="2" >
+                        (  ) Bilhetes aéreos
+                    </td>
+                    <td colspan="4" >
+                        
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="2" >
+                        (  ) Relatórios
+                    </td>
+                    <td colspan="4" >
+                        
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="2" >
+                        (  ) Fotos
+                    </td>
+                    <td colspan="4" >
+                        
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="2" >
+                        (  ) Comprovante de devolução
+                    </td>
+                    <td colspan="4" >
+                        
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="fundo_titulo" colspan="6" >
+                        <h3>DADOS DA AUTORIDADE QUE AUTORIZOU A VIAGEM</h3><p style="font-size: 10px;">&nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td >
+                        Nome
+                    </td>
+                    <td colspan="5"></td>
+                </tr>
+                <tr>
+                    <td >
+                        Matrícula
+                    </td>
+                    <td colspan="5"></td>
+                </tr>
+                <tr>
+                    <td >
+                        Cargo/Função 
+                    </td>
+                    <td colspan="5"></td>
+                </tr>
+                
+                <tr>
+                    <td class="fundo_titulo" colspan="6" >
+                        <h3>ASSINATURAS</h3><p style="font-size: 10px;">&nbsp;</p>
+                    </td>
+                </tr>
+                <tr style="height: 100px;">
+                    <td colspan="2" >
+                        
+                        <div class="assinatura">
+                            <div class="linha"></div>
+                            <div class="texto">Beneficiário</div>
+                        </div>
+    
+                    </td>
+                    <td colspan="4" >
+                        <div class="assinatura">
+                            <div class="linha"></div>
+                            <div class="texto">Autoridade Competente</div>
+                        </div>
+  
+                    </td>
+                </tr>
+                
+            </table>
+
+<footer class="footer-devs">
+                <strong>DIVISÃO DE PRESTAÇÃO DE CONTAS</strong><br>End: Tv. Lomas Valentinas, 2190, Marco, Belém, Pará, CEP 66.093-677<br>
+                Fone: (91) 4006-4239 | E-mail: <a href="mailto:contatodipcsespa@gmail.com">contatodipcsespa@gmail.com</a>
+            </footer>
+
+</div>
         {% endfor %}
 
     </body>
