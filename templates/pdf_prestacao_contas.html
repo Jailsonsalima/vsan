@@ -7,46 +7,49 @@
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { margin: 20px; padding: 20px; font-family: 'Times New Roman', Times, serif; font-size: 14px; }
-            .brasao { position: fixed; top: 0; margin-right: 40px; margin-top: 20px; right: 0; width: 80px; height: auto; }
+            /*.brasao { position: fixed; top: 0; margin-right: 40px; margin-top: 20px; right: 0; width: 80px; height: auto; }*/
             .select { width: 30px; height: auto; }
             .sus { position: fixed; top: 0; margin-left: 20px; margin-top: 30px;  left: 0; width: 200px; height: auto; }
             .vsan { position: fixed; top: 0; margin-right: 40px; margin-top: 20px;  right: 0; width: 90px; height: auto; }
-            .top-text { font-size: 12.5px; position: fixed; text-align: center; top: 0; margin-top: 30px; left: 52%; transform: translateX(-50%); }
+            /*.top-text { font-size: 12.5px; position: fixed; text-align: center; top: 0; margin-top: 30px; left: 52%; transform: translateX(-50%); }*/
+            .brasao { position: fixed; top: 0; margin-top: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: auto; }
+            .top-text { font-size: 12.5px; text-align: center; margin-top: 30px;}
             /* Linha superior centralizada */
             .linha-topo { position: fixed; top: 140px; left: 0; width: 100%; height: auto; }
             h3 { text-align: center;  margin-bottom: 1px; }
             .center_text { text-align: center; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 15px; margin-top: 63px; }
+            table { width: 100%; border-collapse: collapse;  font-size: 15px; margin-top: 10px; margin-bottom: 60px; }
             tr, td { border: 0.5px solid #000000; text-align: left; padding: 2px;}
             @page:first { margin: 0; padding: 0; }
             /* Remove margens padrão do PDF */
-            @page { margin: 0; padding: 0; }
+            @page { margin: 0; padding: 0; margin-top: 5px; }
             
             /* Estrela canto inferior esquerdo */
             .estrela { position: fixed; bottom: 0; left: 0; width: 120px; /* ajuste conforme necessário */ height: auto; z-index: 2; }
             /* Linha inferior centralizada */
             .linha-boton { position: fixed; bottom: 45px; right: 0; width: 100%; height: auto; z-index: 1; }
-            .footer-devs { text-align: center; color: #000; bottom: 25px; position: fixed; width: 100%; }
+            .footer-devs { left: 50%; transform: translateX(-50%); text-align: center; color: #000; bottom: 25px; position: fixed; width: 100%; }
             .fundo_titulo { background-color: #8db3e2;}
-            .bloco-topo {
-                padding-top: 60px; /* altura do top-text + 20px de espaço */
+            .bloco-topo1 {
+                padding-top: 10px; /* altura do top-text + 20px de espaço */
+            }
+            .bloco-topo2 {
+                padding-top: 50px; /* altura do top-text + 20px de espaço */
             }
             .segunda-tabela {
-                margin-top: 40px;
-            }
-            .assinaturas {
-                display: flex;
-                justify-content: space-around;
-                margin-top: 50px;
+                margin-top: 10px;
             }
             .assinatura {
-                text-align: center;
-                width: 40%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;   /* centraliza horizontal */
+                justify-content: center; /* centraliza vertical */
+                height: 80%;          /* ocupa toda a altura da célula */
             }
             .linha {
+                width: 80%;           /* linha menor que a célula */
+                margin-top: 40px;       /* centraliza horizontalmente */
                 border-top: 1px solid #000;
-                margin-bottom: 5px;
-
             }
             .texto {
                 font-size: 14px;
@@ -54,13 +57,14 @@
         </style>
     </head>
     <body>
+        <div class="bloco-topo1">
         {% for servidor in servidores %}
             <!--<img src="file:///home/vsan/vsan/static/img/estrela_para.png" alt="Estrela" class="estrela">-->
             <!--<img src="file:///home/vsan/vsan/static/img/linha_boton.png" alt="Linha inferior" class="linha-boton">-->
             <!--<img src="file:///home/vsan/vsan/static/img/linha_topo.png" alt="Linha superior" class="linha-topo">-->
             <img src="file:///home/vsan/vsan/static/img/brasao.png" alt="Brasao" class="brasao">
             <!--<img src="file:///home/vsan/vsan/static/img/vsan.png" alt="Vigilância Sanitária" class="vsan">-->
-            <img src="file:///home/vsan/vsan/static/img/sespa.png" alt="SUS" class="sus">
+            <!--<img src="file:///home/vsan/vsan/static/img/sespa.png" alt="SUS" class="sus">-->
             <div  class="top-text">
             <strong>SECRETARIA DE ESTADO DE SAÚDE PÚBLICA DO PARÁ</strong><br>
             DIRETORIA ADMINISTRATIVA E FINANCEIRA<br>
@@ -76,7 +80,7 @@
                 </tr>
                 <tr class="fundo_titulo">
                     <td colspan="6" >
-                        <strong><h3>DADOS DO BENEFICIÁRIO</h3></strong><p style="font-size: 10px;">&nbsp;</p>
+                        <strong><h3>DADOS DO BENEFICIÁRIO</h3></strong><p style="font-size: 6px;">&nbsp;</p>
                     </td>
                     
                 </tr>
@@ -135,7 +139,7 @@
                 </tr>
                 <tr class="fundo_titulo">
                     <td colspan="6" >
-                        <h3>DADOS GERAIS DA VIAGEM</h3><p style="font-size: 10px;">&nbsp;</p>
+                        <h3>DADOS GERAIS DA VIAGEM</h3><p style="font-size: 6px;">&nbsp;</p>
                     </td>
                     
                 </tr>
@@ -308,7 +312,7 @@
                 </tr>
                 <tr>
                     <td class="fundo_titulo" colspan="6" >
-                        <h3>MEIO DE TRANSPORTE</h3><p style="font-size: 10px;">&nbsp;</p>
+                        <h3>MEIO DE TRANSPORTE</h3><p style="font-size: 6px;">&nbsp;</p>
                     </td>
                 </tr>
                 <tr>
@@ -357,17 +361,17 @@
                 </tr>
                 <tr>
                     <td class="fundo_titulo" colspan="6" >
-                        <h3>DESCRIÇÃO DAS ATIVIDADES DESENVOLVIDAS</h3><p style="font-size: 10px;">&nbsp;</p>
+                        <h3>DESCRIÇÃO DAS ATIVIDADES DESENVOLVIDAS</h3><p style="font-size: 6px;">&nbsp;</p>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="6" style="height: 250px;">
+                    <td colspan="6" style="min-height: 150px;">
                         <p style="line-height: 1.3; text-align: justify; white-space: pre-line;">{{ atividade.objetivo }}</p>
                     </td>
                 </tr>
                 <tr>
                     <td class="fundo_titulo" colspan="6" >
-                        <h3>DEVOLUÇÃO DE RECURSOS</h3><p style="font-size: 10px;">&nbsp;</p>
+                        <h3>DEVOLUÇÃO DE RECURSOS</h3><p style="font-size: 6px;">&nbsp;</p>
                     </td>
                 </tr>
                 <tr>
@@ -382,8 +386,9 @@
                 <strong>DIVISÃO DE PRESTAÇÃO DE CONTAS</strong><br>End: Tv. Lomas Valentinas, 2190, Marco, Belém, Pará, CEP 66.093-677<br>
                 Fone: (91) 4006-4239 | E-mail: <a href="mailto:contatodipcsespa@gmail.com">contatodipcsespa@gmail.com</a>
             </footer>
+        </div>
 <br><br>
-<div class="bloco-topo">
+<div class="bloco-topo2">
 
 <div  class="top-text">
             <strong>SECRETARIA DE ESTADO DE SAÚDE PÚBLICA DO PARÁ</strong><br>
@@ -391,182 +396,180 @@
             DIVISÃO DE PRESTAÇÃO DE CONTAS
         </div>
             
-            <table class="segunda-tabela">
+            <table>
                 <tr class="fundo_titulo">
                     <td colspan="6" >
-                        <strong><h3>HAVENDO DEVOLUÇÃO DE RECURSOS</h3></strong><p style="font-size: 10px;">&nbsp;</p>
+                        <strong><h3>HAVENDO DEVOLUÇÃO DE RECURSOS</h3></strong><p style="font-size: 6px;">&nbsp;</p>
                     </td>
                     
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <td colspan="3">
                         *Dados Bancários: <br>
                         *CNPJ: <br>
                         *Banco: <br>
                         *Agência: <br>
                         *Conta Corrente: <br>
-                        *Informações fornecidas pela DIEF. 
+                        <i style="display: flex; flex-direction: column; align-items: center; ">*Informações fornecidas pela DIEF.</i>
                     </td>
-                    <td colspan="4">
+                    <td colspan="3" style="width: 50%;">
                          
-                        Obs 1: Os dados bancários NÃO serão informados via telefone; <br>
-                        Obs 2: Após a efetivação da devolução, anexar o comprovante de depósito ao processo; <br>
-                        Obs 3: NÃO ACEITAMOS PIX – SOMENTE TRANSFERÊNCIA BANCÁRIA. <br>
+                        <strong>Obs 1:</strong> Os dados bancários <strong>NÃO</strong> serão informados via telefone; <br>
+                        <strong>Obs 2:</strong> Após a efetivação da devolução, anexar o comprovante de depósito ao processo; <br>
+                        <strong>Obs 3: NÃO ACEITAMOS PIX – SOMENTE TRANSFERÊNCIA BANCÁRIA.</strong><br>
                     </td>
                 </tr>
                 
                 <tr class="fundo_titulo">
                     <td colspan="6" >
-                        <h3>INFORMAÇÕES DO MOTORISTA/CONDUTOR DE VEÍCULO OFICIAL</h3><p style="font-size: 10px;">&nbsp;</p>
+                        <h3>INFORMAÇÕES DO MOTORISTA/CONDUTOR DE VEÍCULO OFICIAL</h3><p style="font-size: 6px;">&nbsp;</p>
                     </td>
                     
                 </tr>
                 <tr>
-                    <td class="center_text" colspan="2">
-                        Veículo ______________ <br>
-                        Placa _______________ <br>
+                    <td colspan="3">
+                        &emsp;Veículo ______________ <br>
+                        &emsp;Placa _______________ <br><br>
                         
-                        *Campo exclusivo para prestação de contas do motorista/condutor de veículo oficial.
+                        <i style="font-size: 12px; font-weight: bold;">*Campo exclusivo para prestação de contas do motorista/condutor de veículo oficial.</i>
                     </td>
-                    <td colspan="4" style="">
+                    <td colspan="3" style="">
                         Horário Da Partida ______________ <br>
                         Horário Da Guarda _______________ <br><br>
                         
-                        * §2º, I (…) horário da partida do seu local de guarda e a data de retorno do veículo oficial ao seu local de guarda registrado na autorização de entrada e saída de veículo official; (Dec. 3.792/2024) <br>
+                        <i style="font-size: 12px; font-weight: bold; text-align: justify;">* §2º, I (…) horário da partida do seu local de guarda e a data de retorno do veículo oficial ao seu local de guarda registrado na autorização de entrada e saída de veículo official; (Dec. 3.792/2024)</i><br>
                     </td>
                     
                     
                 </tr>
                 <tr class="fundo_titulo">
                     <td colspan="6" >
-                        <h3>ANEXOS</h3><p style="font-size: 10px;">&nbsp;</p>
+                        <h3>ANEXOS</h3><p style="font-size: 6px;">&nbsp;</p>
                     </td>
                     
                 </tr>
                 <tr class="fundo_titulo">
-                    <td colspan="2" >
-                        <h3>DOCUMENTOS</h3><p style="font-size: 10px;">&nbsp;</p>
+                    <td colspan="3" >
+                        <h3>DOCUMENTOS</h3><p style="font-size: 6px;">&nbsp;</p>
                     </td>
-                    <td colspan="4" >
-                        <h3>SEQUENCIAL DO ANEXO NO PAE </h3><p style="font-size: 10px;">&nbsp;</p>
+                    <td colspan="3" >
+                        <h3>SEQUENCIAL DO ANEXO NO PAE </h3><p style="font-size: 6px;">&nbsp;</p>
                     </td>
                 </tr>
 
 
 
                 <tr >
-                    <td colspan="2" >
+                    <td colspan="3" style="padding-left: 20px;">
                         (  ) Portaria de concessão
                     </td>
-                    <td colspan="4" >
+                    <td colspan="3" >
                         
                     </td>
                 </tr>
                 <tr >
-                    <td colspan="2" >
+                    <td colspan="3" style="padding-left: 20px;">
                         (  ) Nota de empenho
                     </td>
-                    <td colspan="4" >
+                    <td colspan="3" >
                         
                     </td>
                 </tr>
 
 
                 <tr >
-                    <td colspan="2" >
+                    <td colspan="3" style="padding-left: 20px;">
                         (  ) Ordem bancária
                     </td>
-                    <td colspan="4" >
+                    <td colspan="3" >
                         
                     </td>
                 </tr>
                 <tr >
-                    <td colspan="2" >
+                    <td colspan="3" style="padding-left: 20px;">
                         (  ) Comprovação de transporte 
                     </td>
-                    <td colspan="4" >
+                    <td colspan="3" >
                         
                     </td>
                 </tr>
                 <tr >
-                    <td colspan="2" >
-                        (  ) Registro da autorização de entrada e saída do 
-veículo oficial 
-*Campo exclusivo para prestação de contas do 
-motorista/condutor de veículo oficial. 
+                    <td colspan="3" style="padding-left: 20px;">
+                        (  ) Registro da autorização de entrada e saída do veículo oficial <br>
+                            <i style="font-size: 12px; font-weight: bold; display: flex; flex-direction: column; align-items: center;"> *Campo exclusivo para prestação de contas do motorista/condutor de veículo oficial. </i>
                     </td>
-                    <td colspan="4" >
+                    <td colspan="3" >
                         
                     </td>
                 </tr>
                 <tr >
-                    <td colspan="2" >
+                    <td colspan="3" style="padding-left: 20px;">
                         (  ) Declaração de participação
                     </td>
-                    <td colspan="4" >
+                    <td colspan="3" >
                         
                     </td>
                 </tr>
                 <tr >
-                    <td colspan="2" >
+                    <td colspan="3" style="padding-left: 20px;">
                         (  ) Certificado do evento/curso 
                     </td>
-                    <td colspan="4" >
+                    <td colspan="3" >
                         
                     </td>
                 </tr>
                 <tr >
-                    <td colspan="2" >
+                    <td colspan="3" style="padding-left: 20px;">
                         (  ) Bilhetes aéreos
                     </td>
-                    <td colspan="4" >
+                    <td colspan="3" >
                         
                     </td>
                 </tr>
                 <tr >
-                    <td colspan="2" >
+                    <td colspan="3" style="padding-left: 20px;">
                         (  ) Relatórios
                     </td>
-                    <td colspan="4" >
+                    <td colspan="3" >
                         
                     </td>
                 </tr>
                 <tr >
-                    <td colspan="2" >
+                    <td colspan="3" style="padding-left: 20px;">
                         (  ) Fotos
                     </td>
-                    <td colspan="4" >
+                    <td colspan="3" >
                         
                     </td>
                 </tr>
                 <tr >
-                    <td colspan="2" >
+                    <td colspan="3" style="padding-left: 20px;">
                         (  ) Comprovante de devolução
                     </td>
-                    <td colspan="4" >
+                    <td colspan="3" >
                         
                     </td>
                 </tr>
                 
                 <tr>
                     <td class="fundo_titulo" colspan="6" >
-                        <h3>DADOS DA AUTORIDADE QUE AUTORIZOU A VIAGEM</h3><p style="font-size: 10px;">&nbsp;</p>
+                        <h3>DADOS DA AUTORIDADE QUE AUTORIZOU A VIAGEM</h3><p style="font-size: 6px;">&nbsp;</p>
                     </td>
                 </tr>
                 <tr>
-                    <td >
+                    <td style="width: 20%; padding-left: 10px;">
                         Nome
                     </td>
                     <td colspan="5"></td>
                 </tr>
                 <tr>
-                    <td >
+                    <td style="padding-left: 10px;">
                         Matrícula
                     </td>
                     <td colspan="5"></td>
                 </tr>
                 <tr>
-                    <td >
+                    <td style="padding-left: 10px;">
                         Cargo/Função 
                     </td>
                     <td colspan="5"></td>
@@ -574,11 +577,11 @@ motorista/condutor de veículo oficial.
                 
                 <tr>
                     <td class="fundo_titulo" colspan="6" >
-                        <h3>ASSINATURAS</h3><p style="font-size: 10px;">&nbsp;</p>
+                        <h3>ASSINATURAS</h3><p style="font-size: 6px;">&nbsp;</p>
                     </td>
                 </tr>
                 <tr style="height: 100px;">
-                    <td colspan="2" >
+                    <td colspan="3" >
                         
                         <div class="assinatura">
                             <div class="linha"></div>
@@ -586,7 +589,7 @@ motorista/condutor de veículo oficial.
                         </div>
     
                     </td>
-                    <td colspan="4" >
+                    <td colspan="3" >
                         <div class="assinatura">
                             <div class="linha"></div>
                             <div class="texto">Autoridade Competente</div>
