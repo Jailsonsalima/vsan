@@ -97,13 +97,13 @@
                     <td class="center_text">
                         CPF
                     </td>
-                    <td colspan="2" style="">
+                    <td colspan="2" >
                         {{ servidor.cpf }}
                     </td>
                     <td class="center_text" style="width: 30px; margin: 1px;">
                         Matrícula
                     </td>
-                    <td colspan="2" style="">
+                    <td colspan="2">
                         {{ servidor.matricula }}
                     </td>
                 </tr>
@@ -111,7 +111,7 @@
                     <td class="center_text">
                         Cargo/Função
                     </td>
-                    <td colspan="2" style="">
+                    <td colspan="2">
                         {{ servidor.cargo }}/
                         {% if servidor.funcao != None %}
                             {{ servidor.funcao|title }}
@@ -120,7 +120,7 @@
                     <td class="center_text">
                         Lotação
                     </td>
-                    <td colspan="2" style="">
+                    <td colspan="2">
                         {{ servidor.setor.nome }}
                     </td>
                 </tr>
@@ -129,13 +129,13 @@
                         Telefone
                     </td>
                     <td class="center_text">
-                        Telefone
+                        {{ servidor.telefone }}
                     </td>
                     <td colspan="3" class="center_text">
                         Nº do processo de concessão de diárias
                     </td>
-                    <td style="">
-                        
+                    <td>
+                        {{ atividade.numero_processo }}
                     </td>
                 </tr>
                 <tr class="fundo_titulo">
@@ -148,14 +148,14 @@
                     <td class="center_text">
                         Portaria Nº
                     </td>
-                    <td colspan="3" style="">
+                    <td colspan="3">
                         Portaria Nº
                     </td>
                     <td class="center_text">
                         Data
                     </td>
-                    <td style="">
-                        {{ atividade.data_criacao|date:"d/m/Y" }}
+                    <td>
+                        
                     </td>
                     
                 </tr>
@@ -163,7 +163,7 @@
                     <td class="center_text">
                         Objetivo
                     </td>
-                    <td colspan="5" style="">
+                    <td colspan="5">
                         Objetivo
                     </td>
 
@@ -193,7 +193,7 @@
                     <td class="center_text">
                         Locais de destino
                     </td>
-                    <td colspan="5" style="">
+                    <td colspan="5">
                         Belém/{{ atividade.municipio }}/Belém
                     </td>
 
@@ -241,10 +241,10 @@
                <tr>
                     
                 
-                    <td rowspan="1" style="">
+                    <td rowspan="1">
                         {{ atividade.data_ida }}
                     </td>
-                    <td rowspan="1" style="">
+                    <td rowspan="1">
                         {{ atividade.data_retorno }}
                     </td>
                     
@@ -301,13 +301,13 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <td colspan="2" class="center_text">
                         {{ diarias }}
                     </td>
-                    <td colspan="2">
+                    <td colspan="2" class="center_text">
                         {{ valor_unitario }}
                     </td>
-                    <td colspan="2">
+                    <td colspan="2" class="center_text">
                         {{ valor_total }}
                     </td>
                 </tr>
@@ -357,7 +357,7 @@
                     <td colspan="4" >
                         Veículo: ______________ <br>
                         Placa: _______________<br>
-                        Motorista: __________________________________<p style="line-height: 10px;">&emsp;</p>
+                        Motorista: <u>{{ motorista.nome|upper }}</u><p style="line-height: 10px;">&emsp;</p>
                     </td>
                 </tr>
                 <tr>
@@ -434,7 +434,7 @@
                         
                         <i style="font-size: 12px; font-weight: bold;">*Campo exclusivo para prestação de contas do motorista/condutor de veículo oficial.</i>
                     </td>
-                    <td colspan="3" style="">
+                    <td colspan="3">
                         Horário Da Partida ______________ <br>
                         Horário Da Guarda _______________ <br><br>
                         
@@ -561,13 +561,17 @@
                     <td style="width: 20%; padding-left: 10px;">
                         Nome
                     </td>
-                    <td colspan="5"></td>
+                    <td colspan="5">
+                        {{ servidor.chefe_imediato.chefe_imediato }}
+                    </td>
                 </tr>
                 <tr>
                     <td style="padding-left: 10px;">
                         Matrícula
                     </td>
-                    <td colspan="5"></td>
+                    <td colspan="5">
+                        {{ servidor.chefe_imediato.matricula_chefe }}
+                    </td>
                 </tr>
                 <tr>
                     <td style="padding-left: 10px;">

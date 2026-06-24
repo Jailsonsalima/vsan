@@ -62,6 +62,7 @@ def cadastro_servidor(request):
             admissao=request.POST.get("admissao") or None,
             horario_trabalho=request.POST.get("horario_trabalho"),
             orgao_origem=request.POST.get("orgao_origem"),
+            telefone = request.POST.get("telefone"),
         )
         # Vincula o servidor ao usuário logado
         request.user.servidor = servidor
@@ -127,6 +128,7 @@ def cadastro_servidor_publico(request):
             admissao=admissao,
             horario_trabalho=request.POST.get("horario_trabalho"),
             orgao_origem=request.POST.get("orgao_origem"),
+            telefone = request.POST.get("telefone"),
         )
         messages.success(request, "Servidor público cadastrado com sucesso! ")
         return redirect("sucesso")
