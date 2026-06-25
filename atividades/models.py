@@ -4,6 +4,8 @@ from setores.models import Setor
 from usuarios.models import Usuario
 from agendamentos.models import MotoristaExterno, Agendamento
 
+from veiculos.models import Veiculo
+
 # Create your models here.
 
 class RecursoAtivo(models.Model):
@@ -37,6 +39,27 @@ class Atividade(models.Model):
     numero_processo = models.CharField(max_length=50, blank=True, null=True)
     criador = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="atividades_criadas", null=True, blank=True)
     motoristas_externos = models.ManyToManyField(MotoristaExterno, related_name="atividades", blank=True)  # vínculo com motoristas externos
+
+    # Campos da prestação de contas
+    portaria_numero = models.CharField(max_length=50, blank=True, null=True)
+    data_prestacao = models.DateField(blank=True, null=True)
+    objetivo_prestacao = models.TextField(blank=True, null=True)
+    observacao_prestacao = models.TextField(blank=True, null=True)
+    veiculo_prestacao = models.ForeignKey(Veiculo, on_delete=models.SET_NULL, null=True, blank=True)
+    horario_partida = models.TimeField(blank=True, null=True)
+    horario_guarda = models.TimeField(blank=True, null=True)
+    devolucao = models.CharField(
+        max_length=20,
+        choices=[("total", "Devolução Total"), ("parcial", "Devolução Parcial"), ("nao", "Não se Aplica")],
+        blank=True,
+        null=True
+    )
+    anexos = models.JSONField(default=list, blank=True)
+    # Campos bancários
+    cnpj = models.CharField(max_length=20, blank=True, null=True)
+    banco = models.CharField(max_length=100, blank=True, null=True)
+    agencia = models.CharField(max_length=20, blank=True, null=True)
+    conta_corrente = models.CharField(max_length=30, blank=True, null=True)
     def __str__(self):
         return f"{self.data_criacao} - {self.data_ida} ({self.data_retorno}) - {self.objetivo[:30]}..."
 

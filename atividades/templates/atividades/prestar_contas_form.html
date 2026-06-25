@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Prestação de Contas <br>({{ atividade.municipio }})</h2>
+    <form method="post" class="form">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group">
+                <label>Portaria Nº:</label>
+                <input type="number" name="portaria_numero" value="{{ atividade.portaria_numero }}">
+            </div>
+            <div class="form-group">
+                <label>Data:</label>
+                <input type="date" name="data" value="{{ atividade.data_prestacao|date:'Y-m-d' }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Objetivo:</label>
+            <textarea name="objetivo">{{ atividade.objetivo_prestacao }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Observação:</label>
+            <textarea name="observacao">{{ atividade.observacao_prestacao }}</textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Veículo:</label>
+                <select name="veiculo">
+                    <option value="">-- Selecione --</option>
+                    {% for v in veiculos %}
+                        <option value="{{ v.id }}" {% if atividade.veiculo_prestacao and atividade.veiculo_prestacao.id == v.id %}selected{% endif %}>
+                            {{ v.modelo }} - {{ v.placa }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Horário da Partida:</label>
+                <input type="time" name="horario_partida" value="{{ atividade.horario_partida|time:'H:i' }}">
+            </div>
+            <div class="form-group">
+                <label>Horário da Guarda:</label>
+                <input type="time" name="horario_guarda" value="{{ atividade.horario_guarda|time:'H:i' }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Devolução:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="devolucao" value="total" {% if atividade.devolucao == 'total' %}checked{% endif %}> Total</label>
+                <label><input type="radio" name="devolucao" value="parcial" {% if atividade.devolucao == 'parcial' %}checked{% endif %}> Parcial</label>
+                <label><input type="radio" name="devolucao" value="nao" {% if atividade.devolucao == 'nao' %}checked{% endif %}> Não se Aplica</label>
+            </div>
+        </div>
+        
+        <div id="dados-bancarios" style="display:none;">
+            <div class="form-row">
+<div class="form-group">
+    <label>CNPJ:</label>
+    <input type="text" name="cnpj" value="{{ atividade.cnpj }}">
+</div>
+<div class="form-group">
+    <label>Banco:</label>
+    <input type="text" name="banco" value="{{ atividade.banco }}">
+</div>
+<div class="form-group">
+    <label>Agência:</label>
+    <input type="text" name="agencia" value="{{ atividade.agencia }}">
+</div>
+<div class="form-group">
+    <label>Conta Corrente:</label>
+    <input type="text" name="conta_corrente" value="{{ atividade.conta_corrente }}">
+</div>
+        </div>
+        </div>
+        <div class="form-group">
+            <label>Anexos:</label>
+            <div class="checkbox-list form-row" id="lista-anexos">
+                <div class="lista-anexos">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="anexo-item">
+                            <label><input type="checkbox" name="anexos" value="portaria" {% if 'portaria' in atividade.anexos %}checked{% endif %} style="width: 20px;" onchange="toggleSelect(this)"> Portaria de concessão</label>
+                            <select name="seq_portaria" class="seq-select" {% if 'portaria' in atividade.anexos %}style="display:inline-block;"{% else %}style="display:none;"{% endif %}>
+                                <option value="">SEQUENCIAL DO ANEXO NO PAE</option>
+                                {% for i in numeros %}
+        <option value="{{ i }}" {% if atividade.anexos.portaria == i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+                            </select>
+                            </div>
+                            <br>
+                            <div class="anexo-item">
+                            <label><input type="checkbox" name="anexos" value="nota" {% if 'nota' in atividade.anexos %}checked{% endif %} style="width: 20px;" onchange="toggleSelect(this)"> Nota de empenho</label>
+                            <select name="seq_nota" class="seq-select" {% if 'nota' in atividade.anexos %}style="display:inline-block;"{% else %}style="display:none;"{% endif %}>
+                                <option value="">SEQUENCIAL DO ANEXO NO PAE</option>
+                                {% for i in numeros %}
+        <option value="{{ i }}" {% if atividade.anexos.nota == i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+                            </select>
+                            </div>
+                            <br>
+                            <div class="anexo-item">
+                            <label><input type="checkbox" name="anexos" value="ordem" {% if 'ordem' in atividade.anexos %}checked{% endif %} style="width: 20px;" onchange="toggleSelect(this)"> Ordem bancária</label>
+                            <select name="seq_ordem" class="seq-select" {% if 'ordem' in atividade.anexos %}style="display:inline-block;"{% else %}style="display:none;"{% endif %}>
+                                <option value="">SEQUENCIAL DO ANEXO NO PAE</option>
+                                {% for i in numeros %}
+        <option value="{{ i }}" {% if atividade.anexos.ordem == i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+                            </select>
+                            </div>
+                            <br>
+                            <div class="anexo-item">
+                            <label><input type="checkbox" name="anexos" value="transporte" {% if 'transporte' in atividade.anexos %}checked{% endif %} style="width: 20px;" onchange="toggleSelect(this)"> Comprovação de transporte</label>
+                            <select name="seq_transporte" class="seq-select" {% if 'transporte' in atividade.anexos %}style="display:inline-block;"{% else %}style="display:none;"{% endif %}>
+                                <option value="">SEQUENCIAL DO ANEXO NO PAE</option>
+                                {% for i in numeros %}
+        <option value="{{ i }}" {% if atividade.anexos.transporte == i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+                            </select>
+                            </div>
+                            <br>
+                        
+                        </div>
+                        <div class="form-group">
+                            <div class="anexo-item">
+                            <label><input type="checkbox" name="anexos" value="registro" {% if 'registro' in atividade.anexos %}checked{% endif %} style="width: 20px;" onchange="toggleSelect(this)"> Registro de entrada/saída veículo oficial</label>
+                            <select name="seq_registro" class="seq-select" {% if 'registro' in atividade.anexos %}style="display:inline-block;"{% else %}style="display:none;"{% endif %}>
+                                <option value="">SEQUENCIAL DO ANEXO NO PAE</option>
+                                {% for i in numeros %}
+        <option value="{{ i }}" {% if atividade.anexos.registro == i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+                            </select>
+                            </div>
+                            <br>
+                            <div class="anexo-item">
+                            <label><input type="checkbox" name="anexos" value="declaracao" {% if 'declaracao' in atividade.anexos %}checked{% endif %} style="width: 20px;" onchange="toggleSelect(this)"> Declaração de participação</label>
+                            <select name="seq_declaracao" class="seq-select" {% if 'declaracao' in atividade.anexos %}style="display:inline-block;"{% else %}style="display:none;"{% endif %}>
+                                <option value="">SEQUENCIAL DO ANEXO NO PAE</option>
+                                {% for i in numeros %}
+        <option value="{{ i }}" {% if atividade.anexos.declaracao == i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+                            </select>
+                            </div>
+                            <br>
+                            <div class="anexo-item">
+                            <label><input type="checkbox" name="anexos" value="certificado" {% if 'certificado' in atividade.anexos %}checked{% endif %} style="width: 20px;" onchange="toggleSelect(this)"> Certificado do evento/curso</label>
+                            <select name="seq_certificado" class="seq-select" {% if 'certificado' in atividade.anexos %}style="display:inline-block;"{% else %}style="display:none;"{% endif %}>
+                                <option value="">SEQUENCIAL DO ANEXO NO PAE</option>
+                                {% for i in numeros %}
+        <option value="{{ i }}" {% if atividade.anexos.certificado == i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+                            </select>
+                            </div>
+                            <br>
+                            <div class="anexo-item">
+                            <label><input type="checkbox" name="anexos" value="bilhetes" {% if 'bilhetes' in atividade.anexos %}checked{% endif %} style="width: 20px;" onchange="toggleSelect(this)"> Bilhetes aéreos</label>
+                            <select name="seq_bilhetes" class="seq-select" {% if 'bilhetes' in atividade.anexos %}style="display:inline-block;"{% else %}style="display:none;"{% endif %}>
+                                <option value="">SEQUENCIAL DO ANEXO NO PAE</option>
+                                {% for i in numeros %}
+        <option value="{{ i }}" {% if atividade.anexos.bilhetes == i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+                            </select>
+                            </div>
+                            <br>
+                        </div>
+                        <div class="form-group">
+                            <div class="anexo-item">
+                            <label><input type="checkbox" name="anexos" value="relatorios" {% if 'relatorios' in atividade.anexos %}checked{% endif %} style="width: 20px;" onchange="toggleSelect(this)"> Relatórios</label>
+                            <select name="seq_relatorios" class="seq-select" {% if 'relatorios' in atividade.anexos %}style="display:inline-block;"{% else %}style="display:none;"{% endif %}>
+                                <option value="">SEQUENCIAL DO ANEXO NO PAE</option>
+                                {% for i in numeros %}
+        <option value="{{ i }}" {% if atividade.anexos.relatorios == i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+                            </select>
+                            </div>
+                            <br>
+                            <div class="anexo-item">
+                            <label><input type="checkbox" name="anexos" value="fotos" {% if 'fotos' in atividade.anexos %}checked{% endif %} style="width: 20px;" onchange="toggleSelect(this)"> Fotos</label>
+                            <select name="seq_fotos" class="seq-select" {% if 'fotos' in atividade.anexos %}style="display:inline-block;"{% else %}style="display:none;"{% endif %}>
+                                <option value="">SEQUENCIAL DO ANEXO NO PAE</option>
+                                {% for i in numeros %}
+        <option value="{{ i }}" {% if atividade.anexos.fotos == i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+                            </select>
+                            </div>
+                            <br>
+                            <div class="anexo-item">
+                            <label><input type="checkbox" name="anexos" value="comprovante" {% if 'comprovante' in atividade.anexos %}checked{% endif %} style="width: 20px;" onchange="toggleSelect(this)"> Comprovante de devolução</label>
+                            <select name="seq_comprovante" class="seq-select" {% if 'comprovante' in atividade.anexos %}style="display:inline-block;"{% else %}style="display:none;"{% endif %}>
+                                <option value="">SEQUENCIAL DO ANEXO NO PAE</option>
+                                {% for i in numeros %}
+        <option value="{{ i }}" {% if atividade.anexos.comprovante == i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+                            </select>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 150px; justify-content: center;">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary"><a href="{% url 'listar_atividades' %}" style="text-decoration: none; color: white;">Cancelar</a></button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+.radio-group {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    white-space: nowrap;
+}
+.radio-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+.checkbox-list label {
+    display: block;
+    margin-bottom: 4px;
+}
+
+#lista-anexos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+#lista-anexos label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f9f9f9;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    transition: background 0.3s;
+}
+
+#lista-anexos label:hover {
+    background: #eef2ff;
+}
+
+</style>
+<script>
+function toggleSelect(checkbox) {
+    const select = checkbox.closest(".anexo-item").querySelector(".seq-select");
+    if (checkbox.checked) {
+        select.style.display = "inline-block";
+    } else {
+        select.style.display = "none";
+        select.value = ""; // limpa valor se desmarcar
+    }
+}
+
+function toggleDadosBancarios() {
+    const radios = document.querySelectorAll('input[name="devolucao"]');
+    const container = document.getElementById("dados-bancarios");
+    let selected = null;
+
+    radios.forEach(radio => {
+        if (radio.checked) {
+            selected = radio.value;
+        }
+    });
+
+    if (selected && selected !== "nao") {
+        container.style.display = "block";
+    } else {
+        container.style.display = "none";
+        // opcional: limpar os campos se não se aplica
+        container.querySelectorAll("input").forEach(input => input.value = "");
+    }
+}
+
+// Executa ao carregar a página
+document.addEventListener("DOMContentLoaded", toggleDadosBancarios);
+
+// Executa sempre que mudar o radio
+document.querySelectorAll('input[name="devolucao"]').forEach(radio => {
+    radio.addEventListener("change", toggleDadosBancarios);
+});
+</script>
+
+
+{% endblock %}

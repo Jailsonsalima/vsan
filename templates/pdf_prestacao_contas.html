@@ -149,13 +149,13 @@
                         Portaria Nº
                     </td>
                     <td colspan="3">
-                        Portaria Nº
+                        {{ atividade.portaria_numero }}
                     </td>
                     <td class="center_text">
                         Data
                     </td>
                     <td>
-                        
+                        {{ atividade.data_prestacao }}
                     </td>
                     
                 </tr>
@@ -164,7 +164,7 @@
                         Objetivo
                     </td>
                     <td colspan="5">
-                        Objetivo
+                        {{ atividade.objetivo_prestacao }}
                     </td>
 
 
@@ -233,7 +233,7 @@
                 <tr>
                     
                     <td colspan="3" rowspan="2">
-                        Observação
+                        {{ atividade.observacao_prestacao }}
                     </td>
                     
                     
@@ -355,9 +355,20 @@
                         {% endif %}
                     </td>
                     <td colspan="4" >
-                        Veículo: ______________ <br>
-                        Placa: _______________<br>
-                        Motorista: <u>{{ motorista.nome|upper }}</u><p style="line-height: 10px;">&emsp;</p>
+                        {% if atividade.veiculo_prestacao.modelo %}
+                            Veículo: <u>{{ atividade.veiculo_prestacao.modelo }}</u><br>
+                            Placa: <u>{{ atividade.veiculo_prestacao.placa }}<br>
+                        {% else %}
+                            Veículo: ______________ <br>
+                            Placa: _______________<br>
+                        {% endif %}
+                        Motorista: 
+                        {% if motorista.nome %}
+                            <u>{{ motorista.nome|upper }}</u>
+                        {% else %}
+                            ______________________
+                        {% endif %}
+                        <p style="line-height: 10px;">&emsp;</p>
                     </td>
                 </tr>
                 <tr>
@@ -377,9 +388,19 @@
                 </tr>
                 <tr>
                     <td colspan="6" style="padding: 10px;">
+                        {% if atividade.get_devolucao_display == "Devolução Total" %}
+                            &nbsp;<img src="file:///home/vsan/vsan/static/img/selected.png" alt="select" class="select"> Devolução Total
+                            <img src="file:///home/vsan/vsan/static/img/select.png" alt="select" class="select"> Devolução Parcial
+                            <img src="file:///home/vsan/vsan/static/img/select.png" alt="select" class="select"> Não se Aplica
+                        {% elif atividade.get_devolucao_display == "Devolução Parcial" %}
                         &nbsp;<img src="file:///home/vsan/vsan/static/img/select.png" alt="select" class="select"> Devolução Total
-                        <img src="file:///home/vsan/vsan/static/img/select.png" alt="select" class="select"> Devolução Parcial
-                        <img src="file:///home/vsan/vsan/static/img/select.png" alt="select" class="select"> Não se Aplica
+                            <img src="file:///home/vsan/vsan/static/img/selected.png" alt="select" class="select"> Devolução Parcial
+                            <img src="file:///home/vsan/vsan/static/img/select.png" alt="select" class="select"> Não se Aplica
+                        {% elif atividade.get_devolucao_display == "Não se Aplica" %}
+                        &nbsp;<img src="file:///home/vsan/vsan/static/img/select.png" alt="select" class="select"> Devolução Total
+                            <img src="file:///home/vsan/vsan/static/img/select.png" alt="select" class="select"> Devolução Parcial
+                            <img src="file:///home/vsan/vsan/static/img/selected.png" alt="select" class="select"> Não se Aplica
+                        {% endif %}
                     </td>
                 </tr>
             </table>
@@ -407,10 +428,10 @@
                 <tr>
                     <td colspan="3">
                         *Dados Bancários: <br>
-                        *CNPJ: <br>
-                        *Banco: <br>
-                        *Agência: <br>
-                        *Conta Corrente: <br>
+                        *CNPJ: {{ atividade.cnpj }} <br>
+                        *Banco: {{ atividade.banco }} <br>
+                        *Agência: {{ atividade.agencia }} <br>
+                        *Conta Corrente: {{ atividade.conta_corrente }} <br>
                         <i style="display: flex; flex-direction: column; align-items: center; ">*Informações fornecidas pela DIEF.</i>
                     </td>
                     <td colspan="3" style="width: 50%;">
@@ -429,15 +450,25 @@
                 </tr>
                 <tr>
                     <td colspan="3">
-                        &emsp;Veículo ______________ <br>
-                        &emsp;Placa _______________ <br><br>
+                        {% if atividade.veiculo_prestacao.modelo %}
+                            &emsp;Veículo: <u>{{ atividade.veiculo_prestacao.modelo }}</u><br>
+                            &emsp;Placa: <u>{{ atividade.veiculo_prestacao.placa }}</u><br>
+                        {% else %}
+                            &emsp;Veículo: ______________ <br>
+                            &emsp;Placa: _______________ <br><br>
+                        {% endif %}
+                        
                         
                         <i style="font-size: 12px; font-weight: bold;">*Campo exclusivo para prestação de contas do motorista/condutor de veículo oficial.</i>
                     </td>
                     <td colspan="3">
-                        Horário Da Partida ______________ <br>
-                        Horário Da Guarda _______________ <br><br>
-                        
+                        {% if atividade.horario_partida %}
+                            Horário Da Partida: <u>{{ atividade.horario_partida }}</u><br>
+                            Horário Da Guarda: <u>{{ atividade.horario_guarda }}</u><br><br>
+                        {% else %}
+                            Horário Da Partida: ______________ <br>
+                            Horário Da Guarda: _______________ <br><br>
+                        {% endif %}
                         <i style="font-size: 12px; font-weight: bold; text-align: justify;">* §2º, I (…) horário da partida do seu local de guarda e a data de retorno do veículo oficial ao seu local de guarda registrado na autorização de entrada e saída de veículo official; (Dec. 3.792/2024)</i><br>
                     </td>
                     
@@ -457,98 +488,160 @@
                         <h3>SEQUENCIAL DO ANEXO NO PAE </h3><p style="font-size: 6px;">&nbsp;</p>
                     </td>
                 </tr>
-
-
-
                 <tr >
                     <td colspan="3" style="padding-left: 20px;">
-                        (  ) Portaria de concessão
+                        {% if 'portaria' in atividade.anexos %}
+                            (X) Portaria de concessão
+                        {% else %}
+                            ( ) Portaria de concessão
+                        {% endif %}
                     </td>
-                    <td colspan="3" >
-                        
+                    <td colspan="3" class="center_text">
+                        {% if atividade.anexos.portaria %}
+                            {{ atividade.anexos.portaria }}
+                        {% endif %}
                     </td>
                 </tr>
                 <tr >
                     <td colspan="3" style="padding-left: 20px;">
-                        (  ) Nota de empenho
+                        {% if 'nota' in atividade.anexos %}
+                            (X) Nota de empenho
+                        {% else %}
+                            ( ) Nota de empenho
+                        {% endif %}
                     </td>
-                    <td colspan="3" >
-                        
-                    </td>
-                </tr>
-
-
-                <tr >
-                    <td colspan="3" style="padding-left: 20px;">
-                        (  ) Ordem bancária
-                    </td>
-                    <td colspan="3" >
-                        
+                    <td colspan="3" class="center_text">
+                        {% if atividade.anexos.nota %}
+                            {{ atividade.anexos.nota }}
+                        {% endif %}
                     </td>
                 </tr>
                 <tr >
                     <td colspan="3" style="padding-left: 20px;">
-                        (  ) Comprovação de transporte 
+                        {% if 'ordem' in atividade.anexos %}
+                            (X) Ordem bancária
+                        {% else %}
+                            ( ) Ordem bancária
+                        {% endif %}
                     </td>
-                    <td colspan="3" >
-                        
+                    <td colspan="3" class="center_text">
+                        {% if atividade.anexos.ordem %}
+                            {{ atividade.anexos.ordem }}
+                        {% endif %}
                     </td>
                 </tr>
                 <tr >
                     <td colspan="3" style="padding-left: 20px;">
-                        (  ) Registro da autorização de entrada e saída do veículo oficial <br>
+                        {% if 'transporte' in atividade.anexos %}
+                            (X) Comprovação de transporte
+                        {% else %}
+                            ( ) Comprovação de transporte
+                        {% endif %}
+                    </td>
+                    <td colspan="3" class="center_text">
+                        {% if atividade.anexos.transporte %}
+                            {{ atividade.anexos.transporte }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="3" style="padding-left: 20px;">
+                        {% if 'registro' in atividade.anexos %}
+                            (X) Registro da autorização de entrada e saída do veículo oficial
+                        {% else %}
+                            ( ) Registro da autorização de entrada e saída do veículo oficial
+                        {% endif %}
+                        <br>
                             <i style="font-size: 12px; font-weight: bold; display: flex; flex-direction: column; align-items: center;"> *Campo exclusivo para prestação de contas do motorista/condutor de veículo oficial. </i>
                     </td>
-                    <td colspan="3" >
-                        
+                    <td colspan="3" class="center_text">
+                        {% if atividade.anexos.registro %}
+                            {{ atividade.anexos.registro }}
+                        {% endif %}
                     </td>
                 </tr>
                 <tr >
                     <td colspan="3" style="padding-left: 20px;">
-                        (  ) Declaração de participação
+                        {% if 'declaracao' in atividade.anexos %}
+                            (X) Declaração de participação
+                        {% else %}
+                            ( ) Declaração de participação
+                        {% endif %}
                     </td>
-                    <td colspan="3" >
-                        
-                    </td>
-                </tr>
-                <tr >
-                    <td colspan="3" style="padding-left: 20px;">
-                        (  ) Certificado do evento/curso 
-                    </td>
-                    <td colspan="3" >
-                        
+                    <td colspan="3" class="center_text">
+                        {% if atividade.anexos.declaracao %}
+                            {{ atividade.anexos.declaracao }}
+                        {% endif %}
                     </td>
                 </tr>
                 <tr >
                     <td colspan="3" style="padding-left: 20px;">
-                        (  ) Bilhetes aéreos
+                        {% if 'certificado' in atividade.anexos %}
+                            (X) Certificado do evento/curso
+                        {% else %}
+                            ( ) Certificado do evento/curso
+                        {% endif %}
                     </td>
-                    <td colspan="3" >
-                        
-                    </td>
-                </tr>
-                <tr >
-                    <td colspan="3" style="padding-left: 20px;">
-                        (  ) Relatórios
-                    </td>
-                    <td colspan="3" >
-                        
+                    <td colspan="3" class="center_text">
+                        {% if atividade.anexos.certificado %}
+                            {{ atividade.anexos.certificado }}
+                        {% endif %}
                     </td>
                 </tr>
                 <tr >
                     <td colspan="3" style="padding-left: 20px;">
-                        (  ) Fotos
+                        {% if 'bilhetes' in atividade.anexos %}
+                            (X) Bilhetes aéreos
+                        {% else %}
+                            ( ) Bilhetes aéreos
+                        {% endif %}
                     </td>
-                    <td colspan="3" >
-                        
+                    <td colspan="3" class="center_text">
+                        {% if atividade.anexos.bilhetes %}
+                            {{ atividade.anexos.bilhetes }}
+                        {% endif %}
                     </td>
                 </tr>
                 <tr >
                     <td colspan="3" style="padding-left: 20px;">
-                        (  ) Comprovante de devolução
+                        {% if 'relatorios' in atividade.anexos %}
+                            (X) Relatórios
+                        {% else %}
+                            ( ) Relatórios
+                        {% endif %}
                     </td>
-                    <td colspan="3" >
-                        
+                    <td colspan="3" class="center_text">
+                        {% if atividade.anexos.relatorios %}
+                            {{ atividade.anexos.relatorios }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="3" style="padding-left: 20px;">
+                        {% if 'fotos' in atividade.anexos %}
+                            (X) Fotos
+                        {% else %}
+                            ( ) Fotos
+                        {% endif %}
+                    </td>
+                    <td colspan="3" class="center_text">
+                        {% if atividade.anexos.fotos %}
+                            {{ atividade.anexos.fotos }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="3" style="padding-left: 20px;">
+                        {% if 'comprovante' in atividade.anexos %}
+                            (X) Comprovante de devolução
+                        {% else %}
+                            ( ) Comprovante de devolução
+                        {% endif %}
+                    </td>
+                    <td colspan="3" class="center_text">
+                        {% if atividade.anexos.comprovante %}
+                            {{ atividade.anexos.comprovante }}
+                        {% endif %}
                     </td>
                 </tr>
                 
@@ -562,7 +655,9 @@
                         Nome
                     </td>
                     <td colspan="5">
-                        {{ servidor.chefe_imediato.chefe_imediato }}
+                        {% if chefe_setor %}
+                            {{ chefe_setor.chefe_imediato }}
+                        {% endif %}
                     </td>
                 </tr>
                 <tr>
@@ -570,14 +665,20 @@
                         Matrícula
                     </td>
                     <td colspan="5">
-                        {{ servidor.chefe_imediato.matricula_chefe }}
+                        {% if chefe_setor %}
+                            {{ chefe_setor.matricula_chefe }}
+                        {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <td style="padding-left: 10px;">
                         Cargo/Função 
                     </td>
-                    <td colspan="5"></td>
+                    <td colspan="5">
+                        {% if chefe_setor %}
+                            {{ chefe_setor.cargo_chefe }}
+                        {% endif %}
+                    </td>
                 </tr>
                 
                 <tr>

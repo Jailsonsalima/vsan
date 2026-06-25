@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+    <div class="container-btn-dashboard" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;" >
+        <a href="{% url 'cadastrar_veiculo' %}" class="btn-card" >📝 Cadastrar veículo</a>
+
+    </div>
+    <div class="container-btn-dashboard"  >
+        <h2>Veículos Cadastrados</h2>
+    
+    
+<table class="dashboard-table" style="justify-items: center;">
+    <tr>
+        <th>Modelo</th>
+        <th>Placa</th>
+        <th>Ações</th>
+    </tr>
+    {% for v in veiculos %}
+    <tr>
+        <td>{{ v.modelo }}</td>
+        <td>{{ v.placa }}</td>
+        <td>
+            <a href="{% url 'editar_veiculo' v.id %}" class="btn-secondary">Editar</a> |
+            <a href="{% url 'excluir_veiculo' v.id %}"  class="btn-secondary">Excluir</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+</div>
+{% endblock %}

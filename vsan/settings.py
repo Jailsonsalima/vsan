@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'atividades.apps.AtividadesConfig',
     'agendamentos.apps.AgendamentosConfig',
     'memorandos.apps.MemorandosConfig',
+    'veiculos.apps.VeiculosConfig',
 ]
 
 MIDDLEWARE = [

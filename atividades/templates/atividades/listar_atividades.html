@@ -232,12 +232,15 @@
                         {% if not atividade.numero_processo %}
                             <!--<a href="{% url 'editar_atividade' atividade.id %}" class="btn-secondary" style="display: block; margin-bottom: 10px;">Editar</a>-->
                         {% endif %}
+                        
+                        {% if atividade.municipio != "Ananindeua" and atividade.municipio != "Barcarena" and atividade.municipio != "Belém" and atividade.municipio != "Benevides" and atividade.municipio != "Castanhal" and atividade.municipio != "Marituba" and atividade.municipio != "Santa Bárbara do Pará" and atividade.municipio != "Santa Isabel do Pará" %}
+                            <!--<a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-primary" style="display: block;">PDFs 🗐</a>
+                            <br> <a href="{% url 'prestar_contas' atividade.id %}" class="btn btn-primary">PrestarContas</a>-->
+                            <input type="radio" name="atividade_selecionada" value="{{ atividade.id }}" class="atividade-radio">
+                        {% else %}
                             <a href="{% url 'editar_atividade' atividade.id %}" class="btn-secondary" style="display: block; margin-bottom: 10px;">Editar 🗘</a>
-                            {% if atividade.municipio != "Ananindeua" and atividade.municipio != "Barcarena" and atividade.municipio != "Belém" and atividade.municipio != "Benevides" and atividade.municipio != "Castanhal" and atividade.municipio != "Marituba" and atividade.municipio != "Santa Bárbara do Pará" and atividade.municipio != "Santa Isabel do Pará" %}
-                                <a href="{% url 'gerar_zip_pdfs' atividade.id %}" class="btn-primary" style="display: block;">PDFs 🗐</a>
-                                <br> <a href="{% url 'prestar_contas' atividade.id %}" class="btn btn-primary">PrestarContas</a>
-                            {% endif %}{% if atividade.n_memorando != None %}{% endif %}
-                    
+                        {% endif %}
+                        {% if atividade.n_memorando != None %}{% endif %}
                     {% endif %}
                 </td>
             </tr>
@@ -248,7 +251,13 @@
             {% endfor %}
         </tbody>
     </table>
-
+<!-- Menu flutuante fixo -->
+<div id="menu-acoes">
+    <button style="width: 70px;" onclick="abrirEditar()">Editar Atividade</button>
+    <button style="width: 70px;" onclick="abrirPDFs()">PDFs Atividade</button>
+    <button style="width: 70px;" onclick="abrirEditarPrestarContas()">Editar Prestar Contas</button>
+    <button style="width: 70px;" onclick="abrirPrestarContas()">PDFs Prestar Contas</button>
+</div>
     <!-- Paginação -->
     <div class="pagination" style="margin-top:20px; text-align:center;">
         {% if page_obj.has_previous %}
@@ -264,4 +273,69 @@
 </div>
 
 <script src="{% static 'js/script.js' %}"></script>
+
+<script>
+function getAtividadeSelecionada() {
+    const selecionado = document.querySelector('.atividade-radio:checked');
+    return selecionado ? selecionado.value : null;
+}
+
+function abrirEditar() {
+    const id = getAtividadeSelecionada();
+    if (id) {
+        window.location.href = `/atividade/editar/${id}/`;
+    } else {
+        alert("Selecione uma atividade primeiro.");
+    }
+}
+
+function abrirPDFs() {
+    const id = getAtividadeSelecionada();
+    if (id) {
+        window.location.href = `/atividade/${id}/pdfs/`;
+    } else {
+        alert("Selecione uma atividade primeiro.");
+    }
+}
+
+function abrirPrestarContas() {
+    const id = getAtividadeSelecionada();
+    if (id) {
+        window.location.href = `/prestar-contas/${id}/`;
+    } else {
+        alert("Selecione uma atividade primeiro.");
+    }
+}
+function abrirEditarPrestarContas() {
+    const id = getAtividadeSelecionada();
+    if (id) {
+        window.location.href = `/atividade/${id}/prestar-contas-form/`;
+    } else {
+        alert("Selecione uma atividade primeiro.");
+    }
+}
+</script>
+
+<style>
+    #menu-acoes {
+    position: fixed;   /* Fica fixo na tela */
+    top: 50%;          /* Centraliza verticalmente */
+    right: 20px;       /* Encosta no lado direito */
+    transform: translateY(-50%); /* Ajusta para ficar exatamente no meio */
+    background: #0546f7;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    z-index: 9999;     /* Garante que fique acima de outros elementos */
+    display: flex;
+    flex-direction: column; /* Coluna: um botão embaixo do outro */
+    gap: 10px;         /* Espaço entre os botões */
+    width: 90px;
+}
+#menu-acoes button {
+    width: 70px;      /* Largura fixa para os botões */
+    padding: 8px;
+}
+</style>
+
 {% endblock %}

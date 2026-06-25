@@ -24,6 +24,7 @@ from atividades import views as atividades_views
 from django.contrib.auth import views as auth_views
 from agendamentos import views as agendamento_views
 from memorandos import views as memorandos_views
+from veiculos import views as veiculos_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -93,10 +94,17 @@ urlpatterns = [
     # Novo endpoint para adicionar processo
     path('adicionar_processo/<int:agendamento_id>/', agendamento_views.adicionar_processo, name='adicionar_processo'),
     path("atividade/adicionar_processo/<int:atividade_id>/", atividades_views.adicionar_processo_atividade, name="adicionar_processo_atividade"),
+    path("atividade/<int:atividade_id>/prestar-contas-form/", atividades_views.prestar_contas_form, name="prestar_contas_form"),
+
 
 
     # cadastrar setor externo para motorista externo
     path("cadastrar/", agendamento_views.cadastrar_setor_externo, name="cadastrar_setor_externo"),
     path('memorandos/', memorandos_views.gerenciar_memorando, name='gerenciar_memorando'),
     path("cancelar/<int:agendamento_id>/", agendamento_views.cancelar_agendamento, name="cancelar_agendamento"),
+
+    path("veiculos/", veiculos_views.listar_veiculos, name="listar_veiculos"),
+    path("veiculos/cadastrar/", veiculos_views.cadastrar_veiculo, name="cadastrar_veiculo"),
+    path("veiculos/editar/<int:veiculo_id>/", veiculos_views.editar_veiculo, name="editar_veiculo"),
+    path("veiculos/excluir/<int:veiculo_id>/", veiculos_views.excluir_veiculo, name="excluir_veiculo"),
 ]

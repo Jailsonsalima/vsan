@@ -19,6 +19,8 @@ import locale
 from django.utils import timezone
 from django.core.paginator import Paginator
 
+from veiculos.models import Veiculo
+
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 import unicodedata
@@ -587,6 +589,8 @@ def prestar_contas(request, atividade_id):
     atividade = get_object_or_404(Atividade, id=atividade_id)
     servidores = atividade.servidores.all()
     setores = Setor.objects.all()
+    prestacao = atividade
+
 
     # --- Lógica de setores igual ao pdf_atividade ---
     setores = Setor.objects.filter(nome__startswith="DEVS")
@@ -604,6 +608,20 @@ def prestar_contas(request, atividade_id):
             setores_filtrados.append(setor)
         else:
             setores_filtrados.extend(setor_dvs)
+    # --- Seleção do chefe da autoridade ---
+    setor_devs = Setor.objects.filter(nome="DEVS/DVS/SESPA").first()
+    
+
+    chefe_setor = None
+    if setor_devs:
+        chefe_setor = setor_devs
+        # Se algum servidor tem a mesma matrícula do chefe DEVS/DVS/SESPA,
+        # então usa o chefe imediato do setor do servidor
+        for servidor in servidores:
+            if servidor.matricula == setor_devs.matricula_chefe and servidor.setor:
+                # pega o chefe imediato do setor do servidor
+                chefe_setor = servidor.setor
+                break
     # --- cálculo das diárias ---
     dias_diarias_str = atividade.dias_diarias  # exemplo: "2 / 1,5"
 
@@ -634,6 +652,8 @@ def prestar_contas(request, atividade_id):
                 "valor_unitario": valor_para,
                 "valor_total": round(float(valor_float or 0) * float(valor_para), 2),
                 "diarias":valor_float,
+                "prestacao": prestacao,  # passa os dados da prestação
+                "chefe_setor": chefe_setor,  # passa o chefe correto para o template
             })
             pdf_relatorio = HTML(string=html_relatorio, base_url=request.build_absolute_uri('/')).write_pdf()
             zip_file.writestr(f"relatorio_viagem_{servidor.primeiro_e_ultimo_nome()}_{atividade.id}.pdf", pdf_relatorio)
@@ -644,6 +664,7 @@ def prestar_contas(request, atividade_id):
             "servidores": servidores,
             "setores": setores_filtrados,
             "chefe_eh_servidor": False,  # ajuste conforme sua lógica
+            "chefe_setor": chefe_setor,
         })
         pdf_memorando = HTML(string=html_memorando, base_url=request.build_absolute_uri('/')).write_pdf()
         zip_file.writestr(f"memorando_{atividade.id}.pdf", pdf_memorando)
@@ -652,3 +673,43 @@ def prestar_contas(request, atividade_id):
     response = HttpResponse(buffer.getvalue(), content_type="application/zip")
     response['Content-Disposition'] = f'attachment; filename="prestacao_contas_{atividade.id}.zip"'
     return response
+
+
+@login_required(login_url='/login/')
+def prestar_contas_form(request, atividade_id):
+    atividade = get_object_or_404(Atividade, id=atividade_id)
+    veiculos = Veiculo.objects.all().order_by("modelo")
+    
+    if request.method == "POST":
+        atividade.portaria_numero = request.POST.get("portaria_numero")
+        atividade.data_prestacao = request.POST.get("data")
+        atividade.objetivo_prestacao = request.POST.get("objetivo")
+        atividade.observacao_prestacao = request.POST.get("observacao")
+        veiculo_id = request.POST.get("veiculo")
+        atividade.veiculo_prestacao = Veiculo.objects.get(id=veiculo_id) if veiculo_id else None
+        atividade.horario_partida = request.POST.get("horario_partida")
+        atividade.horario_guarda = request.POST.get("horario_guarda")
+        atividade.devolucao = request.POST.get("devolucao")
+        # Captura anexos e sequenciais
+        anexos_selecionados = request.POST.getlist("anexos")
+        anexos_dict = {}
+        for anexo in anexos_selecionados:
+            seq_valor = request.POST.get(f"seq_{anexo}")
+            anexos_dict[anexo] = int(seq_valor) if seq_valor else None
+
+        atividade.anexos = anexos_dict
+        # Campos bancários
+        atividade.cnpj = request.POST.get("cnpj")
+        atividade.banco = request.POST.get("banco")
+        atividade.agencia = request.POST.get("agencia")
+        atividade.conta_corrente = request.POST.get("conta_corrente")
+        
+        atividade.save()
+        messages.success(request, "Prestação de contas registrada com sucesso!")
+        return redirect("listar_atividades")
+    numeros = range(1, 11)
+    return render(request, "atividades/prestar_contas_form.html", {
+        "atividade": atividade,
+        "veiculos": veiculos,
+        "numeros": numeros,
+    })
