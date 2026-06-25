@@ -60,7 +60,7 @@
                     {% elif atividade.chefe_imediato.nome == "DIVSEV/DEVS/DVS/SESPA" %}
                         <strong>Da:</strong> Divisão de serviços/DEVS/DVS/SESPA<br>
                     {% endif %}
-                    <strong>Para:</strong>  Diretoria de Vigilância em Saúde – DVS/SESPA<br>
+                    <strong>Para:</strong>  Divisão de Prestação de Contas – DIPC/ DIPA/SAGA<br>
                 </td>
             </tr>
             <tr>
@@ -72,7 +72,7 @@
             </tr>
         </table>
         <br>
-        <p>&emsp;&emsp;Prezado(a) Diretor(a),</p><br>
+        <p>&emsp;&emsp;Prezado(a) Senhor(a),</p><br>
         <p style="line-height: 1.3; text-align: justify; white-space: pre-line;">&emsp;&emsp;Encaminhamos a Vossa Senhoria, a prestação de contas dos servidores abaixo que {{ atividade.objetivo }}</p>
         <br>
         <table>
@@ -118,7 +118,7 @@
        <br>
         &emsp;&emsp;Atenciosamente,<br>      
         <div>
-            {% if atividade.chefe_imediato and not chefe_eh_servidor %}
+            <!--{% if atividade.chefe_imediato and not chefe_eh_servidor %}
                 <div class="assinaturas" style="line-height: 1;">
                     <p style="color: #00b0f0;">(Assinatura eletrônica)</p>
                     <strong>{{ atividade.chefe_imediato.chefe_imediato }}</strong><br>
@@ -126,7 +126,7 @@
                     Portaria nº {{ atividade.chefe_imediato.portaria_chefe }}<br>
                     Matrícula nº {{ atividade.chefe_imediato.matricula_chefe }}<br><br>
                 </div>
-            {% endif %}
+            {% endif %}-->
 
             {% for setor in setores %}
             <div class="assinaturas" style="line-height: 1;">
