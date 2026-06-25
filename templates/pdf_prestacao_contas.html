@@ -241,10 +241,10 @@
                <tr>
                     
                 
-                    <td rowspan="1">
+                    <td rowspan="1" class="center_text">
                         {{ atividade.data_ida }}
                     </td>
-                    <td rowspan="1">
+                    <td rowspan="1" class="center_text">
                         {{ atividade.data_retorno }}
                     </td>
                     
@@ -363,8 +363,8 @@
                             Placa: _______________<br>
                         {% endif %}
                         Motorista: 
-                        {% if motorista.nome %}
-                            <u>{{ motorista.nome|upper }}</u>
+                        {% if motorista_servidor %}
+                            <u>{{ motorista_servidor.nome|upper }}</u>
                         {% else %}
                             ______________________
                         {% endif %}

@@ -644,9 +644,16 @@ def prestar_contas(request, atividade_id):
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
         # 1. Para cada servidor, gerar um PDF de prestação de contas/Relatório de Viagem
         for servidor in servidores:
+            motorista_servidor = None
+            for servidor in servidores:
+                if getattr(servidor, "eh_motorista", False):
+                    motorista_servidor = servidor
+                    break
             html_relatorio = render_to_string("pdf_prestacao_contas.html", {
                 "atividade": atividade,
                 "servidores": [servidor],
+                "motoristas_externos": atividade.motoristas_externos.all(),
+                "motorista_servidor": motorista_servidor,  # passa o motorista servidor
                 "setores": setores,
                 "periodo_formatado": formatar_periodo(atividade.data_ida, atividade.data_retorno),
                 "valor_unitario": valor_para,
