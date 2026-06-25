@@ -72,7 +72,7 @@ def solicitar_agendamento(request, template_name="solicitar_agendamento.html"):
                     agendamento__data_ida__lte=agendamento.data_retorno,
                     agendamento__data_retorno__gte=agendamento.data_ida,
                     agendamento__status="processado" # só considera ocupado os com status processado
-                ).values_list("motorista_servidor_id", flat=True)
+                ).exclude(agendamento__status="cancelado").values_list("motorista_servidor_id", flat=True) # Adicionado para teste: '.exclude(agendamento__status="cancelado")'
 
                 motoristas_disponiveis = motoristas_servidores.exclude(id__in=motoristas_ocupados)
 
