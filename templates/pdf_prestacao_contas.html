@@ -365,6 +365,10 @@
                         Motorista: 
                         {% if motorista_servidor %}
                             <u>{{ motorista_servidor.nome|upper }}</u>
+                        {% elif motoristas_externos %}
+                            {% for motorista in motoristas_externos %}
+                                <u>{{ motorista.nome|upper }}</u>{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
                         {% else %}
                             ______________________
                         {% endif %}

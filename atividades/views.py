@@ -640,15 +640,17 @@ def prestar_contas(request, atividade_id):
     # Para viagem para outros estados
     valor_outros = ValorDiaria.objects.get(tipo="OUTROS").valor
 
+    # --- identifica motorista servidor uma vez ---
+    motorista_servidor = None
+    for s in servidores:
+        if "motorista" in s.cargo.lower():
+            motorista_servidor = s
+            break
+
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
         # 1. Para cada servidor, gerar um PDF de prestação de contas/Relatório de Viagem
         for servidor in servidores:
-            motorista_servidor = None
-            for servidor in servidores:
-                if getattr(servidor, "eh_motorista", False):
-                    motorista_servidor = servidor
-                    break
             html_relatorio = render_to_string("pdf_prestacao_contas.html", {
                 "atividade": atividade,
                 "servidores": [servidor],
@@ -688,15 +690,30 @@ def prestar_contas_form(request, atividade_id):
     veiculos = Veiculo.objects.all().order_by("modelo")
     
     if request.method == "POST":
-        atividade.portaria_numero = request.POST.get("portaria_numero")
-        atividade.data_prestacao = request.POST.get("data")
-        atividade.objetivo_prestacao = request.POST.get("objetivo")
-        atividade.observacao_prestacao = request.POST.get("observacao")
+        atividade.portaria_numero = request.POST.get("portaria_numero") or ""
+        data_prestacao_str = request.POST.get("data")
+        atividade.data_prestacao = (
+            datetime.strptime(data_prestacao_str, "%Y-%m-%d").date()
+            if data_prestacao_str else None
+        )
+        atividade.objetivo_prestacao = request.POST.get("objetivo") or ""
+        atividade.observacao_prestacao = request.POST.get("observacao") or ""
         veiculo_id = request.POST.get("veiculo")
         atividade.veiculo_prestacao = Veiculo.objects.get(id=veiculo_id) if veiculo_id else None
-        atividade.horario_partida = request.POST.get("horario_partida")
-        atividade.horario_guarda = request.POST.get("horario_guarda")
+       
         atividade.devolucao = request.POST.get("devolucao")
+
+        horario_partida_str = request.POST.get("horario_partida")
+        atividade.horario_partida = (
+            datetime.strptime(horario_partida_str, "%H:%M").time()
+            if horario_partida_str else None
+        )
+
+        horario_guarda_str = request.POST.get("horario_guarda")
+        atividade.horario_guarda = (
+            datetime.strptime(horario_guarda_str, "%H:%M").time()
+            if horario_guarda_str else None
+        )
         # Captura anexos e sequenciais
         anexos_selecionados = request.POST.getlist("anexos")
         anexos_dict = {}
