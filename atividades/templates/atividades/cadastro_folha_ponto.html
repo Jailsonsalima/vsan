@@ -42,6 +42,7 @@
       </div>
       <div class="checkbox-list form-row" id="lista-servidores">
         {% for servidor in servidores %}
+        {% if servidor.reg != "6466539" %}
           <div class="servidor-item">
             <label>
               <input type="checkbox" name="servidores" value="{{ servidor.id }}"
@@ -49,6 +50,7 @@
               {{ servidor.primeiro_e_ultimo_nome }} - {{ servidor.setor.nome }}
             </label>
           </div>
+          {% endif %}
         {% endfor %}
       </div>
     </form>
