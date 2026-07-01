@@ -127,6 +127,7 @@
         <!-- Motorista sorteado: envia como hidden -->
         <input type="hidden" name="servidores" value="{{ item.servidor.id }}">
     {% else %}
+        {% if item.servidor.rg != "6466539" %}
         <!-- Exibe apenas os servidores normais -->
         <div class="servidor-item {% if item.em_conflito %}conflito{% else %}disponivel{% endif %}">
             <label>
@@ -139,6 +140,7 @@
                 <input type="hidden" name="servidores_conflito" value="{{ item.servidor.id }}">
             {% endif %}
         </div>
+        {% endif %}
     {% endif %}
     {% endfor %}
 </div>
