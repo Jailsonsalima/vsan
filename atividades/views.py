@@ -46,6 +46,8 @@ def cadastrar_atividade(request, agendamento_id=None):
         processamento = getattr(agendamento, "processamento", None)
         if processamento and processamento.motorista_servidor:
             motorista_sorteado = processamento.motorista_servidor
+            # Se já existe motorista servidor, não carrega externos
+            motoristas_externos = MotoristaExterno.objects.none()
         elif processamento and processamento.motorista_externo:
             motorista_sorteado = processamento.motorista_externo
     if request.method == "POST":

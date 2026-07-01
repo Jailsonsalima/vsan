@@ -28,9 +28,25 @@
             .footer-devs { font-family: 'Arial Narrow'; text-align: center; font-size: 10px; color: #000; line-height: 1.2; bottom: 25px; position: fixed; width: 100%; }
             .fundo_titulo { background-color: #8db3e2;}
             .center_text { text-align: center; }
+            .watermark {
+                position: absolute;
+                top: 600px;                 /* começa na célula do dia */
+                left: 50%;              /* centraliza horizontalmente */
+                transform: translateX(-50%) rotate(-45deg) scaleX(0.8);
+                font-size: 50px;
+                color: #e1e1e1;
+                white-space: nowrap;
+                z-index: -1;
+                pointer-events: none;
+                text-align: center;
+                font-family: serif;
+            }
         </style>
     </head>
     <body>
+        <div class="watermark">
+            VIGILÂNCIA SANITÁRIA ESTADUAL - SESPA
+        </div>
         {% load static %}
         <!--<img src="file:///home/vsan/vsan/static/img/estrela_para.png" alt="Estrela" class="estrela">-->
         <!--<img src="file:///home/vsan/vsan/static/img/linha_boton.png" alt="Linha inferior" class="linha-boton">
