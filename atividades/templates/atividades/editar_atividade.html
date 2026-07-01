@@ -250,6 +250,7 @@
             <label>Servidores:</label>
             <div class="checkbox-list form-row" id="lista-servidores">
     {% for item in servidores_status %}
+    {% if item.servidor.rg != "6466539" %}
         <div class="servidor-item {% if item.em_conflito %}conflito{% else %}disponivel{% endif %}">
             <label>
                 <input type="checkbox" name="servidores" value="{{ item.servidor.id }}" 
@@ -264,6 +265,7 @@
                 <input type="hidden" name="servidores_conflito" value="{{ item.servidor.id }}">
             {% endif %}
         </div>
+        {% endif %}
     {% endfor %}
 </div>
 
